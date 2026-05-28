@@ -4,9 +4,10 @@ description: >
   Design, critique, or scaffold native macOS applications using current HIG,
   Liquid Glass, menu/toolbar conventions, safe areas, accessibility, and
   SwiftUI/AppKit patterns. Use when the user invokes /macos-design or names
-  this skill for macOS app design, UI review, or native UI generation.
+  this skill for macOS app design, UI review, native UI generation, or
+  notch-style / Dynamic Island macOS apps.
 disable-model-invocation: true
-version: 2026-05-28
+version: 2026-05-28.1
 platforms: [macOS, SwiftUI, AppKit, Mac Catalyst]
 primary_use_cases:
   - Generate a native macOS app design specification
@@ -14,6 +15,7 @@ primary_use_cases:
   - Produce SwiftUI or AppKit layout scaffolding
   - Design menu bars, toolbars, sidebars, inspectors, settings, menu bar extras, and full-screen experiences
   - Handle modern Liquid Glass, safe areas, camera housing, and accessibility responsibly
+  - Design or implement notch-style apps with hardware-aligned top-center panels
 ---
 
 # macOS Design
@@ -39,14 +41,14 @@ A generated macOS app should assume the following unless the user explicitly ask
 7. **Honor safe areas and the camera housing.** Never place essential content or controls where the menu bar, toolbar, rounded display corners, or camera housing can obscure them.
 8. **Accessibility is part of the design, not a pass at the end.** Every generated design should include keyboard, VoiceOver, contrast, Reduce Transparency, Increase Contrast, Reduce Motion, and localization considerations.
 9. **Target OS matters.** A design using macOS 26-era APIs should include availability checks and graceful fallbacks for earlier macOS versions.
-10. **Do not imitate macOS superficially.** Fake traffic lights, fake title bars, fake menu bars, fake notches, and web-style side navigation usually make apps feel less native.
+10. **Do not imitate macOS superficially in standard app windows.** Fake traffic lights, fake title bars, fake menu bars, fake notches inside normal window content, and web-style side navigation usually make apps feel less native. Dedicated notch-style utility apps are a separate case — see [notch-effect.md](notch-effect.md).
 
 ## How to use this skill
 
 ### Read order
 
 1. Read this hub (`SKILL.md`).
-2. Use the topic router below to pick 1–3 spoke files (never all 10 unless doing a full audit).
+2. Use the topic router below to pick 1–3 spoke files (never all 11 unless doing a full audit).
 3. Read those spoke files before producing output.
 4. Finish design tasks with a template from [critique-checklists.md](critique-checklists.md).
 
@@ -93,6 +95,7 @@ Use [critique-checklists.md](critique-checklists.md) for the full audit sections
 | VoiceOver, keyboard, contrast, transparency, localization | [accessibility.md](accessibility.md) |
 | SwiftUI shells, NavigationSplitView, commands, MenuBarExtra, code recipes | [swiftui-patterns.md](swiftui-patterns.md) |
 | AppKit split views, responder chain, NSScreen safe areas, Mac Catalyst | [appkit-patterns.md](appkit-patterns.md) |
+| Notch-style app, top-center panel, hardware-aligned notch UI, peek/HUD/shelf modules | [notch-effect.md](notch-effect.md) |
 | Critique checklists, anti-patterns, output templates, source map, launch checklist | [critique-checklists.md](critique-checklists.md) |
 
 ### Common task bundles
@@ -104,6 +107,7 @@ Use [critique-checklists.md](critique-checklists.md) for the full audit sections
 | Liquid Glass audit | liquid-glass → icons-and-visual-language → critique-checklists |
 | SwiftUI scaffold | foundations → layout-and-windowing → swiftui-patterns |
 | AppKit / hybrid app | foundations → appkit-patterns → layout-and-windowing |
+| Notch-style app | notch-effect → appkit-patterns → toolbars-and-menus → accessibility |
 | Full design audit | All spokes + critique-checklists |
 
 ## Spoke index
@@ -119,4 +123,5 @@ Use [critique-checklists.md](critique-checklists.md) for the full audit sections
 | [accessibility.md](accessibility.md) | VoiceOver, keyboard, contrast, transparency, localization |
 | [swiftui-patterns.md](swiftui-patterns.md) | SwiftUI shells, NavigationSplitView, commands, searchable, MenuBarExtra |
 | [appkit-patterns.md](appkit-patterns.md) | AppKit split views, responder chain, safe areas, Mac Catalyst |
+| [notch-effect.md](notch-effect.md) | Notch-style apps: NSPanel, geometry, shape, state machine, interactions, modules |
 | [critique-checklists.md](critique-checklists.md) | Critique checklists, anti-patterns, output templates, source map, launch checklist |

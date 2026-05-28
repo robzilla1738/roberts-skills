@@ -298,13 +298,14 @@ Apple generally refers to the physical top-center display cutout on some Mac not
 
 ### 3.2 When the user asks for a “top notch effect”
 
-Interpret this in one of three ways:
+Interpret this in one of four ways:
 
 1. **Safe-area-aware MacBook design.** Design content so it avoids the camera housing and looks intentional in full screen.
 2. **Marketing mockup.** Render a MacBook-like frame with a camera housing for screenshots or promotional images.
 3. **Immersive full-screen content.** Extend background/media behind the menu bar/camera housing while keeping controls and readable text in safe areas.
+4. **Dedicated notch-style utility app.** A borderless top-center panel that merges with the camera housing — a Dynamic Island for macOS. Read [notch-effect.md](notch-effect.md).
 
-LLM response rule: For real apps, recommend safe-area-aware layout. Do not recommend adding a fake notch to the app UI.
+LLM response rule: For standard windowed apps, recommend safe-area-aware layout. Do not recommend adding a fake notch to normal app UI. Only route to [notch-effect.md](notch-effect.md) when the user explicitly wants a notch-style or Dynamic Island macOS app.
 
 ### 3.3 Full-screen compatibility
 

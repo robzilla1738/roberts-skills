@@ -22,6 +22,7 @@ Covers Human Interface Guidelines, Liquid Glass, menus and toolbars, safe areas,
 | `accessibility.md` | VoiceOver, keyboard, contrast, localization |
 | `swiftui-patterns.md` | SwiftUI shells, NavigationSplitView, commands |
 | `appkit-patterns.md` | AppKit split views, responder chain, Mac Catalyst |
+| `notch-effect.md` | Notch-style apps: NSPanel, geometry, state machine, interactions |
 | `critique-checklists.md` | Audit checklists, anti-patterns, output templates |
 
 Keep the whole folder intact. The hub links to spoke files by relative path.
@@ -60,6 +61,7 @@ macos-design/
   accessibility.md
   swiftui-patterns.md
   appkit-patterns.md
+  notch-effect.md
   critique-checklists.md
 ```
 
@@ -81,7 +83,7 @@ Review this SwiftUI layout against macos-design. Focus on toolbar grouping and L
 /macos-design scaffold a settings window for a menu bar extra app
 ```
 
-The agent should read `SKILL.md` first, then open only the spoke files relevant to your task (usually one to three, not all ten).
+The agent should read `SKILL.md` first, then open only the spoke files relevant to your task (usually one to three, not all eleven).
 
 ## Typical workflows
 
@@ -95,7 +97,7 @@ The agent should read `SKILL.md` first, then open only the spoke files relevant 
 
 Replace your local copy of the whole `macos-design` folder when a new version is published. Compare the `version` field in `SKILL.md` front matter.
 
-Current version: `2026-05-28`
+Current version: `2026-05-28.1`
 
 ## Notes
 
