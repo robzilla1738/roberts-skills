@@ -32,6 +32,12 @@ Every skill README explains the exact folder layout and how to update when new v
 | --- | --- |
 | [macOS Design](design-skills/macos-design/) | Design, critique, and scaffold native macOS apps. HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI and AppKit. Hub-and-spoke layout with 10 reference modules. |
 
+### [Workflow skills](workflow-skills/)
+
+| Skill | Description |
+| --- | --- |
+| [Autoreview](workflow-skills/autoreview/) | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, code quality, architecture, maintainability, security, testing, and cleanup. Invoke with `/review`. |
+
 More categories and skills will show up here as they're published.
 
 ## How skills are structured
