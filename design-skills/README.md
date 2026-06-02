@@ -8,6 +8,18 @@ Agent skills for design work: reviewing interfaces, writing specs, and scaffoldi
 | --- | --- | --- |
 | [macOS Design](macos-design/) | 2026-05-28 | Native macOS app design and critique. HIG, Liquid Glass, menus, toolbars, sidebars, inspectors, safe areas, accessibility, SwiftUI and AppKit patterns. |
 
+## Replication guides
+
+Portable, project-agnostic write-ups (from `/documenter`). Search the full catalog in [INDEX.md](../INDEX.md).
+
+| Platform | Guide | Summary |
+| --- | --- | --- |
+| iOS | [liquidglass-animation.md](iOS/liquidglass-animation.md) | Expanding Liquid Glass composer shell with + menu and slash-command panels |
+| iOS | [ios-sidebar-slide.md](iOS/ios-sidebar-slide.md) | Sidebar underlay with foreground card slide, gesture-driven open/close |
+| macOS | [macos_immersive_onboarding_guide.md](macOS/macos_immersive_onboarding_guide.md) | Immersive first-launch onboarding wizard with blur, motion, and permission steps |
+
+The [macOS Design](macos-design/) skill also ships [notch-effect.md](macos-design/notch-effect.md) as a reference module.
+
 ## Install
 
 Each skill has its own README with setup steps. The pattern is the same:

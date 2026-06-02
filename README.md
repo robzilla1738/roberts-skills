@@ -22,6 +22,8 @@ git clone https://github.com/robzilla1738/roberts-skills.git
 
 Pick a skill from the table below, open its README, and copy the whole folder into your assistant's skills directory (personal or project scope). Mention the skill in a prompt or attach it if your tool supports that.
 
+For portable replication guides (patterns captured from real projects), see **[INDEX.md](INDEX.md)** — the searchable catalog of everything in this repo.
+
 Every skill README explains the exact folder layout and how to update when new versions land here.
 
 ## Available skills

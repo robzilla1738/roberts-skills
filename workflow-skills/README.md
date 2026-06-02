@@ -16,4 +16,6 @@ Each skill has its own README with setup steps. The pattern is the same:
 2. Keep all files together.
 3. Invoke the skill explicitly in a prompt (e.g. `/review`).
 
+Autoreview is also listed in [INDEX.md](../INDEX.md).
+
 See the [root README](../README.md) for general compatibility notes.
