@@ -16,7 +16,7 @@ Portable, project-agnostic write-ups (from `/documenter`). Search the full catal
 | --- | --- | --- |
 | iOS | [liquidglass-animation.md](iOS/liquidglass-animation.md) | Expanding Liquid Glass composer shell with + menu and slash-command panels |
 | iOS | [ios-sidebar-slide.md](iOS/ios-sidebar-slide.md) | Sidebar underlay with foreground card slide, gesture-driven open/close |
-| macOS | [macos_immersive_onboarding_guide.md](macOS/macos_immersive_onboarding_guide.md) | Immersive first-launch onboarding wizard with blur, motion, and permission steps |
+| macOS | [macos_immersive_onboarding_guide.md](macos-design/macos_immersive_onboarding_guide.md) | Immersive first-launch onboarding wizard with blur, motion, and permission steps |
 
 The [macOS Design](macos-design/) skill also ships [notch-effect.md](macos-design/notch-effect.md) as a reference module.
 

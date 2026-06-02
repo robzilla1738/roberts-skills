@@ -6,7 +6,7 @@
 |-----|----------|---------|------|---------|
 | design-skills/iOS/liquidglass-animation.md | design / iOS | Expanding Liquid Glass composer shell with + menu and slash-command panels | swiftui, ios, liquid-glass, animation, composer, chat-input | 2026-05-28 |
 | design-skills/iOS/ios-sidebar-slide.md | design / iOS | Mobile sidebar underlay with foreground card slide, gesture-driven open/close | swiftui, ios, sidebar, drawer, gesture, navigation | 2026-05-28 |
-| design-skills/macOS/macos_immersive_onboarding_guide.md | design / macOS | Immersive first-launch onboarding wizard with blur, motion, and permission steps | swiftui, macos, onboarding, appkit, animation, permissions | 2026-05-30 |
+| design-skills/macos-design/macos_immersive_onboarding_guide.md | design / macOS | Immersive first-launch onboarding wizard with blur, motion, and permission steps | swiftui, macos, onboarding, appkit, animation, permissions | 2026-05-30 |
 | workflow-skills/autoreview/SKILL.md | workflow | Hard acceptance gate — review all session changes for production quality before marking work complete | autoreview, review, production-quality, acceptance-gate, workflow | 2026-05-28 |
 
 ## By category
@@ -18,7 +18,7 @@
 
 ### design / macOS
 
-- [macos_immersive_onboarding_guide.md](design-skills/macOS/macos_immersive_onboarding_guide.md) — Immersive first-launch onboarding wizard
+- [macos_immersive_onboarding_guide.md](design-skills/macos-design/macos_immersive_onboarding_guide.md) — Immersive first-launch onboarding wizard
 
 ### workflow
 

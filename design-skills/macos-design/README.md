@@ -23,6 +23,7 @@ Covers Human Interface Guidelines, Liquid Glass, menus and toolbars, safe areas,
 | `swiftui-patterns.md` | SwiftUI shells, NavigationSplitView, commands |
 | `appkit-patterns.md` | AppKit split views, responder chain, Mac Catalyst |
 | `notch-effect.md` | Notch-style apps: NSPanel, geometry, state machine, interactions |
+| `macos_immersive_onboarding_guide.md` | Immersive first-launch onboarding wizard (blur, motion, permissions) |
 | `critique-checklists.md` | Audit checklists, anti-patterns, output templates |
 
 Keep the whole folder intact. The hub links to spoke files by relative path.
