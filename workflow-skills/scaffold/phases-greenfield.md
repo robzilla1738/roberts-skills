@@ -2,16 +2,16 @@
 
 > Ordered execution with exit criteria. Back to [SKILL.md](SKILL.md).
 
-**Rule:** Do not start phase N+1 until phase N’s exit criterion passes.
+**Rule:** Do not start phase N+1 until phase N’s exit criterion passes. Skip phases per [intake-product-profiles.md](intake-product-profiles.md).
 
 ---
 
-## Phase 0 — Intake
+## Phase 0 — Product intake
 
 | | |
 |--|--|
-| **Actions** | Complete [intake-and-variants.md](intake-and-variants.md); post scaffold plan |
-| **Exit** | Variant and auth decision written; user confirmed or defaults applied |
+| **Actions** | [intake-product-profiles.md](intake-product-profiles.md) — ask what you are building; post scaffold plan |
+| **Exit** | Profile ID + secondary picks written; user confirmed |
 
 ---
 
@@ -19,23 +19,15 @@
 
 | | |
 |--|--|
-| **Actions** | `pnpm create next-app@latest` — TypeScript, ESLint, App Router, **no `src/` directory**, Tailwind, import alias `@/*` → `./*` |
+| **Actions** | `pnpm create next-app@latest` (or `npm` per intake) |
 | **Spoke** | [stack-and-tooling.md](stack-and-tooling.md) |
-| **Exit** | `pnpm dev` serves default page without errors |
+| **Exit** | `pnpm dev` loads |
 
 ```bash
 pnpm create next-app@latest {{project-name}} \
-  --typescript \
-  --eslint \
-  --app \
-  --no-src-dir \
-  --tailwind \
-  --import-alias "@/*" \
-  --turbopack \
-  --use-pnpm
+  --typescript --eslint --app --no-src-dir --tailwind \
+  --import-alias "@/*" --turbopack --use-pnpm
 ```
-
-Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consistency with spoke file tree.
 
 ---
 
@@ -43,9 +35,31 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | `engines`, `typecheck`, `tsx`, Drizzle/tRPC deps (or split: DB phase 4, tRPC phase 5), `server-only` |
+| **Actions** | `engines`, `typecheck`, `tsx`, core deps |
 | **Spoke** | [stack-and-tooling.md](stack-and-tooling.md) |
-| **Exit** | `pnpm lint` passes; `pnpm typecheck` passes (add script if missing) |
+| **Exit** | `pnpm lint` and `pnpm typecheck` pass |
+
+---
+
+## Phase 2b — Env and errors
+
+| | |
+|--|--|
+| **Actions** | `lib/env.ts`, `lib/errors.ts` |
+| **Spoke** | [foundation-env-and-errors.md](foundation-env-and-errors.md) |
+| **Skip** | Never — all full-stack profiles |
+| **Exit** | Files exist; rule documented in README |
+
+---
+
+## Phase 2c — Testing
+
+| | |
+|--|--|
+| **Actions** | Vitest config + sample test |
+| **Spoke** | [foundation-testing.md](foundation-testing.md) |
+| **Skip** | Never for full-stack profiles |
+| **Exit** | `pnpm test:run` passes |
 
 ---
 
@@ -53,9 +67,10 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | `app/globals.css` (Tailwind v4), `lib/cn.ts`, minimal `app/layout.tsx` + `app/page.tsx` |
-| **Spoke** | [file-tree-and-conventions.md](file-tree-and-conventions.md) |
-| **Exit** | Home page renders with Tailwind utility visible |
+| **Actions** | `globals.css`, `lib/cn.ts`, layout; shadcn if profile says so |
+| **Spoke** | [foundation-ui.md](foundation-ui.md), [file-tree-and-conventions.md](file-tree-and-conventions.md) |
+| **Skip** | `api-first` with `minimal` UI |
+| **Exit** | Home renders |
 
 ---
 
@@ -63,9 +78,9 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | Neon project, `DATABASE_URL`, Drizzle config, `users` table, lazy `getDb()`, `db:push` or migrate |
+| **Actions** | Neon, Drizzle, schema, lazy `getDb()`, push or migrate per intake |
 | **Spoke** | [database-neon-drizzle.md](database-neon-drizzle.md) |
-| **Exit** | `pnpm db:push` (or migrate) succeeds against Neon |
+| **Exit** | `pnpm db:push` or migrate succeeds |
 
 ---
 
@@ -73,9 +88,9 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | `lib/trpc/*`, `app/api/trpc/[trpc]/route.ts`, `TrpcProvider`, `health` router |
+| **Actions** | Full tRPC layer + AppError formatter + rate-limit stub |
 | **Spoke** | [trpc-and-query.md](trpc-and-query.md) |
-| **Exit** | `health.check` returns `{ ok: true, db: boolean }` from client or curl |
+| **Exit** | `health.check` works |
 
 ---
 
@@ -83,10 +98,10 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | Clerk env, `proxy.ts`, sign-in/up routes, `ClerkProvider`, `getCurrentUser`, webhook sync |
+| **Actions** | Clerk proxy, pages, webhook |
 | **Spoke** | [auth-clerk-optional.md](auth-clerk-optional.md) |
-| **Skip when** | `app-no-auth` |
-| **Exit** | Logged-out visit to `/app` redirects to `/sign-in`; logged-in user reaches `/app` |
+| **Skip** | `api-first` / profile with `auth: none` |
+| **Exit** | `/app` auth flow works when enabled |
 
 ---
 
@@ -94,9 +109,9 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | Public `/`, protected `/app` with layout; one `protectedProcedure` demo + one client `useQuery` demo |
-| **Spoke** | [file-tree-and-conventions.md](file-tree-and-conventions.md), [trpc-and-query.md](trpc-and-query.md) |
-| **Exit** | Demo pages call tRPC successfully |
+| **Actions** | `/` + `/app` demos |
+| **Spoke** | [file-tree-and-conventions.md](file-tree-and-conventions.md) |
+| **Exit** | Client + server tRPC demos work |
 
 ---
 
@@ -104,9 +119,9 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | `.env.example` complete; Vercel project; Neon integration; production env checklist |
+| **Actions** | `.env.example` aligned with `lib/env.ts`; deploy notes |
 | **Spoke** | [vercel-and-env.md](vercel-and-env.md) |
-| **Exit** | Preview deploy checklist documented (deploy may be manual) |
+| **Exit** | Preview checklist documented |
 
 ---
 
@@ -114,18 +129,11 @@ Adjust flags if `create-next-app` CLI changed; prefer **no `src/`** for consiste
 
 | | |
 |--|--|
-| **Actions** | Run [verification-checklist.md](verification-checklist.md); write project `README.md` |
-| **Exit** | All automated checks green; deliverables listed |
+| **Actions** | [verification-checklist.md](verification-checklist.md); README with profile + [production-habits.md](production-habits.md) |
+| **Exit** | All automated checks green |
 
 ---
 
 ## Handoff
 
-Scaffold is complete when Phase 9 passes. Suggest **`/review`** ([autoreview](../autoreview/SKILL.md)) before first feature PR.
-
-**Intentionally empty next steps** (document in README):
-
-- First domain router (e.g. `projects`, `billing`)
-- Design system / component library
-- E2E tests (Playwright)
-- CI workflow
+Suggest **`/review`** ([autoreview](../autoreview/SKILL.md)). List post-scaffold add-ons from intake in README only.

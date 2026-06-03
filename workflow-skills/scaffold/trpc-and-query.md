@@ -1,18 +1,27 @@
 # tRPC and TanStack Query
 
-> Read when: Phase 5 and 7. Back to [SKILL.md](SKILL.md).
+> Read when: Phase 5 and 7. Requires [foundation-env-and-errors.md](foundation-env-and-errors.md). Back to [SKILL.md](SKILL.md).
+
+---
+
+## Packages
+
+```bash
+pnpm add @trpc/server @trpc/client @trpc/tanstack-react-query @tanstack/react-query superjson zod
+```
+
+**Preferred client:** `@trpc/tanstack-react-query` (current tRPC + TanStack Query integration).
+
+**Legacy:** `@trpc/react-query` + `createTRPCReact` still works (joyflow-style); do not mix both in one app.
 
 ---
 
 ## Architecture
 
 ```text
-Browser → TrpcProvider (React Query) → POST /api/trpc → appRouter → procedures → getDb()
+Browser → TRPCProvider → POST /api/trpc → appRouter → procedures → getDb()
 Server Components → createCaller(appRouter) → same routers (no HTTP)
 ```
-
-- Routers and context: **server only**
-- `TrpcProvider`: **client only** (`"use client"`)
 
 ---
 
@@ -22,32 +31,55 @@ Server Components → createCaller(appRouter) → same routers (no HTTP)
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { AppError, isAppError } from "@/lib/errors";
 import type { TrpcContext } from "./context";
+
+function appErrorToTrpcCode(err: AppError): TRPCError["code"] {
+  switch (err.code) {
+    case "NOT_FOUND":
+      return "NOT_FOUND";
+    case "FORBIDDEN":
+      return "FORBIDDEN";
+    case "UNAUTHORIZED":
+      return "UNAUTHORIZED";
+    case "VALIDATION":
+      return "BAD_REQUEST";
+    case "CONFLICT":
+      return "CONFLICT";
+    case "RATE_LIMIT":
+      return "TOO_MANY_REQUESTS";
+    default:
+      return "INTERNAL_SERVER_ERROR";
+  }
+}
 
 const t = initTRPC.context<TrpcContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
-    if (error.cause instanceof ZodError) {
+    const cause = error.cause;
+    if (isAppError(cause)) {
+      return {
+        ...shape,
+        message: cause.code === "INTERNAL" ? "Internal server error" : cause.message,
+        data: {
+          ...shape.data,
+          code: appErrorToTrpcCode(cause),
+          appError: { code: cause.code, details: cause.details },
+        },
+      };
+    }
+    if (cause instanceof ZodError) {
       return {
         ...shape,
         message: "Invalid input",
-        data: {
-          ...shape.data,
-          code: "BAD_REQUEST",
-          zodIssues: error.cause.issues,
-        },
+        data: { ...shape.data, code: "BAD_REQUEST", zodIssues: cause.issues },
       };
     }
     return {
       ...shape,
       message:
-        error.code === "INTERNAL_SERVER_ERROR"
-          ? "Internal server error"
-          : shape.message,
-      data: {
-        ...shape.data,
-        stack: undefined,
-      },
+        error.code === "INTERNAL_SERVER_ERROR" ? "Internal server error" : shape.message,
+      data: { ...shape.data, stack: undefined },
     };
   },
 });
@@ -58,7 +90,62 @@ export const procedure = t.procedure;
 export const createCallerFactory = t.createCallerFactory;
 ```
 
-Extend with typed `AppError` when the app grows.
+---
+
+## `lib/trpc/middleware/rate-limit.ts` (stub)
+
+In-memory bucket — replace with Upstash before multi-region prod ([production-habits.md](production-habits.md)).
+
+```typescript
+import { RateLimitError } from "@/lib/errors";
+import { middleware } from "../server";
+
+const buckets = new Map<string, { count: number; resetAt: number }>();
+
+export function rateLimit(options?: { capacity?: number; windowMs?: number }) {
+  const capacity = options?.capacity ?? 120;
+  const windowMs = options?.windowMs ?? 60_000;
+
+  return middleware(async ({ ctx, next }) => {
+    const key = ctx.requestId;
+    const now = Date.now();
+    let bucket = buckets.get(key);
+    if (!bucket || now >= bucket.resetAt) {
+      bucket = { count: 0, resetAt: now + windowMs };
+      buckets.set(key, bucket);
+    }
+    bucket.count += 1;
+    if (bucket.count > capacity) {
+      throw new RateLimitError();
+    }
+    return next();
+  });
+}
+```
+
+---
+
+## `lib/trpc/procedures.ts`
+
+```typescript
+import { TRPCError } from "@trpc/server";
+import { procedure, middleware } from "./server";
+import { rateLimit } from "./middleware/rate-limit";
+
+const authMiddleware = middleware(async ({ ctx, next }) => {
+  try {
+    const user = await ctx.getUser();
+    return next({ ctx: { ...ctx, user } });
+  } catch {
+    throw new TRPCError({ code: "UNAUTHORIZED", message: "Authentication required" });
+  }
+});
+
+export const publicProcedure = procedure.use(rateLimit());
+export const protectedProcedure = publicProcedure.use(authMiddleware);
+```
+
+For `api-first` without auth, omit `protectedProcedure` usage until Clerk is added.
 
 ---
 
@@ -66,17 +153,16 @@ Extend with typed `AppError` when the app grows.
 
 ```typescript
 import { randomUUID } from "node:crypto";
-import type { getCurrentUser } from "@/lib/auth/current";
-
-type DbUser = Awaited<ReturnType<typeof getCurrentUser>>;
 
 export interface TrpcContext {
   requestId: string;
   headers: Headers;
-  getUser: () => Promise<DbUser>;
+  getUser: () => Promise<{ id: string; email: string }>;
 }
 
-export type AuthedTrpcContext = TrpcContext & { user: DbUser };
+export type AuthedTrpcContext = TrpcContext & {
+  user: Awaited<ReturnType<TrpcContext["getUser"]>>;
+};
 
 export async function createTrpcContext(opts: { req: Request }): Promise<TrpcContext> {
   const requestId =
@@ -84,7 +170,7 @@ export async function createTrpcContext(opts: { req: Request }): Promise<TrpcCon
     opts.req.headers.get("x-vercel-id") ??
     randomUUID();
 
-  let cachedUser: DbUser | null = null;
+  let cachedUser: Awaited<ReturnType<TrpcContext["getUser"]>> | null = null;
 
   return {
     requestId,
@@ -99,79 +185,67 @@ export async function createTrpcContext(opts: { req: Request }): Promise<TrpcCon
 }
 ```
 
-For `app-no-auth`, replace `getCurrentUser` with a stub or remove `protectedProcedure`.
+For no-auth scaffold, stub `getCurrentUser` to throw or return a dev user.
 
 ---
 
-## `lib/trpc/procedures.ts`
+## Routers
 
-```typescript
-import { TRPCError } from "@trpc/server";
-import { procedure } from "./server";
-import { middleware } from "./server";
+`lib/trpc/routers/health.ts` — unchanged pattern from prior spoke.
 
-export const publicProcedure = procedure;
-
-const authMiddleware = middleware(async ({ ctx, next }) => {
-  let user;
-  try {
-    user = await ctx.getUser();
-  } catch {
-    throw new TRPCError({ code: "UNAUTHORIZED", message: "Authentication required" });
-  }
-  return next({ ctx: { ...ctx, user } });
-});
-
-export const protectedProcedure = procedure.use(authMiddleware);
-```
+`lib/trpc/routers/_app.ts` — merge `healthRouter`.
 
 ---
 
-## `lib/trpc/routers/health.ts`
+## `lib/trpc/client.tsx`
 
-```typescript
-import { sql } from "drizzle-orm";
-import { getDb } from "@/db";
-import { publicProcedure, router } from "../server";
+```tsx
+"use client";
 
-export const healthRouter = router({
-  check: publicProcedure.query(async () => {
-    let dbOk = false;
-    try {
-      await getDb().execute(sql`SELECT 1`);
-      dbOk = true;
-    } catch {
-      dbOk = false;
-    }
-    return { ok: true as const, db: dbOk };
-  }),
-});
-```
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import { createTRPCContext } from "@trpc/tanstack-react-query";
+import { useState, type ReactNode } from "react";
+import superjson from "superjson";
+import type { AppRouter } from "@/lib/trpc/routers/_app";
 
----
+export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 
-## `lib/trpc/routers/_app.ts`
+function makeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: { staleTime: 30_000, refetchOnWindowFocus: false },
+    },
+  });
+}
 
-```typescript
-import { router } from "../server";
-import { healthRouter } from "./health";
+function getBaseUrl() {
+  if (typeof window !== "undefined") return "";
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return `http://localhost:${process.env.PORT ?? 3000}`;
+}
 
-export const appRouter = router({
-  health: healthRouter,
-});
+export function TrpcProvider({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => makeQueryClient());
+  const [trpcClient] = useState(() =>
+    createTRPCClient<AppRouter>({
+      links: [
+        httpBatchLink({
+          url: `${getBaseUrl()}/api/trpc`,
+          transformer: superjson,
+        }),
+      ],
+    }),
+  );
 
-export type AppRouter = typeof appRouter;
-```
-
----
-
-## `lib/trpc/client.ts`
-
-```typescript
-import { createTRPCReact } from "@trpc/react-query";
-import type { AppRouter } from "./routers/_app";
-
-export const api = createTRPCReact<AppRouter>();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
+        {children}
+      </TRPCProvider>
+    </QueryClientProvider>
+  );
+}
 ```
 
 ---
@@ -186,10 +260,9 @@ import { createTrpcContext } from "@/lib/trpc/context";
 const MAX_BODY_BYTES = 1024 * 1024;
 
 async function handler(req: Request) {
-  // Recommended: CSRF / origin check for mutations in production.
-  // See joyflow rejectCrossSiteRequest pattern — implement when adding cookies.
+  // TODO(production): reject cross-site mutations — validate Origin/Referer
+  // when using cookie-based sessions. See production-habits.md.
 
-  let request = req;
   if (req.method === "POST") {
     const contentLength = Number(req.headers.get("content-length") ?? 0);
     if (contentLength > MAX_BODY_BYTES) {
@@ -199,9 +272,9 @@ async function handler(req: Request) {
 
   const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
-    req: request,
+    req,
     router: appRouter,
-    createContext: () => createTrpcContext({ req: request }),
+    createContext: () => createTrpcContext({ req }),
   });
 
   const headers = new Headers(response.headers);
@@ -218,51 +291,22 @@ export { handler as GET, handler as POST };
 
 ---
 
-## `components/providers/TrpcProvider.tsx`
+## Client demo (`useTRPC`)
 
 ```tsx
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink } from "@trpc/client";
-import superjson from "superjson";
-import { api } from "@/lib/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/lib/trpc/client";
 
-function makeQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 30_000,
-        refetchOnWindowFocus: false,
-      },
-    },
-  });
-}
-
-function getBaseUrl() {
-  if (typeof window !== "undefined") return "";
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return `http://localhost:${process.env.PORT ?? 3000}`;
-}
-
-export function TrpcProvider({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => makeQueryClient());
-  const [trpcClient] = useState(() =>
-    api.createClient({
-      links: [
-        httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
-          transformer: superjson,
-        }),
-      ],
-    }),
-  );
-
+export function HealthBadge() {
+  const trpc = useTRPC();
+  const { data, isLoading } = useQuery(trpc.health.check.queryOptions());
+  if (isLoading) return <span>Checking…</span>;
   return (
-    <api.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </api.Provider>
+    <span>
+      API {data?.ok ? "ok" : "fail"} · DB {data?.db ? "ok" : "down"}
+    </span>
   );
 }
 ```
@@ -271,47 +315,14 @@ export function TrpcProvider({ children }: { children: ReactNode }) {
 
 ## RSC server caller (optional)
 
-`lib/trpc/server-caller.ts`:
-
-```typescript
-import { createCallerFactory } from "./server";
-import { appRouter } from "./routers/_app";
-
-const createCaller = createCallerFactory(appRouter);
-
-export async function getTrpcCaller() {
-  const { getCurrentUser } = await import("@/lib/auth/current");
-  return createCaller({
-    requestId: "rsc",
-    headers: new Headers(),
-    getUser: getCurrentUser,
-  });
-}
-```
-
-Use in Server Components: `const caller = await getTrpcCaller(); await caller.health.check();`
-
----
-
-## Client demo
-
-```tsx
-"use client";
-import { api } from "@/lib/trpc/client";
-
-export function HealthBadge() {
-  const { data, isLoading } = api.health.check.useQuery();
-  if (isLoading) return <span>Checking…</span>;
-  return <span>API {data?.ok ? "ok" : "fail"} · DB {data?.db ? "ok" : "down"}</span>;
-}
-```
+`lib/trpc/server-caller.ts` — `createCallerFactory(appRouter)` with manual context.
 
 ---
 
 ## Anti-patterns
 
-- Calling `getDb()` from client components
-- Duplicating auth checks in every procedure instead of `protectedProcedure`
-- Returning raw `Error.stack` from procedures
+- Raw `process.env` outside `lib/env.ts`
+- `getDb()` in client components
+- Copy-pasting auth in every procedure instead of `protectedProcedure`
 
 Next: [auth-clerk-optional.md](auth-clerk-optional.md) or [verification-checklist.md](verification-checklist.md).

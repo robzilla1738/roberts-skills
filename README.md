@@ -42,7 +42,7 @@ Every skill README explains the exact folder layout and how to update when new v
 | --- | --- |
 | [Autoreview](workflow-skills/autoreview/) | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, code quality, architecture, maintainability, security, testing, and cleanup. Invoke with `/review`. |
 | [macOS Sandbox](workflow-skills/macos-sandbox/) | Smoke-test macOS apps in disposable Tart VMs via macbox CLI or MCP. Upload, launch, logs, screenshots, crashes, guest automation. Synced from [macbox](https://github.com/robzilla1738/macbox). |
-| [Scaffold](workflow-skills/scaffold/) | Greenfield a build-ready Next.js app: Tailwind v4, tRPC, TanStack Query, Neon/Drizzle, Vercel, optional Clerk. Phased workflow with verification gate. Invoke with `/scaffold`. |
+| [Scaffold](workflow-skills/scaffold/) | Product-driven greenfield Next.js: intake profiles (SaaS, internal tool, API-first), typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. Invoke with `/scaffold`. |
 
 More categories and skills will show up here as they're published.
 

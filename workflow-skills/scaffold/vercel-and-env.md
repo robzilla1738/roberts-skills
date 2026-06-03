@@ -4,6 +4,12 @@
 
 ---
 
+## Environment source of truth
+
+All variables are declared in **`lib/env.ts`** ([foundation-env-and-errors.md](foundation-env-and-errors.md)). `.env.example` must stay in sync with that schema.
+
+---
+
 ## `.env.example` template
 
 Commit this file; copy to `.env.local` for local dev.
@@ -31,7 +37,7 @@ CLERK_WEBHOOK_SECRET=
 # VERCEL_URL is auto-injected on preview/production
 ```
 
-Add domain-specific keys as features are built (Stripe, Resend, etc.) — not part of base scaffold.
+Extend `lib/env.ts` when adding domain keys (Stripe, Resend, etc.) — list planned add-ons from intake in README; see [production-habits.md](production-habits.md).
 
 ---
 

@@ -119,6 +119,28 @@ pnpm db:migrate    # add script: drizzle-kit migrate
 
 Never edit applied migration files.
 
+**Intake `push` vs `migrate`:**
+
+| Workflow | Command | When |
+|----------|---------|------|
+| `push` | `pnpm db:push` | Solo prototype, fast iteration |
+| `migrate` | `pnpm db:generate` then `pnpm db:migrate` | Team repos, production |
+
+---
+
+## Optional `db/relations.ts`
+
+When tables reference each other, split relations from `schema.ts`:
+
+```typescript
+import { relations } from "drizzle-orm";
+import { users } from "./schema";
+
+export const usersRelations = relations(users, () => ({}));
+```
+
+Pass merged schema to `drizzle()` in `db/index.ts`: `{ ...schema, ...relations }`.
+
 ---
 
 ## Optional seed (dev)

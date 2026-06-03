@@ -12,8 +12,9 @@ Run from project root:
 pnpm install
 pnpm typecheck
 pnpm lint
+pnpm test:run
 pnpm build
-pnpm db:push    # or pnpm db:migrate
+pnpm db:push    # or pnpm db:migrate per intake
 ```
 
 All must exit **0**. Fix failures before claiming done.
@@ -25,8 +26,8 @@ All must exit **0**. Fix failures before claiming done.
 | # | Test | Expected |
 |---|------|----------|
 | 1 | `pnpm dev` → open `/` | Public home loads |
-| 2 | Open `/api/trpc/health.check` or use client `HealthBadge` | `{ ok: true, db: true }` when DB configured |
-| 3 | Visit `/app` logged out (auth variant) | Redirect to `/sign-in` |
+| 2 | `HealthBadge` or tRPC health query | `{ ok: true, db: true }` when DB configured |
+| 3 | Visit `/app` logged out (auth profile) | Redirect to `/sign-in` |
 | 4 | Sign in → `/app` | Protected page loads; tRPC demo works |
 | 5 | Clerk webhook test event (optional) | User row upserted |
 
@@ -34,21 +35,26 @@ All must exit **0**. Fix failures before claiming done.
 
 ## Deliverables
 
-- [ ] `.env.example` — commented, complete for chosen variant
-- [ ] `README.md` — setup, env table, scripts, deploy notes
+- [ ] **README** — setup, env table, scripts, **scaffold profile ID**, package manager
+- [ ] **Production habits** section — link checklist from [production-habits.md](production-habits.md)
+- [ ] `.env.example` — matches `lib/env.ts`
 - [ ] No secrets in git diff
-- [ ] No stray `console.log` / TODO from scaffold
-- [ ] Migrations or push state documented if team uses migrate vs push
+- [ ] No stray `console.log` / scaffold TODOs
+- [ ] DB workflow (`push` vs `migrate`) documented
 
 ---
 
 ## Intentionally empty (list in README)
 
-- Domain routers beyond `health`
-- UI component library
-- E2E tests
-- GitHub Actions CI
-- Error monitoring (Sentry, etc.)
+Depends on profile:
+
+| Profile | May still be empty |
+|---------|-------------------|
+| `saas-dashboard` | Domain routers, Stripe, CI, Playwright, Sentry |
+| `api-first` | shadcn components, auth (if deferred) |
+| All | GitHub Actions unless user asked |
+
+Do not list “UI library” if shadcn profile was applied.
 
 ---
 
@@ -60,9 +66,9 @@ If scaffold was done in one agent session, invoke **`/review`** using [autorevie
 
 ## Scaffold complete
 
-When automated + manual checks pass, report to the user:
+Report to the user:
 
-- Project path
-- Variant (`full-app` / `app-no-auth`)
+- Project path and **scaffold profile**
 - Commands to run locally
-- Vercel / Neon / Clerk dashboard steps remaining (if any)
+- Vercel / Neon / Clerk steps remaining
+- Post-scaffold add-ons from intake (document only)

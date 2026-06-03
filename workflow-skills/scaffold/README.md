@@ -1,6 +1,6 @@
 # Stack Scaffold
 
-Greenfield a **Next.js 16 + Tailwind v4 + tRPC + TanStack Query + Neon/Drizzle + Vercel** app, with optional **Clerk** auth — in a build-green state before feature work.
+Greenfield a **Next.js 16 + Tailwind v4 + tRPC + TanStack Query + Neon/Drizzle + Vercel** app with **product-driven intake** — typed env, Vitest, optional Clerk, and production-habits checklist.
 
 Works with any AI coding assistant that loads skills from markdown files.
 
@@ -10,56 +10,42 @@ Works with any AI coding assistant that loads skills from markdown files.
 
 ## What you get
 
-Hub-and-spoke workflow:
-
 | File | Role |
 | --- | --- |
-| `SKILL.md` | Hub — intake router, phase order, related skills |
-| `intake-and-variants.md` | Questions and variant selection |
-| `phases-greenfield.md` | Phases 0–9 with exit criteria |
-| `stack-and-tooling.md` | Versions, create-next-app, scripts |
-| `file-tree-and-conventions.md` | Canonical layout |
-| `database-neon-drizzle.md` | Neon + Drizzle setup |
-| `trpc-and-query.md` | tRPC server, client, route handler |
-| `auth-clerk-optional.md` | Clerk proxy, webhook (optional) |
-| `vercel-and-env.md` | Env template and deploy |
-| `verification-checklist.md` | Final gate |
+| `SKILL.md` | Hub — product intake, phase order |
+| `intake-product-profiles.md` | **Start here** — what are you building? |
+| `foundation-env-and-errors.md` | Zod env + AppError |
+| `foundation-testing.md` | Vitest |
+| `foundation-ui.md` | shadcn vs minimal |
+| `production-habits.md` | Post-scaffold industry checklist |
+| + stack, DB, tRPC, auth, Vercel, verify spokes |
 
 ---
 
 ## Install
 
-Copy the entire `scaffold` directory into your assistant's skills location.
-
-| Assistant | Path |
-| --- | --- |
-| Claude Code | `~/.claude/skills/scaffold/` |
-| Codex | `~/.agents/skills/scaffold/` |
-| Cursor | `~/.cursor/skills/scaffold/` |
+Copy `scaffold/` to `~/.cursor/skills/scaffold/` (or Claude/Codex paths in hub).
 
 ---
 
 ## Use it
 
 ```text
-/scaffold — new SaaS app called Acme with Clerk and Neon
+/scaffold — B2B SaaS dashboard for Acme with teams and billing later
 ```
 
-```text
-/scaffold extend-existing — add tRPC and Drizzle to this Next repo
-```
-
-The agent should run **intake first**, then phases in order.
+The agent should ask **what you are building**, pick a profile (`saas-dashboard`, `internal-tool`, `api-first`, etc.), then run phases 0–9.
 
 ---
 
-## Variants
+## Profiles (summary)
 
-| Variant | Description |
+| Profile | Use for |
 | --- | --- |
-| `full-app` | Default — DB, tRPC, Clerk, `/app` shell |
-| `app-no-auth` | DB + tRPC, no Clerk |
-| `marketing-only` | Redirects to web-marketing-landing skill |
+| `saas-dashboard` | Default multi-user SaaS |
+| `internal-tool` | Team tools |
+| `api-first` | Backend-first, thin UI |
+| `marketing-only` | Redirect to web-marketing-landing |
 | `extend-existing` | Gap-fill only |
 
 ---
@@ -67,13 +53,13 @@ The agent should run **intake first**, then phases in order.
 ## Related skills
 
 - [autoreview](../autoreview/) — `/review` after scaffold
-- [web-marketing-landing](../../design-skills/web-marketing-landing/) — marketing-only sites
-- **clerk-auth** (global) — advanced Clerk patterns
+- [web-marketing-landing](../../design-skills/web-marketing-landing/) — marketing-only
+- **clerk-auth** — advanced Clerk
 
 ---
 
 ## Version
 
-See `version` in `SKILL.md` front matter. Current: `2026-06-03.1`.
+`2026-06-03.2` — see `SKILL.md` front matter.
 
-`disable-model-invocation: true` — loads on explicit `/scaffold` or request.
+`disable-model-invocation: true` — invoke with `/scaffold`.

@@ -20,13 +20,18 @@ app/
     webhooks/clerk/route.ts  # if auth
 components/
   providers/
-    TrpcProvider.tsx
+    TrpcProvider.tsx         # or lib/trpc/client.tsx exports TrpcProvider
+    theme-provider.tsx       # if shadcn + next-themes
+  ui/                        # shadcn components
 db/
   schema.ts
+  relations.ts               # optional when relations grow
   index.ts
   migrations/                # after db:generate
 drizzle.config.ts
 lib/
+  env.ts
+  errors.ts
   cn.ts
   auth/
     current.ts               # getCurrentUser (if auth)
@@ -35,11 +40,16 @@ lib/
     server.ts
     context.ts
     procedures.ts
-    client.ts
+    middleware/
+      rate-limit.ts
+    client.tsx               # TRPCProvider + useTRPC
     server-caller.ts         # optional RSC caller
     routers/
       _app.ts
       health.ts
+tests/
+  errors.test.ts
+vitest.config.ts
 proxy.ts                     # Clerk (Next 16) — if auth
 .env.example
 .env.local                   # gitignored
@@ -106,7 +116,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
 **Public `app/page.tsx`:** link to `/app` and `/sign-in`.
 
-**Protected `app/app/page.tsx`:** server or client call to `api.health.check.useQuery()` or server caller — proves end-to-end stack.
+**Protected `app/app/page.tsx`:** `HealthBadge` with `useTRPC()` + `useQuery(trpc.health.check.queryOptions())` — proves end-to-end stack.
 
 ---
 

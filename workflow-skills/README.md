@@ -8,7 +8,7 @@ Agent skills for process and quality workflows: acceptance gates, session review
 | --- | --- | --- |
 | [Autoreview](autoreview/) | 2026-05-28.1 | Hard acceptance gate before marking work complete. Reviews all session changes for production quality across correctness, architecture, maintainability, security, testing, and cleanup. |
 | [macOS Sandbox](macos-sandbox/) | 2026-06-03.1 | Smoke-test `.app`/`.pkg` in disposable Tart VMs via [macbox](https://github.com/robzilla1738/macbox) CLI or MCP — upload, launch, logs, screenshots, crashes, guest automation. |
-| [Scaffold](scaffold/) | 2026-06-03.1 | Greenfield Next.js + Tailwind v4 + tRPC + TanStack Query + Neon/Drizzle + Vercel, optional Clerk. Invoke with `/scaffold`. |
+| [Scaffold](scaffold/) | 2026-06-03.2 | Product-driven greenfield Next.js — intake profiles, env/errors, Vitest, tRPC, optional Clerk, Neon/Drizzle, Vercel. Invoke with `/scaffold`. |
 
 ## Install
 

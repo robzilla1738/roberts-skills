@@ -4,6 +4,12 @@
 
 Deep Clerk patterns live in the global **clerk-auth** skill — this spoke covers scaffold wiring only.
 
+**Profiles:** `saas-dashboard`, `internal-tool` — usually Clerk. `api-first` — skip unless intake requests auth.
+
+**NextAuth fork:** Some repos (e.g. are) use Auth.js / NextAuth instead of Clerk. Out of default scaffold — swap auth spoke manually if required.
+
+**`/api/trpc` vs `health.check`:** Protecting all `/api/trpc` in `proxy.ts` blocks unauthenticated health calls from the browser. Options: narrow the matcher to `/app` only and enforce auth in `protectedProcedure`, or keep health as a Route Handler outside tRPC. Document the choice in README.
+
 ---
 
 ## Environment
