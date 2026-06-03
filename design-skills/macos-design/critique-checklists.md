@@ -71,7 +71,7 @@ Reject or revise these:
 - A macOS app with no menu bar command design.
 - A custom top navigation bar pretending to replace the system menu bar.
 - Fake traffic-light buttons.
-- Fake notch/camera housing inside standard app window content (does not apply to intentional notch-style utility apps built per [notch-effect.md](notch-effect.md)).
+- Fake notch/camera housing inside standard app window content (does not apply to intentional notch-style utility apps built per [macos-notch](../macos-notch/SKILL.md)]).
 - A single fixed-size window for a complex productivity app.
 - Toolbars with every command crammed into one row.
 - Sidebars used as command menus.
