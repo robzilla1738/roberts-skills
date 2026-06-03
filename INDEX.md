@@ -8,6 +8,7 @@
 | design-skills/iOS/ios-sidebar-slide.md | design / iOS | Mobile sidebar underlay with foreground card slide, gesture-driven open/close | swiftui, ios, sidebar, drawer, gesture, navigation | 2026-05-28 |
 | design-skills/macos-design/macos_immersive_onboarding_guide.md | design / macOS | Immersive first-launch onboarding wizard with blur, motion, and permission steps | swiftui, macos, onboarding, appkit, animation, permissions | 2026-05-30 |
 | workflow-skills/autoreview/SKILL.md | workflow | Hard acceptance gate — review all session changes for production quality before marking work complete | autoreview, review, production-quality, acceptance-gate, workflow | 2026-05-28 |
+| workflow-skills/macos-sandbox/SKILL.md | workflow | Smoke-test macOS .app/.pkg in disposable Tart VMs via macbox CLI or MCP — upload, launch, logs, screenshots, crashes, guest automation | macbox, macos, tart, vm, sandbox, smoke-test, mcp | 2026-06-03 |
 | design-skills/web-marketing-landing/SKILL.md | design / Web | Premium SaaS marketing home — aurora hero, glass nav, connector hub, bento grid, CSS motion (Next.js + Tailwind v4) | nextjs, react, tailwind, marketing, landing-page, css-animation | 2026-06-02 |
 
 ## By category
@@ -28,6 +29,7 @@
 ### workflow
 
 - [autoreview/SKILL.md](workflow-skills/autoreview/SKILL.md) — Hard acceptance gate for session changes (invoke with `/review`)
+- [macos-sandbox/SKILL.md](workflow-skills/macos-sandbox/SKILL.md) — macOS app smoke testing in Tart VMs via macbox
 
 ## How to add entries
 

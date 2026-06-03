@@ -40,6 +40,7 @@ Every skill README explains the exact folder layout and how to update when new v
 | Skill | Description |
 | --- | --- |
 | [Autoreview](workflow-skills/autoreview/) | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, code quality, architecture, maintainability, security, testing, and cleanup. Invoke with `/review`. |
+| [macOS Sandbox](workflow-skills/macos-sandbox/) | Smoke-test macOS apps in disposable Tart VMs via macbox CLI or MCP. Upload, launch, logs, screenshots, crashes, guest automation. Synced from [macbox](https://github.com/robzilla1738/macbox). |
 
 More categories and skills will show up here as they're published.
 
