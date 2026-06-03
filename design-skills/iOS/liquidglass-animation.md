@@ -2,7 +2,7 @@
 
 A reusable pattern for iOS chat-style input bars that expand smoothly inside a single Liquid Glass capsule. Covers the **+ menu slide-up** and **slash-command suggestion panel** animations.
 
-Reference implementation: Joyflow iOS (`ComposerViews.swift`, `ChatDetail.swift`). This document is **project-agnostic** — copy the patterns into any SwiftUI app targeting iOS 26+.
+Derived from a production iOS chat app (`ComposerViews.swift`, `ChatDetail.swift`). This document is **project-agnostic** — copy the patterns into any SwiftUI app targeting iOS 26+.
 
 ---
 
@@ -55,7 +55,7 @@ Circle controls use the same recipe with `Circle()` instead of `RoundedRectangle
 
 ## Design tokens (defaults)
 
-Tune per app; these are the Joyflow production values:
+Tune per app; these are proven production defaults:
 
 | Token | Value | Purpose |
 |---|---|---|
@@ -592,20 +592,20 @@ The same `glassEffect(.regular.interactive())` API appears on **fixed-size** con
 
 ---
 
-## Reference appendix (Joyflow source)
+## Reference appendix (source map)
 
 | File | What to read |
 |---|---|
-| `Joyflow/Joyflow/ComposerViews.swift` L11–21 | Animation constants and transitions |
-| `Joyflow/Joyflow/ComposerViews.swift` L23–66 | `ComposerGlassShell`, `ComposerGlassCircle`, `composerGlassShell()` |
-| `Joyflow/Joyflow/ComposerViews.swift` L68–92 | `ComposerDockBackdrop` |
-| `Joyflow/Joyflow/ComposerViews.swift` L182–265 | Expanding shell, state coordination, focus |
-| `Joyflow/Joyflow/ComposerViews.swift` L268–315 | Input chrome, slash padding compensation |
-| `Joyflow/Joyflow/ComposerViews.swift` L849–886 | `ComposerSlashSuggestionPanel` |
-| `Joyflow/Joyflow/ComposerViews.swift` L977–1057 | `ComposerPlusMenu`, nested page transitions |
-| `Joyflow/Joyflow/Chat/ChatDetail.swift` L153–155 | `safeAreaInset` host integration |
-| `Joyflow/Joyflow/Chat/ChatDetail.swift` L230–286 | `chatComposerInset` + dock backdrop |
-| `Joyflow/Joyflow/Workspace/WorkspaceShell.swift` L449–466 | Fixed-size glass capsule button (drawer) |
+| `ComposerViews.swift` L11–21 | Animation constants and transitions |
+| `ComposerViews.swift` L23–66 | `ComposerGlassShell`, `ComposerGlassCircle`, `composerGlassShell()` |
+| `ComposerViews.swift` L68–92 | `ComposerDockBackdrop` |
+| `ComposerViews.swift` L182–265 | Expanding shell, state coordination, focus |
+| `ComposerViews.swift` L268–315 | Input chrome, slash padding compensation |
+| `ComposerViews.swift` L849–886 | `ComposerSlashSuggestionPanel` |
+| `ComposerViews.swift` L977–1057 | `ComposerPlusMenu`, nested page transitions |
+| `Chat/ChatDetail.swift` L153–155 | `safeAreaInset` host integration |
+| `Chat/ChatDetail.swift` L230–286 | `chatComposerInset` + dock backdrop |
+| `Workspace/WorkspaceShell.swift` L449–466 | Fixed-size glass capsule button (drawer) |
 
 **Platform target:** iOS 26.2+ / Liquid Glass era (`glassEffect` API).
 

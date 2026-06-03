@@ -1,6 +1,6 @@
 # iOS Sidebar Slide Effect Recipe
 
-This documents the current Joyflow-style compact sidebar interaction in an app-agnostic way so it can be rebuilt elsewhere.
+This documents a compact sidebar slide interaction in an app-agnostic way so it can be rebuilt elsewhere.
 
 ## Goal
 

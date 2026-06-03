@@ -2,7 +2,7 @@
 
 > Read after Phase 9; document in project README. Not auto-installed unless user asks. Back to [SKILL.md](SKILL.md).
 
-The base scaffold stops at a **build-green foundation**. These habits match mature repos (joyflow, bg-forecast, b&g_v2) and current industry practice.
+The base scaffold stops at a **build-green foundation**. These habits match mature production Next.js repos and current industry practice.
 
 ---
 
@@ -36,7 +36,7 @@ Scaffold may include:
 
 For `saas-dashboard` profile, README should say:
 
-> When adding organizations/workspaces, introduce `workspaceId` on domain tables and a `workspaceProcedure` middleware (see joyflow pattern). Do not add until the product needs multi-tenancy.
+> When adding organizations/workspaces, introduce `workspaceId` on domain tables and a `workspaceProcedure` middleware. Do not add until the product needs multi-tenancy.
 
 ---
 

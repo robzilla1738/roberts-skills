@@ -63,7 +63,7 @@ Import `Toaster` from `@/components/ui/sonner` (path after shadcn add).
 
 ## Alternative: Base UI
 
-[joyflow-monorepo](https://github.com/) uses `@base-ui-components/react` instead of shadcn. Pick **one** component system per app — do not init both.
+Some monorepos use `@base-ui-components/react` instead of shadcn. Pick **one** component system per app — do not init both.
 
 ---
 

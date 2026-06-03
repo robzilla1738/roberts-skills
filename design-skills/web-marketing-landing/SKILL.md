@@ -89,4 +89,4 @@ Wrap all sections in **MarketingShell** → `main` → sections. See [shell-and-
 
 ## Reference implementation
 
-A full instance of this pattern exists as a Joyflow marketing home (Next.js + Tailwind v4). Use it only when the user asks for parity; the skill itself stays brand-agnostic.
+If the user has an existing marketing home built with this stack, use it for parity checks only; the skill itself stays brand-agnostic.

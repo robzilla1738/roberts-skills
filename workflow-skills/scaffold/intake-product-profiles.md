@@ -57,7 +57,7 @@ Map the answer to a **scaffold profile** below. If unclear, default to **`saas-d
 |---------|----------|
 | Supabase instead of Neon/Drizzle | Different stack — do not force this skill |
 | NextAuth instead of Clerk | Note in README; see [auth-clerk-optional.md](auth-clerk-optional.md) fork |
-| Expo / React Native (e.g. Rhema mobile) | Separate mobile scaffold (not here) |
+| Expo / React Native | Separate mobile scaffold (not here) |
 | Turborepo from day one | [intake-and-variants.md](intake-and-variants.md) monorepo fork |
 
 ---

@@ -12,7 +12,7 @@ pnpm add @trpc/server @trpc/client @trpc/tanstack-react-query @tanstack/react-qu
 
 **Preferred client:** `@trpc/tanstack-react-query` (current tRPC + TanStack Query integration).
 
-**Legacy:** `@trpc/react-query` + `createTRPCReact` still works (joyflow-style); do not mix both in one app.
+**Legacy:** `@trpc/react-query` + `createTRPCReact` still works in older apps; do not mix both in one app.
 
 ---
 
