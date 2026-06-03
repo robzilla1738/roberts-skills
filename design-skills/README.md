@@ -7,6 +7,7 @@ Agent skills for design work: reviewing interfaces, writing specs, and scaffoldi
 | Skill | Version | What it covers |
 | --- | --- | --- |
 | [macOS Design](macos-design/) | 2026-05-28 | Native macOS app design and critique. HIG, Liquid Glass, menus, toolbars, sidebars, inspectors, safe areas, accessibility, SwiftUI and AppKit patterns. |
+| [Web Marketing Landing](web-marketing-landing/) | 2026-06-02 | Premium SaaS marketing home page — aurora hero, glass nav, connector hub, bento grid, comparison/FAQ bands, CSS-driven motion (Next.js + Tailwind v4). |
 
 ## Replication guides
 

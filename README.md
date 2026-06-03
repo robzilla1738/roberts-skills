@@ -33,6 +33,7 @@ Every skill README explains the exact folder layout and how to update when new v
 | Skill | Description |
 | --- | --- |
 | [macOS Design](design-skills/macos-design/) | Design, critique, and scaffold native macOS apps. HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI and AppKit. Hub-and-spoke layout with 10 reference modules. |
+| [Web Marketing Landing](design-skills/web-marketing-landing/) | Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, connector hub, bento grid, CSS motion). Next.js + Tailwind v4. |
 
 ### [Workflow skills](workflow-skills/)
 
