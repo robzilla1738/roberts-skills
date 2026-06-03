@@ -5,7 +5,7 @@ description: >
   hardware-aligned geometry, state machine, module widgets (agent monitor,
   media, HUD, shelf, camera). Use for /macos-notch or notch-style macOS UI.
 disable-model-invocation: true
-version: 2026-06-03.1
+version: 2026-06-03.2
 platforms: [macOS, SwiftUI, AppKit]
 primary_use_cases:
   - Scaffold a notch-style macOS utility with NSPanel and SwiftUI

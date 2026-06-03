@@ -50,7 +50,7 @@ Review my notch panel: hover timing, focus stealing, and external display behavi
 
 Replace this folder when a new version is published. Compare `version` in `SKILL.md` front matter.
 
-Current version: `2026-06-03.1`
+Current version: `2026-06-03.2`
 
 ## Notes
 

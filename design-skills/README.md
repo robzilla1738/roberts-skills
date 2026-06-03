@@ -8,7 +8,7 @@ Agent skills for design work: reviewing interfaces, writing specs, and scaffoldi
 | --- | --- | --- |
 | [macOS Design](macos-design/) | 2026-05-28 | Native macOS app design and critique. HIG, Liquid Glass, menus, toolbars, sidebars, inspectors, safe areas, accessibility, SwiftUI and AppKit patterns. |
 | [Web Marketing Landing](web-marketing-landing/) | 2026-06-02 | Premium SaaS marketing home page — aurora hero, glass nav, connector hub, bento grid, comparison/FAQ bands, CSS-driven motion (Next.js + Tailwind v4). |
-| [macOS Notch](macos-notch/) | 2026-06-03.1 | Dynamic Island notch apps — NSPanel shell, modules (media, HUD, shelf, agents, camera), OSS ecosystem audit. |
+| [macOS Notch](macos-notch/) | 2026-06-03.2 | Dynamic Island notch apps — NSPanel shell, modules (media, HUD, shelf, agents, camera), OSS ecosystem audit. |
 
 ## Replication guides
 

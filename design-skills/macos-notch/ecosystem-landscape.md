@@ -2,7 +2,9 @@
 
 > Read when: choosing which notch product archetype to build, comparing OSS references, or checking licenses. Back to [SKILL.md](SKILL.md).
 
-This document audits the public **macbook-notch** ecosystem ([GitHub topic](https://github.com/topics/macbook-notch)) plus the dominant reference app **boring.notch**. Use it to pick module types and to avoid copying GPL code without compliance.
+This document audits the public **macbook-notch** ecosystem ([GitHub topic](https://github.com/topics/macbook-notch)) plus the dominant reference app **boring.notch** (not always topic-tagged). Use it to pick module types and to avoid copying GPL code without compliance.
+
+**Audit date:** 2026-06-03 — re-verify stars and licenses on GitHub before derivative work.
 
 ---
 
@@ -49,31 +51,55 @@ flowchart TB
 
 ## Comparison matrix
 
-| Project | Stars | Lang | License | Notch type | Notable modules |
-|---------|------:|------|---------|------------|-----------------|
-| [TheBoredTeam/boring.notch](https://github.com/TheBoredTeam/boring.notch) | ~9.5k | Swift | **GPL-3.0** | Full cockpit | Media, HUD, shelf, calendar, battery, gestures — primary pattern reference |
-| [zkondor/znotch](https://github.com/zkondor/znotch) | 113 | — | Check repo | **Physical hide/show** | Toggles visibility of M1/M2 notch — not a panel app |
-| [coaxel2/NotchIA](https://github.com/coaxel2/NotchIA) | 0 | Swift | Check repo | Full cockpit | Media, calendar, shelf, focus, clipboard, on-device AI, **agent tracking** |
-| [kozhydlo/NotchMac](https://github.com/kozhydlo/NotchMac) | 0 | Swift | Check repo | Dynamic Island replacement | Animations, indicators |
-| [omerates760/AgentPulse](https://github.com/omerates760/AgentPulse) | 1 | Swift | Check repo | **Agent monitor** | Claude Code, Cursor, Codex, Gemini sessions |
-| [badursun/MacCam-NotchIsland](https://github.com/badursun/MacCam-NotchIsland) | 0 | Swift | Check repo | **Camera mirror** | Live preview, photo capture, glass backdrop |
-| [paralevel/hide-the-macbook-notch](https://github.com/paralevel/hide-the-macbook-notch) | 0 | AppleScript | Check repo | **Physical masking** | Script-based notch disappearance |
-| [NexVar/NexNotch](https://github.com/NexVar/NexNotch) | 2 | JavaScript | Check repo | Linux GNOME | Inspiration only — not macOS |
+| Project | Stars | Platform | Lang | License | Notch type | Notable modules / features |
+|---------|------:|----------|------|---------|------------|----------------------------|
+| [TheBoredTeam/boring.notch](https://github.com/TheBoredTeam/boring.notch) | ~9.5k | macOS 14+ | Swift | **GPL-3.0** | Full cockpit | Music + visualizer, calendar, reminders, mirror, shelf + AirDrop, volume/brightness/backlight HUD, charging %, gestures, sizing per display |
+| [zkondor/znotch](https://github.com/zkondor/znotch) | 113 | macOS (M1/M2) | — | Other | **Physical hide/show** | Toggle hardware notch visibility — **not** a panel app; repo **archived** |
+| [coaxel2/NotchIA](https://github.com/coaxel2/NotchIA) | 0 | macOS 15+ | Swift | **GPL-3.0** | Full cockpit | Media (multi-source + lyrics), shelf + conversions, calendar/reminders, clipboard, Pomodoro, system HUD, **Claude/Codex/Copilot agent tab** |
+| [kozhydlo/NotchMac](https://github.com/kozhydlo/NotchMac) | 0 | macOS 14+, notch MacBooks | Swift | MIT (badge) | Dynamic Island replacement | HUD modes (minimal / bar / notched), now playing (many players), battery plug/unplug, lock-screen indicator (SkyLight) |
+| [omerates760/AgentPulse](https://github.com/omerates760/AgentPulse) | 1 | macOS 13+ | Swift | **MIT** | **Agent monitor** | Claude Code, Cursor, Codex, Gemini — hooks, approvals, questions from notch |
+| [badursun/MacCam-NotchIsland](https://github.com/badursun/MacCam-NotchIsland) | 0 | macOS 13+ | Swift | **MIT** | **Camera mirror** | Deploy animation, live preview, photo capture, frosted glass backdrop |
+| [paralevel/hide-the-macbook-notch](https://github.com/paralevel/hide-the-macbook-notch) | 0 | macOS | AppleScript | **MIT** | **Physical masking** | Script-based notch disappearance |
+| [NexVar/NexNotch](https://github.com/NexVar/NexNotch) | 2 | Linux GNOME 49+ | JavaScript | Other | Desktop shell | UX inspiration only — not macOS |
 
-Stars and licenses change; verify on GitHub before shipping derivative work.
+**Topic coverage:** All repos above except **boring.notch** appear on [github.com/topics/macbook-notch](https://github.com/topics/macbook-notch). boring.notch is included because it is the de facto reference implementation.
+
+### Emerging modules (OSS only — no dedicated spoke yet)
+
+| Module | Seen in | Notes |
+|--------|---------|-------|
+| Clipboard history | NotchIA | Compact list; privacy-sensitive |
+| Pomodoro / focus timer | NotchIA, NexNotch | Peek or tab; avoid dominating open layout |
+| File format conversion | NotchIA | Shelf extension; run off main thread |
+| Lock screen widget | boring.notch roadmap | Private API risk — see [foundations.md](foundations.md) |
+| Bluetooth live activity | boring.notch roadmap | Connect/disconnect peek |
 
 ---
 
 ## GPL and boring.notch
 
-**boring.notch** is the most complete open reference for Dynamic Island behavior on macOS. It is licensed under **GPL-3.0**.
+**boring.notch** is the most complete open reference for Dynamic Island behavior on macOS. It is licensed under **GPL-3.0**. **NotchIA** is also GPL-3.0.
 
 | Allowed | Not allowed without GPL compliance |
 |---------|-----------------------------------|
 | Study architecture, timing, and UX patterns | Copy-paste Swift source into a proprietary app |
-| Reimplement behaviors from this skill’s spokes | Fork code and distribute without GPL obligations |
+| Reimplement behaviors from this skill’s spokes | Fork GPL code and distribute without GPL obligations |
 
-This skill documents **patterns**, not GPL source. When a spoke cites boring.notch, treat it as behavioral reference only.
+This skill documents **patterns**, not GPL source. When a spoke cites boring.notch or NotchIA, treat them as behavioral reference only.
+
+**Distribution note:** boring.notch ships outside the Mac App Store (unsigned / quarantine bypass). Your app’s distribution model may differ — do not copy their install story unless it fits your product.
+
+---
+
+## Picking a reference by goal
+
+| You want to… | Start with | License note |
+|--------------|------------|----------------|
+| Full-feature consumer notch app | boring.notch patterns → this skill’s spokes | GPL if you fork their code |
+| Agent-only utility | AgentPulse + [module-agent-monitor.md](module-agent-monitor.md) | MIT-friendly reference |
+| Camera-only utility | MacCam + [module-camera-mirror.md](module-camera-mirror.md) | MIT |
+| HUD + media without GPL | NotchMac + spokes (reimplement, don’t copy) | Verify repo license file |
+| Hide the physical notch | znotch or hide-the-macbook-notch | Out of scope for panel spokes |
 
 ---
 
@@ -104,8 +130,9 @@ If the user asks to “hide the MacBook notch,” route them to those utilities 
 
 ## Keeping this doc current
 
-1. Re-scan [github.com/topics/macbook-notch](https://github.com/topics/macbook-notch) periodically.
-2. Update module spokes when a new archetype appears (e.g. focus timers, clipboard history).
+1. Re-scan [github.com/topics/macbook-notch](https://github.com/topics/macbook-notch) and check **boring.notch** releases periodically.
+2. Update module spokes when a new archetype stabilizes (e.g. clipboard, focus timers).
+3. Record audit date at the top when you refresh stars or licenses.
 
 ---
 
@@ -113,4 +140,7 @@ If the user asks to “hide the MacBook notch,” route them to those utilities 
 
 - GitHub topic: https://github.com/topics/macbook-notch
 - boring.notch: https://github.com/TheBoredTeam/boring.notch (GPL-3.0)
-- Audit date: 2026-06-03
+- NotchIA: https://github.com/coaxel2/NotchIA (GPL-3.0)
+- AgentPulse: https://github.com/omerates760/AgentPulse (MIT)
+- MacCam-NotchIsland: https://github.com/badursun/MacCam-NotchIsland (MIT)
+- NotchMac: https://github.com/kozhydlo/NotchMac

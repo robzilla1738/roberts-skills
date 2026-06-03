@@ -10,7 +10,7 @@
 | workflow-skills/autoreview/SKILL.md | workflow | Hard acceptance gate — review all session changes for production quality before marking work complete | autoreview, review, production-quality, acceptance-gate, workflow | 2026-05-28 |
 | workflow-skills/macos-sandbox/SKILL.md | workflow | Smoke-test macOS .app/.pkg in disposable Tart VMs via macbox CLI or MCP — upload, launch, logs, screenshots, crashes, guest automation | macbox, macos, tart, vm, sandbox, smoke-test, mcp | 2026-06-03 |
 | design-skills/web-marketing-landing/SKILL.md | design / Web | Premium SaaS marketing home — aurora hero, glass nav, connector hub, bento grid, CSS motion (Next.js + Tailwind v4) | nextjs, react, tailwind, marketing, landing-page, css-animation | 2026-06-02 |
-| design-skills/macos-notch/SKILL.md | design / macOS | Dynamic Island notch apps — NSPanel, geometry, state machine, module widgets (media, HUD, shelf, agents) | macos, notch, nspanel, dynamic-island, swiftui, appkit, menubar | 2026-06-03 |
+| design-skills/macos-notch/SKILL.md | design / macOS | Dynamic Island notch apps — NSPanel, geometry, state machine, module widgets (media, HUD, shelf, agents) | macos, notch, nspanel, dynamic-island, swiftui, appkit, menubar | 2026-06-03.2 |
 
 ## By category
 

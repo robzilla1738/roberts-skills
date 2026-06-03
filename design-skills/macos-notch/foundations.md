@@ -373,4 +373,27 @@ final class NotchViewModel: ObservableObject {
 }
 ```
 
+### Open and expanded targets
+
+Keep panel routing explicit so SwiftUI does not branch on loose strings:
+
+```swift
+enum OpenPanel: Equatable {
+    case home
+    case music
+    case shelf
+    case calendar
+    case settings
+}
+
+enum ExpandedKind: Equatable {
+    case shelf
+    case calendar
+    case camera
+    case dashboard
+}
+```
+
+Use `open(.music)` for tab-like modules and `expanded(.shelf)` when the shell grows taller than a standard open card.
+
 ---
