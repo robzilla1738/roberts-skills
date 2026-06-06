@@ -2,11 +2,11 @@
 name: fuzz
 description: >
   Flush out hidden bugs dynamically by generating property-based tests, fuzz targets, or
-  differential oracles, then shrinking failures into committed regression tests. Use when
-  the user invokes /fuzz, wants to harden a function, or when bughunt needs to confirm a
-  Probable finding at runtime.
+  differential oracles, RUNNING them against the project's own test runner, then shrinking
+  failures into committed regression tests. Use when the user invokes /fuzz, wants to harden
+  a function, or when bughunt needs to confirm a Probable finding at runtime.
 disable-model-invocation: true
-version: 2026-06-06.1
+version: 2026-06-06.2
 platforms: [language-agnostic]
 primary_use_cases:
   - Harden a parser, encoder, state machine, or pure function against unexpected inputs
@@ -23,6 +23,28 @@ invariants hold. It's the dynamic counterpart to the [bughunt](../bughunt/SKILL.
 
 Use it standalone to harden a function, or as the **confirm** step of a hunt: convert a
 `Probable` finding into `Confirmed` with a failing test.
+
+This skill **runs code**. The loop is: **discover → pick technique → generate harness →
+execute → shrink → emit**. It writes only test/harness code, never product fixes.
+
+## The loop
+
+| Step | Do |
+|------|-----|
+| 1 **Discover** | Find fuzzable targets. For a whole-module pass, run `python3 ${CLAUDE_PLUGIN_ROOT}/skills/bughunt/scripts/bughunt.py census --functions` — it shortlists pure-ish functions (no obvious side effects) with their params, the best fuzz candidates. For a `Probable` finding from a hunt, the target is the cited function. |
+| 2 **Pick technique** | Choose property / fuzz / differential / metamorphic (table below) and design the oracle. |
+| 3 **Detect & generate** | Detect the project's test runner and property/fuzz library (table below). Generate a harness in the project's own conventions. **If the library isn't installed, ask before installing it** — never add a dependency silently. |
+| 4 **Execute** | Run it via the project's runner. A real run that fails is the proof; a green run is evidence the property holds for the explored space. |
+| 5 **Shrink** | Let the framework minimize the failing input (most shrink automatically), or minimize by hand to the smallest case that still fails. |
+| 6 **Emit** | Commit the shrunk case as a named regression test, and record a findings-JSON entry with `verified: {by:"fuzz", method:"property-test", verdict:"upheld"}` so [triage](../triage/SKILL.md)/`merge` can fold it into the report as `Confirmed`. |
+
+### When there's no test infrastructure
+
+If the project has no test runner or the property library can't be installed (offline, user
+declines), **degrade gracefully**: generate the harness and the concrete boundary inputs,
+hand-trace the most suspicious case, and present the ready-to-run harness with a one-line
+"install X and run Y to confirm" — clearly marked **not executed**. Never report a fuzz
+finding as `Confirmed` unless you actually ran it.
 
 ## Pick the technique
 

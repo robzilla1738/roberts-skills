@@ -2,3 +2,14 @@
 .env
 .env.local
 .env*.local
+
+# Python bytecode (the bughunt toolkit + its self-test import generate these)
+__pycache__/
+*.pyc
+
+# Claude Code local runtime artifacts
+.claude/
+
+# bughunt run artifacts (regenerated each run; baseline/suppressions are committed per-repo)
+.bughunt/findings.json
+.bughunt/report.*

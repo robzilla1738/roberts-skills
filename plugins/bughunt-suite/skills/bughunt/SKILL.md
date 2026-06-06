@@ -1,19 +1,21 @@
 ---
 name: bughunt
 description: >
-  Adversarial whole-codebase bug hunter for any project type (iOS, macOS, web, services,
-  terminal tools). Recon the target, fan out parallel hunters across a grid of analysis
-  lenses x risk hotspots, then merge, cross-validate, and report ranked, reproducible
-  findings. Report-only by default. Use when the user invokes /bughunt, asks to find
-  hidden bugs, audit code for defects, do a deep code review, or hunt for what tests miss.
+  Adversarial whole-codebase hunter for bugs, pain points, and inefficiencies on any project
+  type (iOS, macOS, web, services, terminal tools). A zero-dependency toolkit ranks hotspots,
+  then parallel hunters sweep a grid of 13 analysis lenses x risk hotspots; a mandatory skeptic
+  pass refutes false positives; findings are fingerprinted, deduped, baseline-diffed, and
+  rendered to markdown/HTML/SARIF with CI exit codes. Report-only by default. Use when the user
+  invokes /bughunt, asks to find hidden bugs, audit code for defects, hunt pain points or
+  inefficiencies, do a deep code review, gate CI on findings, or hunt for what tests miss.
 disable-model-invocation: true
-version: 2026-06-06.3
+version: 2026-06-06.4
 platforms: [language-agnostic, Apple, Web, Systems, Backend, CLI, Android, .NET, PHP, SQL, IaC]
 primary_use_cases:
   - Hunt an entire codebase for hidden defects, not just the current diff
+  - Surface pain points and inefficiencies — perf, DX friction, UX gaps, supply-chain, data risk
   - Deep adversarial code review of a module, feature, or risky change
-  - Find concurrency, lifecycle, taint, numeric, failure-path, and contract bugs
-  - Produce a ranked, evidence-backed, reproducible bug report
+  - Produce a ranked, evidence-backed, reproducible report; baseline-diff and gate CI on it
 ---
 
 # Bughunt
@@ -33,13 +35,21 @@ product code unless the user asks.
 
 ## What makes this powerful (not just a checklist)
 
-1. **Breadth via fan-out** — split the target into a grid of **(lens × hotspot)** cells and
+1. **A deterministic spine** — a bundled zero-dependency toolkit (`bughunt.py`) ranks hotspots
+   by churn × complexity × boundary × test-gap, surfaces pain signals (aged TODOs, config
+   drift, risky deps), and owns structured findings: fingerprint, dedupe, suppress,
+   baseline-diff, and render to markdown/HTML/SARIF with CI exit codes. See
+   [tooling.md](tooling.md). Degrades to a pure-markdown pipeline when `python3` is absent.
+2. **Breadth via fan-out** — split the target into a grid of **(lens × hotspot)** cells and
    run them as independent parallel hunters, so every risky area is examined through every
-   relevant lens. See [fanout-orchestration.md](fanout-orchestration.md).
-2. **Depth via specialized lenses + platform catalogs** — each lens is a distinct adversarial
-   discipline; each platform catalog encodes that ecosystem's specific footguns.
-3. **Signal via triage + proof** — confidence-rate every finding, cross-validate across
-   lenses, and reproduce the top ones. Handled by [triage](../triage/SKILL.md).
+   relevant lens. A capability ladder runs the same phases whether or not the Workflow tool
+   is available. See [orchestration.md](orchestration.md).
+3. **Depth via specialized lenses + platform catalogs** — 13 lenses, each a distinct
+   adversarial discipline (bugs, perf, DX, UX, supply-chain, data safety); each platform
+   catalog encodes that ecosystem's specific footguns.
+4. **Signal via mandatory verify + triage** — a skeptic pass tries to **refute every finding
+   before it's reported** ([verification.md](verification.md)); survivors are confidence-rated,
+   cross-validated, and reproduced by [triage](../triage/SKILL.md).
 
 ## First principle: signal over noise
 
@@ -78,13 +88,29 @@ Execute in order. Spokes carry the detail.
 
 | Step | Do | Spoke |
 |------|-----|-------|
-| 1 | **Recon & scope** — detect platform, map trust boundaries, rank hotspots, build the hunt plan | [recon-and-scoping.md](recon-and-scoping.md) |
-| 2 | **Fan-out** — build the (lens × hotspot) grid, dispatch parallel hunters (or sequential fallback) | [fanout-orchestration.md](fanout-orchestration.md) |
-| 3 | **Hunt** — each hunter runs one lens over one area using the relevant platform catalog; collects evidence | lens + platform spokes below |
-| 4 | **Merge & cross-validate** — dedupe, cluster, boost confidence when two lenses agree | [fanout-orchestration.md](fanout-orchestration.md) |
-| 5 | **Triage** — severity × confidence, filter false positives, build minimal repros | [triage](../triage/SKILL.md) |
-| 6 | **Confirm (optional)** — prove high-value findings dynamically or at runtime | [fuzz](../fuzz/SKILL.md), `verify` |
-| 7 | **Report** — emit the ranked report; hand fixing off | [triage](../triage/SKILL.md) report layout |
+| 1 | **Recon & pre-pass** — detect platform, run the deterministic pre-pass (census/hotspots/signals/deps), map trust boundaries, build the hunt plan | [recon-and-scoping.md](recon-and-scoping.md), [tooling.md](tooling.md) |
+| 2 | **Fan-out** — build the (lens × hotspot) grid, dispatch hunters via the capability ladder (Workflow / parallel Tasks / sequential) | [orchestration.md](orchestration.md) |
+| 3 | **Hunt** — each hunter runs one lens over one area using the relevant platform catalog; returns evidence as JSON | lens + platform spokes below |
+| 4 | **Verify (mandatory)** — a skeptic pass tries to refute every candidate before it counts as a finding | [verification.md](verification.md) |
+| 5 | **Merge & cross-validate** — `bughunt.py merge`: fingerprint, dedupe, cross-validate, suppress, baseline-diff | [orchestration.md](orchestration.md), [tooling.md](tooling.md) |
+| 6 | **Triage** — severity × confidence (+ impact rubric), filter false positives, build minimal repros | [triage](../triage/SKILL.md) |
+| 7 | **Confirm (optional)** — prove high-value findings dynamically or at runtime | [fuzz](../fuzz/SKILL.md), `verify` |
+| 8 | **Report** — `bughunt.py render` the ranked markdown/HTML/SARIF; hand fixing off | [tooling.md](tooling.md), [triage](../triage/SKILL.md) report layout |
+
+## Toolkit & capability ladder
+
+The hunt has a **deterministic spine** and a **portable execution model**, so it works the same
+on Claude Code, Cursor, or Codex.
+
+- **Toolkit** — `bughunt.py` (zero-dependency, stdlib `python3`) under [`scripts/`](tooling.md)
+  does the non-judgment work: rank hotspots, mine pain signals, audit deps, and
+  fingerprint/dedupe/suppress/baseline-diff/render the findings. **Always probe `python3 --version`
+  first.** If it's missing, run the **markdown fallback** — rank by the recon heuristics, keep
+  findings in markdown, skip SARIF; nothing in the toolkit is required for the hunt to work.
+- **Capability ladder** ([orchestration.md](orchestration.md)) — same five phases
+  (Recon → Hunt → **Verify** → Merge → Report) on every rung: **(A)** invoke the shipped
+  `hunt-workflow.js` when the Workflow tool is available; **(B)** parallel Tasks on standard
+  Claude Code; **(C)** a sequential walk on single-agent tools. Verify is mandatory on all three.
 
 ## Example: one trip through the loop (condensed)
 
@@ -130,6 +156,10 @@ Read on demand — only the lenses the hunt plan selects.
 | [lens-auth-access.md](lens-auth-access.md) | Broken authn/authz, IDOR, privilege escalation, tenant isolation, session/token/crypto/secret misuse |
 | [lens-logic-correctness.md](lens-logic-correctness.md) | Internally wrong logic: inverted conditions, wrong operators/formulas, branch/case errors, wrong variable used |
 | [lens-resource-performance.md](lens-resource-performance.md) | O(n²)+ complexity, N+1 queries, unbounded growth, memory blowups, DoS amplification at scale |
+| [lens-dx-pain.md](lens-dx-pain.md) | Developer-experience friction: aged TODO/FIXME debt, flaky-test patterns, slow/serial scripts, config drift, unhelpful errors |
+| [lens-product-ux.md](lens-product-ux.md) | User-facing pain: missing loading/empty/error states, swallowed feedback, dead feature flags, friction & dead ends |
+| [lens-dependency-supply.md](lens-dependency-supply.md) | Supply-chain risk: vulnerable/unpinned/abandoned deps, lockfile drift, typosquats, unsafe install/CI |
+| [lens-data-migration.md](lens-data-migration.md) | Data safety: destructive/irreversible migrations, unsafe backfills, schema/code skew, serialization drift |
 
 ## Platform index (ecosystem footguns)
 
@@ -147,8 +177,10 @@ Pick the one(s) recon identifies.
 
 | File | Contents |
 |------|----------|
-| [recon-and-scoping.md](recon-and-scoping.md) | Platform detection, trust boundaries, hotspot ranking, hunt plan |
-| [fanout-orchestration.md](fanout-orchestration.md) | (Lens × hotspot) grid, hunter prompt template, merge/dedup/cross-validate, sequential fallback |
+| [recon-and-scoping.md](recon-and-scoping.md) | Deterministic pre-pass, platform detection, trust boundaries, hotspot ranking, hunt plan |
+| [orchestration.md](orchestration.md) | (Lens × hotspot) grid, hunter prompt, capability ladder (Workflow/Tasks/sequential), merge/cross-validate |
+| [verification.md](verification.md) | The mandatory adversarial skeptic pass — four refutation questions, verdict contract |
+| [tooling.md](tooling.md) | `bughunt.py` reference — census/hotspots/signals/deps/merge/render/diff, state dir, CI mode |
 | [lens-dataflow-taint.md](lens-dataflow-taint.md) | Source→sink tracing |
 | [lens-state-lifecycle.md](lens-state-lifecycle.md) | State machines & resource lifecycle |
 | [lens-concurrency.md](lens-concurrency.md) | Races, ordering, deadlock |
@@ -158,6 +190,10 @@ Pick the one(s) recon identifies.
 | [lens-auth-access.md](lens-auth-access.md) | Authorization & access control |
 | [lens-logic-correctness.md](lens-logic-correctness.md) | Business-logic correctness |
 | [lens-resource-performance.md](lens-resource-performance.md) | Resource & performance at scale |
+| [lens-dx-pain.md](lens-dx-pain.md) | Developer-experience pain |
+| [lens-product-ux.md](lens-product-ux.md) | Product & UX pain |
+| [lens-dependency-supply.md](lens-dependency-supply.md) | Dependency & supply chain |
+| [lens-data-migration.md](lens-data-migration.md) | Data & migration safety |
 | [platform-apple.md](platform-apple.md) | Swift/ObjC catalog |
 | [platform-web.md](platform-web.md) | JS/TS/Node catalog |
 | [platform-systems.md](platform-systems.md) | C/C++/Rust/Go catalog |

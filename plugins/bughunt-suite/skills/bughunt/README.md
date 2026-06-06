@@ -1,13 +1,16 @@
 # Bughunt
 
-An offensive, whole-codebase bug hunter for any project type — iOS, macOS, web, services,
-terminal tools. Where the **autoreview** skill (`/review`) is a defensive gate on your own diff,
-bughunt assumes the code is guilty: it recons the target, fans out parallel hunters across a
-grid of analysis **lenses × risk hotspots**, then merges, cross-validates, and reports
-ranked, reproducible findings. **Report-only by default.**
+An offensive, whole-codebase hunter for **bugs, pain points, and inefficiencies** on any
+project type — iOS, macOS, web, services, terminal tools. Where the **autoreview** skill
+(`/review`) is a defensive gate on your own diff, bughunt assumes the code is guilty: a
+zero-dependency toolkit ranks risk hotspots, parallel hunters sweep a grid of **13 analysis
+lenses × risk hotspots**, a mandatory skeptic pass refutes false positives, and findings are
+fingerprinted, deduped, baseline-diffed, and rendered to markdown/HTML/SARIF with CI exit
+codes. **Report-only by default.**
 
-Hub-and-spoke layout, pure markdown. Works with any AI coding assistant that loads skills
-from markdown files.
+Hub-and-spoke layout. The toolkit is a single stdlib-only `python3` file; everything degrades
+to a pure-markdown pipeline when `python3` is absent — so it works with any AI coding
+assistant that loads skills from markdown files.
 
 **Author:** [Robert Courson](https://robertcourson.com) · Part of [Robert's Skills](https://github.com/robzilla1738/roberts-skills)
 
@@ -19,9 +22,9 @@ Bughunt is the orchestrator of a three-skill bug-hunting suite:
 
 | Skill | Role |
 | --- | --- |
-| **bughunt** (this) | Orchestrator: recon → fan-out → hunt → merge → report |
-| [triage](../triage/) | Severity × confidence, minimal repro, the finding/report schema |
-| [fuzz](../fuzz/) | Property/fuzz/differential harnesses to confirm findings dynamically |
+| **bughunt** (this) | Orchestrator: recon → fan-out → hunt → **verify** → merge → report |
+| [triage](../triage/) | Severity × confidence (+ impact rubric), minimal repro, the finding/report schema |
+| [fuzz](../fuzz/) | Property/fuzz/differential harnesses that **run** to confirm findings dynamically |
 
 It also plugs into the existing the **autoreview** skill (`/review`) (the fix gate) and `verify`
 (runtime repro) skills.
@@ -30,10 +33,13 @@ It also plugs into the existing the **autoreview** skill (`/review`) (the fix ga
 
 | File | Role |
 | --- | --- |
-| `SKILL.md` | Hub: mission, modes, the hunt loop, lens/platform routing tables |
-| `recon-and-scoping.md` | Platform detection, trust boundaries, hotspot ranking, hunt plan |
-| `fanout-orchestration.md` | (Lens × hotspot) grid, hunter prompt, merge/cross-validate, sequential fallback |
-| `lens-*.md` (9) | Analysis disciplines: taint, state/lifecycle, concurrency, boundaries/numeric, error/failure, contract/spec, auth/access, logic-correctness, resource/performance |
+| `SKILL.md` | Hub: mission, modes, the hunt loop, toolkit + capability ladder, lens/platform routing |
+| `recon-and-scoping.md` | Deterministic pre-pass, platform detection, trust boundaries, hotspot ranking, hunt plan |
+| `orchestration.md` | (Lens × hotspot) grid, hunter prompt, capability ladder (Workflow/Tasks/sequential) |
+| `verification.md` | The mandatory adversarial skeptic pass — four refutation questions, verdict contract |
+| `tooling.md` | `bughunt.py` reference — census/hotspots/signals/deps/merge/render/diff, state dir, CI |
+| `scripts/` | `bughunt.py` (zero-dep toolkit), `hunt-workflow.js` (Workflow script), `schema/`, `selftest.py` |
+| `lens-*.md` (13) | Analysis disciplines: taint, state/lifecycle, concurrency, boundaries/numeric, error/failure, contract/spec, auth/access, logic-correctness, resource/performance, dx-pain, product-ux, dependency-supply, data-migration |
 | `platform-*.md` (5) | Ecosystem footguns: Apple, Web, Systems, Backend+CLI, Other (Android/.NET/PHP/Flutter/SQL/IaC + generic fallback) |
 
 ## Install
@@ -66,7 +72,9 @@ bughunt/
   SKILL.md
   README.md
   recon-and-scoping.md
-  fanout-orchestration.md
+  orchestration.md
+  verification.md
+  tooling.md
   lens-dataflow-taint.md
   lens-state-lifecycle.md
   lens-concurrency.md
@@ -76,12 +84,25 @@ bughunt/
   lens-auth-access.md
   lens-logic-correctness.md
   lens-resource-performance.md
+  lens-dx-pain.md
+  lens-product-ux.md
+  lens-dependency-supply.md
+  lens-data-migration.md
   platform-apple.md
   platform-web.md
   platform-systems.md
   platform-backend-cli.md
   platform-other.md
+  scripts/
+    bughunt.py
+    hunt-workflow.js
+    selftest.py
+    schema/finding.schema.json
 ```
+
+The `scripts/` directory is optional — copy it to get the deterministic toolkit (ranked
+hotspots, structured findings, baseline diffing, SARIF). Without it, the skill runs the
+pure-markdown fallback.
 
 ## Use it
 
@@ -113,11 +134,14 @@ For reviewing your own session diff for quality, use the **autoreview** skill (`
 Replace your local copy of the whole `bughunt` folder when a new version is published.
 Compare the `version` field in `SKILL.md` front matter.
 
-Current version: `2026-06-06.3`
+Current version: `2026-06-06.4`
 
 ## Notes
 
 - **Report-only by default** — hunts and documents; hand fixing to a human or autoreview.
-- **Portable** — parallel fan-out is the flagship, but a sequential single-agent fallback is
-  built in for assistants without sub-agents.
+- **Deterministic where it counts** — `bughunt.py` (stdlib-only `python3`) ranks hotspots and
+  owns structured findings; everything degrades to markdown when `python3` is absent.
+- **Mandatory verify** — a skeptic pass refutes false positives before anything is reported.
+- **Portable** — the capability ladder runs the same five phases via the Workflow tool,
+  parallel Tasks, or a sequential single-agent walk.
 - `disable-model-invocation: true` means the skill loads on explicit request.

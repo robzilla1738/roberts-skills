@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/robzilla1738/roberts-skills/plugins/bughunt-suite/finding.schema.json",
+  "title": "Bughunt findings document",
+  "description": "The structured findings contract for the bughunt suite. Hunters emit this; `bughunt.py merge` validates, fingerprints, dedupes, suppresses, and baselines it; `bughunt.py render` turns it into markdown/HTML/SARIF. The hand-rolled validator in bughunt.py is the executable source of truth; this file is the readable reference.",
+  "type": "object",
+  "required": ["schemaVersion", "findings"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "tool": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "run": {
+      "type": "object",
+      "description": "Run metadata. Filled by the orchestrator; merge preserves it from the first input that has it.",
+      "properties": {
+        "target": { "type": "string", "description": "Human name of what was hunted" },
+        "root": { "type": "string", "description": "Absolute path to the hunted repo root" },
+        "commit": { "type": "string", "description": "HEAD short SHA at hunt time, or null off-git" },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "mode": { "enum": ["repo", "diff", "staged", "path"] },
+            "paths": { "type": "array", "items": { "type": "string" } },
+            "diffBase": { "type": ["string", "null"] }
+          }
+        },
+        "lenses": { "type": "array", "items": { "type": "string" } },
+        "platforms": { "type": "array", "items": { "type": "string" } },
+        "startedAt": { "type": "string", "description": "ISO 8601" },
+        "finishedAt": { "type": "string", "description": "ISO 8601" }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    }
+  },
+  "$defs": {
+    "location": {
+      "type": "object",
+      "required": ["file", "startLine"],
+      "properties": {
+        "file": { "type": "string", "description": "Path relative to run.root, forward slashes" },
+        "startLine": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "note": { "type": "string" }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["id", "title", "lens", "severity", "confidence", "location", "trigger", "trace", "impact"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^BH-\\d{3,}$", "description": "BH-001 style; merge renumbers to keep ids unique across hunters" },
+        "title": { "type": "string", "minLength": 4 },
+        "lens": {
+          "enum": [
+            "dataflow-taint", "state-lifecycle", "concurrency", "boundaries-numeric",
+            "error-failure", "contract-spec", "auth-access", "logic-correctness",
+            "resource-performance", "dx-pain", "product-ux", "dependency-supply", "data-migration"
+          ]
+        },
+        "severity": { "enum": ["Critical", "High", "Medium", "Low"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidenceLabel": {
+          "enum": ["Confirmed", "Probable", "Speculative"],
+          "description": "Derived by merge when absent: >=0.85 Confirmed, >=0.5 Probable, else Speculative"
+        },
+        "location": { "$ref": "#/$defs/location" },
+        "relatedLocations": { "type": "array", "items": { "$ref": "#/$defs/location" } },
+        "alsoFlaggedBy": {
+          "type": "array",
+          "description": "Set by merge clustering: the other lenses that independently flagged this same bug. Each entry { lens, title, severity, confidence, line }.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "lens": { "type": "string" },
+              "title": { "type": "string" },
+              "severity": { "type": "string" },
+              "confidence": { "type": "number" },
+              "line": { "type": "integer" }
+            }
+          }
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{16}$",
+          "description": "Filled by merge when absent: sha256(lens + NUL + relpath + NUL + normalized_snippet)[:16]. Snippet = anchor lines startLine..endLine, whitespace collapsed, string/number literals replaced with §. Stable across line shifts. Fallback when the file/line is unreadable: sha256(lens + NUL + relpath + NUL + title)[:16]."
+        },
+        "trigger": { "type": "string", "description": "The exact condition/input that fires it" },
+        "trace": { "type": "string", "description": "cause -> ... -> effect, with file:line hops" },
+        "impact": { "type": "string", "description": "What actually goes wrong" },
+        "impactClass": {
+          "enum": ["security", "correctness", "reliability", "performance", "data-integrity", "dx", "ux", "supply-chain"],
+          "description": "Drives the triage impact rubric. Defaults to correctness."
+        },
+        "repro": { "type": "string", "description": "Failing test / runtime steps / traced values, or 'not reproduced: why'" },
+        "fixSketch": { "type": "string", "description": "One or two lines; the direction, not a full patch" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "verified": {
+          "type": "object",
+          "required": ["verdict"],
+          "properties": {
+            "by": { "type": "string", "description": "e.g. skeptic-pass, fuzz, runtime-repro" },
+            "method": { "enum": ["static-refutation", "failing-test", "runtime-repro", "property-test", "manual-review"] },
+            "verdict": { "enum": ["upheld", "refuted", "uncertain"] },
+            "note": { "type": "string" }
+          },
+          "description": "Set by the mandatory adversarial verify phase. merge moves verdict:refuted findings to the refuted appendix and excludes them from the gate."
+        },
+        "source": {
+          "type": "object",
+          "properties": {
+            "hunter": { "type": "string", "description": "e.g. 'auth-access x routes/invoices.js'" },
+            "detectedBy": { "enum": ["agent", "script", "fuzz"] }
+          }
+        },
+        "suppressed": { "type": "boolean", "description": "Set by merge from .bughunt/suppressions.json; suppressed findings are excluded from the report body and the CI gate" },
+        "baselineStatus": { "enum": ["new", "existing", "fixed"], "description": "Set by merge --baseline" }
+      }
+    }
+  }
+}
