@@ -41,6 +41,9 @@ Every skill README explains the exact folder layout and how to update when new v
 | Skill | Description |
 | --- | --- |
 | [Autoreview](workflow-skills/autoreview/) | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, code quality, architecture, maintainability, security, testing, and cleanup. Invoke with `/review`. |
+| [Bughunt](workflow-skills/bughunt/) | Offensive whole-codebase bug hunter for any project type (iOS, macOS, web, services, terminal tools). Recon, then fan out parallel hunters across analysis lenses × risk hotspots; merge, cross-validate, and report ranked, reproducible findings. Report-only. Hub-and-spoke. Invoke with `/bughunt`. |
+| [Triage](workflow-skills/triage/) | Companion to bughunt: turn a suspected bug or a batch of findings into a ranked, evidence-backed report — severity × confidence, minimal repro, standard finding schema. Invoke with `/triage`. |
+| [Fuzz](workflow-skills/fuzz/) | Companion to bughunt: flush out hidden bugs dynamically with property-based tests, fuzz targets, or differential oracles, then shrink failures into regression tests. Invoke with `/fuzz`. |
 | [macOS Sandbox](workflow-skills/macos-sandbox/) | Smoke-test macOS apps in disposable Tart VMs via macbox CLI or MCP. Upload, launch, logs, screenshots, crashes, guest automation. Synced from [macbox](https://github.com/robzilla1738/macbox). |
 | [Scaffold](workflow-skills/scaffold/) | Product-driven greenfield Next.js: intake profiles (SaaS, internal tool, API-first), typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. Invoke with `/scaffold`. |
 
