@@ -72,7 +72,10 @@ Produce a compact plan before fanning out:
 Selecting lenses: always consider **taint** at input boundaries, **concurrency** wherever
 there's shared state/async, **error-failure** around I/O and external calls, **boundaries-
 numeric** in parsing/math, **state-lifecycle** for anything with setup/teardown or a state
-machine, and **contract-spec** everywhere there are docs/types/tests to check against.
+machine, and **contract-spec** everywhere there are docs/types/tests to check against. Also:
+**auth-access** whenever there are users, permissions, sessions, or multi-tenancy;
+**logic-correctness** broadly — especially on calculations, conditionals, and business rules;
+**resource-performance** on loops over data, queries, caches, and user-controlled sizes.
 
 ## 5. Hand off
 

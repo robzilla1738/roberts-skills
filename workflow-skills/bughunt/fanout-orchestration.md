@@ -13,9 +13,11 @@ fan out cleanly.
 ```
                 hotspot A (parser)   hotspot B (auth)   hotspot C (sync engine)
 taint                 ✓                    ✓                   ·
+auth-access           ·                    ✓                   ·
 concurrency           ·                    ·                   ✓
 boundaries-numeric    ✓                    ·                   ✓
 error-failure         ✓                    ✓                   ✓
+logic-correctness     ✓                    ✓                   ✓
 ```
 
 Don't fill every cell — only the combinations that make sense (a sync engine gets

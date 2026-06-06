@@ -33,7 +33,7 @@ It also plugs into the existing [autoreview](../autoreview/) (the fix gate) and 
 | `SKILL.md` | Hub: mission, modes, the hunt loop, lens/platform routing tables |
 | `recon-and-scoping.md` | Platform detection, trust boundaries, hotspot ranking, hunt plan |
 | `fanout-orchestration.md` | (Lens × hotspot) grid, hunter prompt, merge/cross-validate, sequential fallback |
-| `lens-*.md` (6) | Analysis disciplines: taint, state/lifecycle, concurrency, boundaries/numeric, error/failure, contract/spec |
+| `lens-*.md` (9) | Analysis disciplines: taint, state/lifecycle, concurrency, boundaries/numeric, error/failure, contract/spec, auth/access, logic-correctness, resource/performance |
 | `platform-*.md` (4) | Ecosystem footguns: Apple, Web, Systems, Backend+CLI |
 
 ## Install
@@ -73,6 +73,9 @@ bughunt/
   lens-boundaries-numeric.md
   lens-error-failure.md
   lens-contract-spec.md
+  lens-auth-access.md
+  lens-logic-correctness.md
+  lens-resource-performance.md
   platform-apple.md
   platform-web.md
   platform-systems.md
@@ -109,7 +112,7 @@ For reviewing your own session diff for quality, use [autoreview](../autoreview/
 Replace your local copy of the whole `bughunt` folder when a new version is published.
 Compare the `version` field in `SKILL.md` front matter.
 
-Current version: `2026-06-06.1`
+Current version: `2026-06-06.2`
 
 ## Notes
 

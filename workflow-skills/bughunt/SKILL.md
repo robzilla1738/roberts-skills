@@ -7,7 +7,7 @@ description: >
   findings. Report-only by default. Use when the user invokes /bughunt, asks to find
   hidden bugs, audit code for defects, do a deep code review, or hunt for what tests miss.
 disable-model-invocation: true
-version: 2026-06-06.1
+version: 2026-06-06.2
 platforms: [language-agnostic, Apple, Web, Systems, Backend, CLI]
 primary_use_cases:
   - Hunt an entire codebase for hidden defects, not just the current diff
@@ -85,6 +85,9 @@ Read on demand — only the lenses the hunt plan selects.
 | [lens-boundaries-numeric.md](lens-boundaries-numeric.md) | Off-by-one, overflow/truncation, precision, null/optional, empty/limit cases, encoding, time/DST |
 | [lens-error-failure.md](lens-error-failure.md) | Swallowed errors, fail-open, partial writes, missing rollback, retry/timeout/cancel correctness |
 | [lens-contract-spec.md](lens-contract-spec.md) | Code vs docs/tests/types/comments, violated invariants, dead/contradictory logic, copy-paste divergence |
+| [lens-auth-access.md](lens-auth-access.md) | Broken authn/authz, IDOR, privilege escalation, tenant isolation, session/token/crypto/secret misuse |
+| [lens-logic-correctness.md](lens-logic-correctness.md) | Internally wrong logic: inverted conditions, wrong operators/formulas, branch/case errors, wrong variable used |
+| [lens-resource-performance.md](lens-resource-performance.md) | O(n²)+ complexity, N+1 queries, unbounded growth, memory blowups, DoS amplification at scale |
 
 ## Platform index (ecosystem footguns)
 
@@ -109,6 +112,9 @@ Pick the one(s) recon identifies.
 | [lens-boundaries-numeric.md](lens-boundaries-numeric.md) | Numeric & boundary conditions |
 | [lens-error-failure.md](lens-error-failure.md) | Error & failure paths |
 | [lens-contract-spec.md](lens-contract-spec.md) | Contract vs implementation |
+| [lens-auth-access.md](lens-auth-access.md) | Authorization & access control |
+| [lens-logic-correctness.md](lens-logic-correctness.md) | Business-logic correctness |
+| [lens-resource-performance.md](lens-resource-performance.md) | Resource & performance at scale |
 | [platform-apple.md](platform-apple.md) | Swift/ObjC catalog |
 | [platform-web.md](platform-web.md) | JS/TS/Node catalog |
 | [platform-systems.md](platform-systems.md) | C/C++/Rust/Go catalog |
