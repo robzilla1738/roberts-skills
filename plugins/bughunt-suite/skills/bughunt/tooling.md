@@ -5,8 +5,9 @@
 `scripts/bughunt.py` is a zero-dependency python3 CLI (stdlib only — no pip install,
 no virtualenv). It gives the hunt a **deterministic spine**: ranked targets instead of
 wandering, structured findings instead of prose, fingerprinted dedupe, baseline diffing,
-suppression, and md/HTML/SARIF reports + CI exit codes. The hunt stops being a vibe and
-starts being reproducible.
+suppression, and md/HTML/SARIF reports + CI exit codes. It is infrastructure for a
+structured hunt, not a magic semantic scanner: agents still find bugs by reading code through
+the selected lenses.
 
 Invoke it as:
 
@@ -39,9 +40,15 @@ vendored / test files. Returns:
   languages{<lang>: {files, loc}}, totals{files, loc, bytes, codeFiles, testFiles} }
 ```
 
-With `--functions` it adds `functions[]` — a heuristic shortlist of **pure-function
+Selected project dot-directories are included because they often contain real CI/config risk:
+`.github`, `.gitlab`, `.circleci`, `.buildkite`, `.devcontainer`, `.husky`, `.claude`,
+`.cursor`, and `.agents`. Cache/VCS/build dot-directories remain excluded.
+
+With `--functions` it adds `functions[]` — a heuristic shortlist of **pure-ish function
 candidates** (`{file, name, startLine, endLine, params[], pure_guess}`) for handing to
 `/fuzz`. Pure candidates are returned first; if none look pure, the first 50 are returned.
+Request/response handlers and obvious side-effectful functions are intentionally not promoted
+as clean fuzz targets.
 
 ### hotspots
 
@@ -121,24 +128,32 @@ soft (stays offline) if the request errors.
 
 ```bash
 python3 .../bughunt.py merge <files...|-> [--baseline P] [--suppress P] \
-    [--write-baseline] [--out P] [--fail-on critical-high|any|none] [--no-cluster]
+    [--write-baseline] [--out P] [--fail-on critical-high|any|none] \
+    [--require-verified] [--require-coverage] [--strict] [--no-cluster]
 ```
 
 The **CI gate** and the heart of the pipeline. Takes one or more hunter findings JSON files
 (or `-` for stdin), and **owns**:
 
 - **Validation** — the executable form of `schema/finding.schema.json`. Invalid findings are
-  dropped with a stderr warning; merge **never aborts** on a bad finding.
+  dropped with a stderr warning by default. `--strict` turns malformed findings into exit `3`.
+- **Verification enforcement** — `--require-verified` drops findings without
+  `verified.verdict`; combine it with `--strict` in CI so missing skeptic verdicts fail.
+- **Coverage enforcement** — `--require-coverage` exits `3` when the input lacks top-level
+  coverage metadata; use it in CI so a "deep" run cannot omit what was actually examined.
 - **Fingerprinting** — assigns a stable fingerprint to each finding (see below).
 - **Dedupe** — collapses identical fingerprints, keeping the clearer write-up.
 - **Cross-lens clustering** — when several *different* lenses flag the same bug at overlapping
   lines, collapses them into one primary finding carrying an `alsoFlaggedBy` list, with a
-  convergence confidence bump and a `cross-validated` tag. This is what stops one bug being
+  convergence confidence bump and a `cross-validated` tag. Upheld candidates win over
+  uncertain duplicates when selecting the cluster primary. This is what stops one bug being
   reported three times. `--no-cluster` keeps them separate (legacy: boost only, no merge).
 - **Suppression** — mutes findings whose fingerprint is in `suppressions.json`.
 - **Baseline diff** — marks each finding `new` vs `existing` against `baseline.json`, and
   lists `fixed` ones that disappeared.
 - **Id renumbering** — stable severity-sorted `BH-001…` ids.
+- **Uncertainty routing** — `verified.verdict == "uncertain"` is capped to Speculative;
+  `refuted` findings are moved to the transparency appendix and excluded from the gate.
 
 Output is the merged findings document (also written to `--out`, default
 `.bughunt/findings.json`). `--write-baseline` snapshots the current set as the new baseline.
@@ -193,8 +208,10 @@ Add to `.gitignore`:
 
 ## CI mode
 
-`/bughunt ci` runs the pipeline **non-interactively** and surfaces `merge`'s exit code:
-**0** clean, **1** new Critical/High, **2** new Medium/Low. A minimal CI shape:
+`/bughunt ci` runs the pipeline **non-interactively** and should call merge with
+`--require-verified --require-coverage --strict --fail-on critical-high`. Exit codes: **0** no new
+Critical/High, **1** new Critical/High, **3** usage/IO/malformed findings. Exit **2** is used
+only with `--fail-on any` for new Medium/Low. A minimal CI shape:
 
 ```bash
 ROOT=${CLAUDE_PLUGIN_ROOT}/skills/bughunt/scripts/bughunt.py
@@ -206,8 +223,8 @@ python3 "$ROOT" signals  > signals.json
 # 2. drive the hunt -> one or more hunter findings JSON files (hunters/*.json)
 
 # 3. gate: merge against the committed baseline, fail on new Critical/High
-python3 "$ROOT" merge hunters/*.json --fail-on critical-high
-GATE=$?   # 0 clean / 1 new crit-high / 2 new med-low
+python3 "$ROOT" merge hunters/*.json --require-verified --require-coverage --strict --fail-on critical-high
+GATE=$?   # 0 no new crit-high / 1 new crit-high / 3 malformed or IO error
 
 # 4. render SARIF and upload it to GitHub code scanning
 python3 "$ROOT" render .bughunt/findings.json --formats sarif

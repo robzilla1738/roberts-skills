@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/robzilla1738/roberts-skills/plugins/bughunt-suite/finding.schema.json",
   "title": "Bughunt findings document",
-  "description": "The structured findings contract for the bughunt suite. Hunters emit this; `bughunt.py merge` validates, fingerprints, dedupes, suppresses, and baselines it; `bughunt.py render` turns it into markdown/HTML/SARIF. The hand-rolled validator in bughunt.py is the executable source of truth; this file is the readable reference.",
+  "description": "The structured findings contract for the bughunt suite. Hunters emit candidate findings without ids; `bughunt.py merge` validates, fingerprints, dedupes, suppresses, ids, and baselines them; `bughunt.py render` turns merged findings into markdown/HTML/SARIF. The hand-rolled validator in bughunt.py is the executable source of truth; this file is the readable reference.",
   "type": "object",
   "required": ["schemaVersion", "findings"],
   "properties": {
@@ -38,6 +38,28 @@
     "findings": {
       "type": "array",
       "items": { "$ref": "#/$defs/finding" }
+    },
+    "coverage": {
+      "type": "object",
+      "description": "Optional run coverage metadata preserved by merge and rendered in reports when available.",
+      "properties": {
+        "plannedCells": { "type": "integer", "minimum": 0 },
+        "executedCells": { "type": "integer", "minimum": 0 },
+        "skippedCells": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "lens": { "type": "string" },
+              "area": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "filesRead": { "type": "array", "items": { "type": "string" } },
+        "commandsRun": { "type": "array", "items": { "type": "string" } },
+        "notExamined": { "type": "array", "items": { "type": "string" } }
+      }
     }
   },
   "$defs": {
@@ -53,9 +75,9 @@
     },
     "finding": {
       "type": "object",
-      "required": ["id", "title", "lens", "severity", "confidence", "location", "trigger", "trace", "impact"],
+      "required": ["title", "lens", "severity", "confidence", "location", "trigger", "trace", "impact"],
       "properties": {
-        "id": { "type": "string", "pattern": "^BH-\\d{3,}$", "description": "BH-001 style; merge renumbers to keep ids unique across hunters" },
+        "id": { "type": "string", "pattern": "^BH-\\d{3,}$", "description": "BH-001 style; optional in candidate findings and filled/renumbered by merge" },
         "title": { "type": "string", "minLength": 4 },
         "lens": {
           "enum": [

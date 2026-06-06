@@ -107,17 +107,18 @@ shipped workflow script.
    ```
    Workflow({
      scriptPath: '<abs>/scripts/hunt-workflow.js',
-     args: { cells, evidenceContract, skepticPrompt, hunterPreamble }
+     args: { cells, skippedCells, commandsRun, notExamined, evidenceContract, skepticPrompt, hunterPreamble }
    })
    ```
    The script fans out one hunter per cell, then runs the mandatory skeptic pass on every
-   candidate finding (it drops `refuted` ones), and returns `{schemaVersion:"1.0", findings}`.
+   candidate finding, and returns `{schemaVersion:"1.0", coverage, findings}` with verifier
+   verdicts preserved. `merge` moves `refuted` ones into the appendix.
    `hunterPreamble` = the evidence contract + JSON-return instructions; `skepticPrompt` = the
    SKEPTIC template from [verification.md](verification.md) (with `{{FINDING}}` /
    `{{LENS_PATH}}` placeholders).
 4. **Merge (Bash):** pipe the workflow's findings JSON to merge and write the baseline —
    ```
-   echo "$WORKFLOW_JSON" | python3 scripts/bughunt.py merge - --write-baseline
+   echo "$WORKFLOW_JSON" | python3 scripts/bughunt.py merge - --require-verified --require-coverage --strict --write-baseline
    ```
 5. **Report (Bash):** `python3 scripts/bughunt.py render .bughunt/findings.json` →
    md/html/sarif.
@@ -135,10 +136,10 @@ Identical phases, done by hand with the Task/Agent tool.
    skeptic Task using the SKEPTIC template from [verification.md](verification.md). Again,
    fan these out concurrently. Each returns the verdict JSON; attach it as the finding's
    `verified` field.
-5. **Merge + Report (Bash):** combine all findings into one
-   `{schemaVersion:"1.0", findings:[...]}` document and pipe it in —
+5. **Merge + Report (Bash):** combine all findings plus coverage into one
+   `{schemaVersion:"1.0", coverage:{plannedCells, executedCells, skippedCells, filesRead, commandsRun, notExamined}, findings:[...]}` document and pipe it in —
    ```
-   echo "$ALL_FINDINGS" | python3 scripts/bughunt.py merge - --write-baseline
+   echo "$ALL_FINDINGS" | python3 scripts/bughunt.py merge - --require-verified --require-coverage --strict --write-baseline
    python3 scripts/bughunt.py render .bughunt/findings.json
    ```
 
@@ -152,7 +153,8 @@ No fan-out machinery: walk the grid **sequentially**, but run all five phases.
    **immediately skeptic-verify every finding it produced** (the four refutation questions
    from [verification.md](verification.md)) **before moving to the next cell**. Reset focus
    between cells — explicitly switch to the new lens's mindset and re-read the lens spoke so
-   you don't carry the previous lens's assumptions. Accumulate the verified findings as JSON.
+   you don't carry the previous lens's assumptions. Accumulate the verified findings and a
+   coverage object as JSON.
 4. **Merge + Report:** if `python3` is present, pipe the accumulated JSON to
    `bughunt.py merge` + `render`. If not, **hand-assemble** the markdown report using the
    triage layout (severity × confidence sections; refuted in an appendix; uncertain capped at

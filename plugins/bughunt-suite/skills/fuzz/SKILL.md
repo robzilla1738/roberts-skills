@@ -3,7 +3,7 @@ name: fuzz
 description: >
   Flush out hidden bugs dynamically by generating property-based tests, fuzz targets, or
   differential oracles, RUNNING them against the project's own test runner, then shrinking
-  failures into committed regression tests. Use when the user invokes /fuzz, wants to harden
+  failures into regression tests or ready-to-commit harnesses. Use when the user invokes /fuzz, wants to harden
   a function, or when bughunt needs to confirm a Probable finding at runtime.
 disable-model-invocation: true
 version: 2026-06-06.2
@@ -36,7 +36,7 @@ execute → shrink → emit**. It writes only test/harness code, never product f
 | 3 **Detect & generate** | Detect the project's test runner and property/fuzz library (table below). Generate a harness in the project's own conventions. **If the library isn't installed, ask before installing it** — never add a dependency silently. |
 | 4 **Execute** | Run it via the project's runner. A real run that fails is the proof; a green run is evidence the property holds for the explored space. |
 | 5 **Shrink** | Let the framework minimize the failing input (most shrink automatically), or minimize by hand to the smallest case that still fails. |
-| 6 **Emit** | Commit the shrunk case as a named regression test, and record a findings-JSON entry with `verified: {by:"fuzz", method:"property-test", verdict:"upheld"}` so [triage](../triage/SKILL.md)/`merge` can fold it into the report as `Confirmed`. |
+| 6 **Emit** | Keep or present the shrunk case as a named regression test, and record a findings-JSON entry with `verified: {by:"fuzz", method:"property-test", verdict:"upheld"}` so [triage](../triage/SKILL.md)/`merge` can fold it into the report as `Confirmed`. |
 
 ### When there's no test infrastructure
 
@@ -89,7 +89,7 @@ corruption into loud, locatable failures.
 1. **Reproduce** — capture the exact failing input.
 2. **Shrink** — let the framework minimize it (or minimize by hand) to the smallest input
    that still fails. Most property frameworks shrink automatically.
-3. **Pin it** — commit the minimized case as a normal, named regression test so it can
+3. **Pin it** — preserve the minimized case as a normal, named regression test so it can
    never come back silently. Note the invariant it violated.
 4. **Report** — hand the proven case back to [triage](../triage/SKILL.md) to record as
    `Confirmed`, with the failing test as the repro.

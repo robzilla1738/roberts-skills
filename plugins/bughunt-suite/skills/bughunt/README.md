@@ -1,12 +1,12 @@
 # Bughunt
 
-An offensive, whole-codebase hunter for **bugs, pain points, and inefficiencies** on any
-project type — iOS, macOS, web, services, terminal tools. Where the **autoreview** skill
+An offensive, hotspot-driven workflow for **bugs, pain points, and inefficiencies** across
+project types — iOS, macOS, web, services, terminal tools. Where the **autoreview** skill
 (`/review`) is a defensive gate on your own diff, bughunt assumes the code is guilty: a
-zero-dependency toolkit ranks risk hotspots, parallel hunters sweep a grid of **13 analysis
-lenses × risk hotspots**, a mandatory skeptic pass refutes false positives, and findings are
-fingerprinted, deduped, baseline-diffed, and rendered to markdown/HTML/SARIF with CI exit
-codes. **Report-only by default.**
+zero-dependency toolkit ranks risk hotspots, agents inspect them through **13 analysis
+lenses**, a mandatory skeptic pass refutes false positives, strict CI merge gates can enforce
+verification and coverage, and findings are fingerprinted, deduped, baseline-diffed, and
+rendered to markdown/HTML/SARIF with CI exit codes. **Report-only by default.**
 
 Hub-and-spoke layout. The toolkit is a single stdlib-only `python3` file; everything degrades
 to a pure-markdown pipeline when `python3` is absent — so it works with any AI coding
@@ -123,7 +123,7 @@ ranked, evidence-backed report. It does not edit code unless you ask.
 
 ## When to use it
 
-- You want bugs across an entire codebase, not just the current diff.
+- You want a structured hunt across the riskiest parts of a codebase, not just the current diff.
 - Deep adversarial review of a risky module, feature, or change.
 - Before a release, audit, or handoff.
 
@@ -134,14 +134,15 @@ For reviewing your own session diff for quality, use the **autoreview** skill (`
 Replace your local copy of the whole `bughunt` folder when a new version is published.
 Compare the `version` field in `SKILL.md` front matter.
 
-Current version: `2026-06-06.4`
+Current version: `2026-06-06.5`
 
 ## Notes
 
 - **Report-only by default** — hunts and documents; hand fixing to a human or autoreview.
 - **Deterministic where it counts** — `bughunt.py` (stdlib-only `python3`) ranks hotspots and
   owns structured findings; everything degrades to markdown when `python3` is absent.
-- **Mandatory verify** — a skeptic pass refutes false positives before anything is reported.
+- **Mandatory verify** — a skeptic pass refutes false positives before anything is reported;
+  CI can require both verifier verdicts and coverage metadata.
 - **Portable** — the capability ladder runs the same five phases via the Workflow tool,
   parallel Tasks, or a sequential single-agent walk.
 - `disable-model-invocation: true` means the skill loads on explicit request.

@@ -1,15 +1,15 @@
 ---
 name: bughunt
 description: >
-  Adversarial whole-codebase hunter for bugs, pain points, and inefficiencies on any project
-  type (iOS, macOS, web, services, terminal tools). A zero-dependency toolkit ranks hotspots,
-  then parallel hunters sweep a grid of 13 analysis lenses x risk hotspots; a mandatory skeptic
-  pass refutes false positives; findings are fingerprinted, deduped, baseline-diffed, and
-  rendered to markdown/HTML/SARIF with CI exit codes. Report-only by default. Use when the user
+  Adversarial, hotspot-driven bug-hunting workflow for bugs, pain points, and inefficiencies
+  across project types (iOS, macOS, web, services, terminal tools). A zero-dependency toolkit ranks hotspots,
+  agents inspect risk areas through 13 analysis lenses, a mandatory skeptic pass refutes false positives,
+  and strict merge gates can enforce verification and coverage in CI. Findings are fingerprinted,
+  deduped, baseline-diffed, and rendered to markdown/HTML/SARIF with CI exit codes. Report-only by default. Use when the user
   invokes /bughunt, asks to find hidden bugs, audit code for defects, hunt pain points or
   inefficiencies, do a deep code review, gate CI on findings, or hunt for what tests miss.
 disable-model-invocation: true
-version: 2026-06-06.4
+version: 2026-06-06.5
 platforms: [language-agnostic, Apple, Web, Systems, Backend, CLI, Android, .NET, PHP, SQL, IaC]
 primary_use_cases:
   - Hunt an entire codebase for hidden defects, not just the current diff
@@ -20,16 +20,17 @@ primary_use_cases:
 
 # Bughunt
 
-An **offensive, whole-codebase bug hunter**. Where the **autoreview** skill (`/review`) is a
-defensive gate on *your own diff*, bughunt assumes the code is **guilty** and goes looking
-for hidden defects across the whole target — on any platform.
+An **offensive, hotspot-driven bug-hunting workflow**. Where the **autoreview** skill (`/review`)
+is a defensive gate on *your own diff*, bughunt assumes the code is **guilty** and goes looking
+for hidden defects in the riskiest parts of the target with explicit coverage reporting.
 
 Read this hub first, run **recon**, then open only the spokes your hunt plan selects.
 
 ## Mission
 
-Find the bugs that tests, linters, and a tired reviewer miss — and **prove** them. The
-output is a ranked, evidence-backed report, not a vibe. Default behavior is **report-only**:
+Find the bugs that tests, linters, and a tired reviewer miss — and make each claim carry
+evidence. The output is a ranked, evidence-backed report, not a vibe. Default behavior is
+**report-only**:
 hunt, document, hand fixing to a human or the **autoreview** skill (`/review`). Never edit
 product code unless the user asks.
 
@@ -64,11 +65,16 @@ Before reporting anything, try to kill it (see the false-positive filter in
 - **Assume guilt.** The code is wrong until you've checked. Read it for what it *does*, not
   what it's supposed to do.
 - **Evidence-first.** No `file:line` + trace + trigger + impact → it's a question, not a finding.
+- **Do not overstate proof.** Static skeptic-upheld findings are Probable unless reproduced
+  or traced beyond plausible refutation. Runtime/property-test proof is what earns Confirmed.
 - **Report, don't edit.** This skill is read-only by default. Surface and prove bugs; hand
   fixing to a human or the **autoreview** skill (`/review`). Only edit code if the user asks.
 - **Scope before you scale.** On a large/unfamiliar repo, do recon and confirm scope/budget
   with the user before launching a deep hunt (see [recon-and-scoping.md](recon-and-scoping.md)).
 - **Be honest about coverage.** Always state what you examined and what you did not.
+- **Enforce verification and coverage in CI.** `ci` runs must merge with
+  `--require-verified --require-coverage --strict` so skipped skeptic verdicts or missing
+  coverage metadata fail instead of becoming trusted findings.
 - **Don't invent bugs.** A clean result is a valid, valuable outcome — see *When the hunt
   finds nothing* below. Never pad the report to look productive.
 
@@ -104,7 +110,9 @@ on Claude Code, Cursor, or Codex.
 
 - **Toolkit** — `bughunt.py` (zero-dependency, stdlib `python3`) under [`scripts/`](tooling.md)
   does the non-judgment work: rank hotspots, mine pain signals, audit deps, and
-  fingerprint/dedupe/suppress/baseline-diff/render the findings. **Always probe `python3 --version`
+  fingerprint/dedupe/suppress/baseline-diff/render the findings. The automated dependency
+  support is strongest for npm/Python-style manifests; other ecosystems rely more on platform
+  catalogs and agent inspection. **Always probe `python3 --version`
   first.** If it's missing, run the **markdown fallback** — rank by the recon heuristics, keep
   findings in markdown, skip SARIF; nothing in the toolkit is required for the hunt to work.
 - **Capability ladder** ([orchestration.md](orchestration.md)) — same five phases
@@ -132,7 +140,7 @@ A small Node API repo, deep hunt:
    discount = `High-Probable` (traced values: $100 + 10% tax then −10% = $99, expected $90);
    N+1 = `Medium-Probable`.
 6. **Report** — three findings, ranked, each with repro/trace; recommend fixing then `/review`.
-   No edits made.
+   No product-code edits made; `.bughunt/` report/state files may be written.
 
 ## When the hunt finds nothing
 

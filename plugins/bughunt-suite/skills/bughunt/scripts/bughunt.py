@@ -12,7 +12,8 @@ Deterministic pre-pass + findings pipeline:
     diff      fingerprint-compare two findings JSON files
 
 All subcommands emit JSON to stdout (render writes files). Progress goes to stderr.
-Exit codes (merge): 0 clean, 1 new Critical/High, 2 new Medium/Low. Usage/IO errors: 3.
+Exit codes (merge): 0 no gated findings, 1 new Critical/High, 2 new Medium/Low
+only when --fail-on any is selected. Usage/IO/data errors: 3.
 
 The findings contract lives in schema/finding.schema.json next to this file; the
 validator below is the executable version of it.
@@ -29,7 +30,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 TOOL_NAME = "bughunt"
-TOOL_VERSION = "2026-06-06.4"
+TOOL_VERSION = "2026-06-06.5"
 SCHEMA_VERSION = "1.0"
 
 LENSES = [
@@ -38,6 +39,7 @@ LENSES = [
     "resource-performance", "dx-pain", "product-ux", "dependency-supply", "data-migration",
 ]
 SEVERITIES = ["Critical", "High", "Medium", "Low"]
+SEVERITY_RANK = {s: i for i, s in enumerate(SEVERITIES)}
 IMPACT_CLASSES = [
     "security", "correctness", "reliability", "performance",
     "data-integrity", "dx", "ux", "supply-chain",
@@ -55,6 +57,11 @@ EXCLUDED_DIRS = {
     "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".tox",
     "dist", "build", "out", ".next", ".nuxt", ".output", "target", "Pods",
     "DerivedData", "coverage", ".turbo", ".cache", STATE_DIR,
+}
+
+ALLOWED_DOT_DIRS = {
+    ".github", ".gitlab", ".circleci", ".buildkite", ".devcontainer",
+    ".husky", ".claude", ".cursor", ".agents",
 }
 
 LANG_BY_EXT = {
@@ -140,7 +147,7 @@ def iter_files(root, extra_excludes=()):
         rel_dir = Path(dirpath).relative_to(root).as_posix()
         dirnames[:] = sorted(
             d for d in dirnames
-            if d not in EXCLUDED_DIRS and not d.startswith(".")
+            if d not in EXCLUDED_DIRS and (not d.startswith(".") or d in ALLOWED_DOT_DIRS)
             and not any(Path(rel_dir, d).as_posix().startswith(e) or
                         Path(rel_dir, d).match(e) for e in extra))
         for name in sorted(filenames):
@@ -175,7 +182,11 @@ IMPURE_PY = re.compile(
     r"db\.|session\.|cursor|logging)\b")
 IMPURE_JS = re.compile(
     r"\b(fetch|console\.|document\.|window\.|process\.|require\(|fs\.|"
-    r"this\.|await |Math\.random|Date\.|localStorage|axios|setTimeout|setInterval)\b")
+    r"this\.|await |Math\.random|Date\.|localStorage|axios|setTimeout|setInterval|"
+    r"db\.|pool\.|client\.|connection\.|query\(|execute\(|insert\(|update\(|delete\(|"
+    r"res\.|req\.|next\(|send\(|json\(|redirect\(|render\(|setHeader\(|"
+    r"cache\.|store\.|session\.|cookie)\b")
+JS_HANDLER_PARAMS = {"req", "request", "res", "response", "next", "ctx", "context"}
 
 PY_DEF = re.compile(r"^def\s+([A-Za-z_]\w*)\s*\(([^)]*)\)", re.M)
 JS_FUNC = re.compile(
@@ -211,14 +222,16 @@ def find_functions(rel, lang, text):
         for m in JS_FUNC.finditer(text):
             name = m.group(1) or m.group(3)
             params = m.group(2) if m.group(2) is not None else (m.group(4) or "")
+            parsed_params = [p.strip().split(":")[0].split("=")[0].strip()
+                             for p in params.split(",") if p.strip()]
             start = text.count("\n", 0, m.start()) + 1
             end = min(start + 60, len(lines))  # rough body window
             body = "\n".join(lines[start - 1:end])
+            handlerish = any(p in JS_HANDLER_PARAMS for p in parsed_params)
             out.append({
                 "file": rel, "name": name, "startLine": start, "endLine": end,
-                "params": [p.strip().split(":")[0].split("=")[0].strip()
-                           for p in params.split(",") if p.strip()],
-                "pure_guess": not IMPURE_JS.search(body),
+                "params": parsed_params,
+                "pure_guess": not handlerish and not IMPURE_JS.search(body),
             })
     return out
 
@@ -678,7 +691,7 @@ def fingerprint(root, finding):
     return digest[:16]
 
 
-def validate_finding(f, idx, errors):
+def validate_finding(f, idx, errors, require_verified=False):
     """Executable version of schema/finding.schema.json. Returns cleaned finding or None."""
     where = f"finding[{idx}]"
     if not isinstance(f, dict):
@@ -717,7 +730,14 @@ def validate_finding(f, idx, errors):
     if f.get("impactClass") and f["impactClass"] not in IMPACT_CLASSES:
         errors.append(f"{where}: invalid impactClass '{f['impactClass']}' (defaulted)")
         f["impactClass"] = None
-    if f.get("verified") and f["verified"].get("verdict") not in VERDICTS:
+    verified = f.get("verified")
+    if require_verified and (not isinstance(verified, dict) or not verified.get("verdict")):
+        errors.append(f"{where}: missing verified.verdict")
+        return None
+    if verified and verified.get("verdict") not in VERDICTS:
+        if require_verified:
+            errors.append(f"{where}: invalid verified.verdict '{verified.get('verdict')}'")
+            return None
         errors.append(f"{where}: invalid verified.verdict (cleared)")
         f["verified"] = None
     return f
@@ -725,6 +745,28 @@ def validate_finding(f, idx, errors):
 
 def confidence_label(conf):
     return "Confirmed" if conf >= 0.85 else ("Probable" if conf >= 0.5 else "Speculative")
+
+
+def verdict_rank(f):
+    verdict = (f.get("verified") or {}).get("verdict")
+    return {"upheld": 0, "uncertain": 1}.get(verdict, 2)
+
+
+def finding_priority(f):
+    return (verdict_rank(f), SEVERITY_RANK[f["severity"]],
+            -f["confidence"], -len(f.get("trace", "")))
+
+
+def cap_uncertain_findings(findings):
+    """Uncertain verifier verdicts are leads, not confirmed/probable findings."""
+    for f in findings:
+        if (f.get("verified") or {}).get("verdict") == "uncertain":
+            if f["confidence"] >= 0.5:
+                f["confidence"] = 0.49
+            f["confidenceLabel"] = confidence_label(f["confidence"])
+            f.setdefault("tags", [])
+            if "uncertain" not in f["tags"]:
+                f["tags"].append("uncertain")
 
 
 def overlaps(a, b, slack=5):
@@ -768,14 +810,12 @@ def cross_lens_cluster(findings, enabled, slack=1):
     for i in range(len(findings)):
         groups.setdefault(find(i), []).append(findings[i])
 
-    sev_rank = {s: i for i, s in enumerate(SEVERITIES)}
     out = []
     for members in groups.values():
         if len(members) == 1:
             out.append(members[0])
             continue
-        primary = min(members, key=lambda x: (sev_rank[x["severity"]], -x["confidence"],
-                                              -len(x.get("trace", ""))))
+        primary = min(members, key=finding_priority)
         others = [x for x in members if x is not primary]
         lenses = {x["lens"] for x in members}
         if len(lenses) > 1:  # genuine cross-lens convergence is strong signal
@@ -812,20 +852,28 @@ def cmd_merge(args):
         else:
             docs.append(load_json_file(src))
 
-    run_meta, raw = None, []
+    run_meta, coverage_meta, raw = None, None, []
     for doc in docs:
         if isinstance(doc, list):  # tolerate a bare findings array
             raw.extend(doc)
             continue
         if run_meta is None and doc.get("run"):
             run_meta = doc["run"]
+        if coverage_meta is None and doc.get("coverage"):
+            coverage_meta = doc["coverage"]
         raw.extend(doc.get("findings", []))
 
+    if args.require_coverage and not isinstance(coverage_meta, dict):
+        die("coverage metadata required but missing", 3)
+
     errors = []
-    findings = [v for i, f in enumerate(raw) if (v := validate_finding(f, i, errors))]
+    findings = [v for i, f in enumerate(raw)
+                if (v := validate_finding(f, i, errors, args.require_verified))]
     n_dropped = len(raw) - len(findings)
     for e in errors:
         log(f"  invalid: {e}", args.quiet)
+    if args.strict and errors:
+        die(f"strict merge rejected malformed findings ({n_dropped} dropped)", 3)
 
     # normalize + fingerprint
     for f in findings:
@@ -834,6 +882,7 @@ def cmd_merge(args):
         if not re.fullmatch(r"[0-9a-f]{16}", str(f.get("fingerprint") or "")):
             f["fingerprint"] = fingerprint(root, f)
         f["confidenceLabel"] = confidence_label(f["confidence"])
+    cap_uncertain_findings(findings)
 
     # quarantine refuted
     refuted = [f for f in findings if (f.get("verified") or {}).get("verdict") == "refuted"]
@@ -846,8 +895,8 @@ def cmd_merge(args):
         prev = by_fp.get(f["fingerprint"])
         if prev is None:
             by_fp[f["fingerprint"]] = f
-        else:  # keep the clearer write-up: higher confidence, then longer trace
-            keep = max(prev, f, key=lambda x: (x["confidence"], len(x.get("trace", ""))))
+        else:  # keep the strongest verifier verdict, then severity/confidence/trace.
+            keep = min((prev, f), key=finding_priority)
             by_fp[f["fingerprint"]] = keep
     findings = list(by_fp.values())
     n_before_cluster = len(findings)
@@ -855,6 +904,7 @@ def cmd_merge(args):
     # cross-lens clustering: the same bug seen by multiple lenses collapses to one primary
     # finding (+ alsoFlaggedBy), with a confidence boost for the convergence.
     findings = cross_lens_cluster(findings, enabled=not args.no_cluster)
+    cap_uncertain_findings(findings)
     n_clustered = n_before_cluster - len(findings)
 
     # suppressions
@@ -923,6 +973,8 @@ def cmd_merge(args):
             "invalidDropped": n_dropped,
         },
     }
+    if coverage_meta is not None:
+        out["coverage"] = coverage_meta
 
     out_path = Path(args.out) if args.out else root / STATE_DIR / "findings.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -948,8 +1000,6 @@ def cmd_merge(args):
     if n_new_crit and args.fail_on in ("critical-high", "any"):
         sys.exit(1)
     if n_new_other and args.fail_on == "any":
-        sys.exit(2)
-    if n_new_other and args.fail_on == "critical-high":
         sys.exit(2)
     sys.exit(0)
 
@@ -1027,6 +1077,7 @@ def render_md(doc):
         out += [f"- {f['title']} ({f['location']['file']}:{f['location']['startLine']}) — "
                 f"{(f.get('verified') or {}).get('note') or 'refuted'}" for f in refuted] + [""]
     out += ["## Coverage & gaps"]
+    coverage = doc.get("coverage") or {}
     lenses = run.get("lenses") or sorted({f["lens"] for f in findings})
     files = sorted({f["location"]["file"] for f in findings})
     cov = f"Hunted with lenses: {', '.join(lenses) if lenses else 'unknown'}."
@@ -1034,6 +1085,26 @@ def render_md(doc):
     if scope:
         cov += f" Scope: {scope}."
     out.append(cov)
+    if coverage:
+        if "plannedCells" in coverage or "executedCells" in coverage:
+            out.append(f"Cells: {coverage.get('executedCells', 'unknown')} executed"
+                       f" / {coverage.get('plannedCells', 'unknown')} planned.")
+        if coverage.get("filesRead"):
+            listed = coverage["filesRead"][:12]
+            out.append(f"Files read: {', '.join(listed)}"
+                       f"{' …' if len(coverage['filesRead']) > 12 else ''}.")
+        if coverage.get("commandsRun"):
+            listed = coverage["commandsRun"][:8]
+            out.append(f"Commands run: {', '.join(listed)}"
+                       f"{' …' if len(coverage['commandsRun']) > 8 else ''}.")
+        if coverage.get("skippedCells"):
+            skipped = "; ".join(
+                f"{c.get('lens', 'unknown')} x {c.get('area', 'unknown')}: {c.get('reason', 'skipped')}"
+                for c in coverage["skippedCells"][:8])
+            out.append(f"Skipped cells: {skipped}"
+                       f"{' …' if len(coverage['skippedCells']) > 8 else ''}.")
+        if coverage.get("notExamined"):
+            out.append(f"Not examined: {', '.join(coverage['notExamined'])}.")
     if files:
         out.append(f"Findings span {len(files)} file(s): {', '.join(files[:12])}"
                    f"{' …' if len(files) > 12 else ''}.")
@@ -1223,6 +1294,12 @@ def main(argv=None):
     p.add_argument("--write-baseline", action="store_true")
     p.add_argument("--out", default=None, help=f"default: {STATE_DIR}/findings.json")
     p.add_argument("--fail-on", choices=["critical-high", "any", "none"], default="critical-high")
+    p.add_argument("--require-verified", action="store_true",
+                   help="reject findings without verified.verdict")
+    p.add_argument("--require-coverage", action="store_true",
+                   help="reject runs without top-level coverage metadata")
+    p.add_argument("--strict", action="store_true",
+                   help="fail on malformed findings instead of dropping or repairing them")
     p.add_argument("--no-cluster", action="store_true",
                    help="keep cross-lens duplicates separate (legacy: boost confidence, don't merge)")
     p.set_defaults(func=cmd_merge)

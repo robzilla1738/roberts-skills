@@ -45,7 +45,7 @@ bughunt-fixture/
                             (product-ux, contract-spec)
   scripts/
     migrate_invoices.py     destructive backfill, schema/code skew               (data-migration)
-    parse_receipts.py       aged FIXME, format drift, unhelpful catch, flaky sleep (dx-pain)
+    parse_receipts.py       FIXME marker, format drift, unhelpful catch, flaky sleep (dx-pain)
   answer-key.json           ground truth: id, lens, file, line, severity, impactClass, blurb
   RUNBOOK.md                this file
 ```
@@ -66,11 +66,14 @@ the fixture root the layout above resolves to `../../plugins/...`.)
 
    ```bash
    python3 "$BH" --root . hotspots   # rank files by likelihood-of-defect
-   python3 "$BH" --root . signals    # aged TODOs, dead flags, config drift  -> dx-pain / product-ux
+   python3 "$BH" --root . signals    # TODO/FIXME by git-blame age, flags, config drift -> dx-pain / product-ux
    python3 "$BH" --root . deps       # unpinned / no-lockfile / typosquat     -> dependency-supply
    ```
 
-   Note the subcommands take `--root .` (a flag), not a positional path.
+   Note the subcommands take `--root .` (a flag), not a positional path. `signals`
+   computes TODO/FIXME age from `git blame`, not dates embedded in comments. In a freshly
+   copied fixture, BUG-024 may report `ageDays: 0`; the embedded `(2021-03)` text is a lens
+   clue, not a pre-pass age guarantee.
 
 2. **Run the agent hunt** over this directory:
 

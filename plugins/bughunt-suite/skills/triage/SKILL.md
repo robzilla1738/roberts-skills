@@ -20,7 +20,7 @@ primary_use_cases:
 
 Companion skill that converts raw suspicion into a **precise, ranked, evidence-backed
 report**. It owns the **finding schema**, the **severity × confidence** model, and the
-discipline of building a **minimal reproduction** before anything is called a bug.
+discipline of building a **minimal reproduction** before anything is called Confirmed.
 
 Use it standalone on a single suspected bug, or as the scoring/reporting stage of
 [bughunt](../bughunt/SKILL.md).
@@ -81,7 +81,8 @@ Rate **how sure you are it's real**, independent of severity.
 | **Probable** | Strong static evidence; you traced it end to end but did not execute it |
 | **Speculative** | Pattern looks wrong but a guard, invariant, or caller you can't see might save it |
 
-**Speculative findings are quarantined** in their own section, never mixed with the rest.
+**Speculative findings are quarantined** in their own section, never mixed with Confirmed or
+Probable findings. A `verified.verdict` of `uncertain` is always Speculative after merge.
 When a defect is independently flagged by two different lenses, raise its confidence one
 step (cross-validation).
 
@@ -139,11 +140,12 @@ Emit each finding in this exact markdown shape so reports are scannable and merg
 
 **JSON ⇄ label mapping.** In JSON, `confidence` is a float `0.0–1.0`; the label you show is
 derived (`≥0.85` → Confirmed, `≥0.5` → Probable, else Speculative). Set `impactClass` (see the
-impact rubric) so non-security findings sort correctly. The mandatory verify pass records its
-result in `verified.verdict` (`upheld`/`refuted`/`uncertain`); `bughunt.py merge` quarantines
-`refuted` findings into a report appendix. You do not fingerprint, dedupe, or cluster by hand —
-`merge` owns that, including collapsing the same bug seen by multiple lenses into one finding
-with an `alsoFlaggedBy` list. See [verification.md](../bughunt/verification.md) and
+impact rubric) so non-security findings sort correctly. Candidate JSON does not need an `id`;
+`bughunt.py merge` assigns/renumbers IDs and fingerprints. The mandatory verify pass records
+its result in `verified.verdict` (`upheld`/`refuted`/`uncertain`); `merge` quarantines
+`refuted` findings into a report appendix and caps `uncertain` findings to Speculative. You do
+not fingerprint, dedupe, or cluster by hand — `merge` owns that, including collapsing the same
+bug seen by multiple lenses into one finding with an `alsoFlaggedBy` list. See [verification.md](../bughunt/verification.md) and
 [orchestration.md](../bughunt/orchestration.md).
 
 ## Report layout

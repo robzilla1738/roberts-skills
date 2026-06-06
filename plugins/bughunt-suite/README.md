@@ -1,11 +1,11 @@
 # Bughunt Suite
 
-An offensive, whole-codebase **hunting plugin** for **bugs, pain points, and inefficiencies**
-on any project type — iOS, macOS, web, services, terminal tools, and more. A zero-dependency
-toolkit ranks risk hotspots, parallel hunters sweep a grid of **13 analysis lenses × risk
-hotspots**, a mandatory skeptic pass refutes false positives, and findings are fingerprinted,
-deduped, baseline-diffed, and rendered to **markdown / HTML / SARIF** with **CI exit codes**.
-**Report-only** by default.
+An offensive, hotspot-driven **hunting plugin** for **bugs, pain points, and inefficiencies**
+across project types — iOS, macOS, web, services, terminal tools, and more. A zero-dependency
+toolkit ranks risk hotspots, agents inspect them through **13 analysis lenses**, a skeptic
+pass verifies candidates, strict CI merge gates can enforce verification and coverage, and
+findings are fingerprinted, deduped, baseline-diffed, and rendered to **markdown / HTML / SARIF**
+with **CI exit codes**. **Report-only** by default.
 
 **Author:** [Robert Courson](https://robertcourson.com) · Part of [Robert's Skills](https://github.com/robzilla1738/roberts-skills)
 
@@ -31,9 +31,10 @@ contract/spec · auth/access · logic-correctness · resource/performance · **d
 Flutter/SQL/IaC) **+ a generic fallback for any unlisted language**.
 
 **Toolkit (`skills/bughunt/scripts/bughunt.py`, zero-dependency `python3`):** deterministic
-hotspot ranking, pain-signal mining, dependency audit, structured findings with fingerprint
-dedupe, suppression, baseline diffing (“3 new, 2 fixed”), and markdown/HTML/SARIF rendering
-with CI exit codes. Degrades to a pure-markdown pipeline when `python3` is unavailable.
+hotspot ranking, pain-signal mining, npm/Python-oriented dependency risk signals, structured
+findings with fingerprint dedupe, suppression, baseline diffing (“3 new, 2 fixed”), and
+markdown/HTML/SARIF rendering with CI exit codes. Degrades to a pure-markdown pipeline when
+`python3` is unavailable; other ecosystems use the platform catalogs and agent inspection.
 
 ## Install
 
@@ -80,7 +81,7 @@ Invoke with `/skills` or `$bughunt`.
 /bughunt the whole repo — deep hunt, find the hidden bugs
 /bughunt the sync engine, focus on concurrency and failure paths
 /bughunt diff — only what changed on this branch
-/bughunt ci — non-interactive; exit 1 on new Critical/High (gate a pipeline)
+/bughunt ci — non-interactive; strict verified+coverage merge, exit 1 on new Critical/High
 /triage this crash report and give me a minimal repro
 /fuzz this parser — decode(encode(x)) must round-trip and it must never crash
 ```
@@ -107,9 +108,9 @@ bughunt-suite/
 - **Deterministic spine** — `bughunt.py` (stdlib-only `python3`) ranks hotspots and owns
   structured findings, baseline diffing, and SARIF; the hunt still works in pure markdown
   when `python3` is absent.
-- **Mandatory verify** — a skeptic pass refutes false positives before anything is reported.
+- **Verified merge** — CI can require every finding to carry a skeptic/runtime verdict and coverage metadata; uncertain findings stay Speculative and refuted ones move to an appendix.
 - **Portable** — a capability ladder runs the same five phases via the Workflow tool, parallel
   Tasks, or a sequential single-agent walk. The same `SKILL.md` files are native to Claude
   Code, Cursor, and Codex.
 
-Current versions: `bughunt` 2026-06-06.4 · `triage` 2026-06-06.3 · `fuzz` 2026-06-06.2 · plugin 2.0.0
+Current versions: `bughunt` 2026-06-06.5 · `triage` 2026-06-06.3 · `fuzz` 2026-06-06.2 · plugin 2.1.0

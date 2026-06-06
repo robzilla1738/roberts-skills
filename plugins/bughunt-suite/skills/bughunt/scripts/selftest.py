@@ -6,7 +6,7 @@ Run:  python3 selftest.py [-v]
 Covers: subcommand JSON shapes (git + non-git fallback), schema round-trip
 (merge -> render md -> parse back), fingerprint stability, dedupe + cross-lens
 confidence bump, suppression, baseline diff, CI exit codes, SARIF structure,
-standalone HTML, and the diff subcommand.
+standalone HTML, coverage enforcement, verifier-aware clustering, and the diff subcommand.
 """
 
 import json
@@ -69,6 +69,10 @@ class TempRepo(unittest.TestCase):
             "  const invoice = await db.findById(req.params.id);\n"
             "  res.json(invoice);\n"
             "};\n")
+        (self.dir / "routes" / "handler.js").write_text(
+            "const handler = (req, res, next) => {\n"
+            "  res.json({ ok: true });\n"
+            "};\n")
         (self.dir / "lib").mkdir()
         (self.dir / "lib" / "pricing.js").write_text(
             "function applyDiscount(total, pct) {\n"
@@ -81,6 +85,8 @@ class TempRepo(unittest.TestCase):
             "scripts": {"slow": "a && b && c && d && e"}}))
         (self.dir / ".env.example").write_text("API_KEY=\nDB_URL=\n")
         (self.dir / ".env").write_text("API_KEY=x\nEXTRA=1\n")
+        (self.dir / ".github" / "workflows").mkdir(parents=True)
+        (self.dir / ".github" / "workflows" / "ci.yml").write_text("name: ci\non: [push]\n")
 
     def tearDown(self):
         shutil.rmtree(self.dir, ignore_errors=True)
@@ -97,6 +103,12 @@ class TestCensusHotspotsSignalsDeps(TempRepo):
         self.assertIn("javascript", out["languages"])
         names = {f["name"] for f in out["functions"]}
         self.assertIn("applyDiscount", names)
+        self.assertNotIn("handler", names)
+        handler_src = (self.dir / "routes" / "handler.js").read_text()
+        handler = bughunt.find_functions("routes/handler.js", "javascript", handler_src)[0]
+        self.assertFalse(handler["pure_guess"])
+        paths = {f["path"] for f in out["files"]}
+        self.assertIn(".github/workflows/ci.yml", paths)
 
     def test_hotspots_non_git_mtime_fallback(self):
         r = run_cli(["hotspots", "--top", "5"], self.dir)
@@ -205,6 +217,140 @@ class TestMerge(TempRepo):
         self.assertEqual(out["summary"]["invalidDropped"], 1)
         self.assertIn("invalid", r.stderr)
 
+    def test_strict_fails_on_invalid(self):
+        bad = {"title": "no location", "lens": "auth-access", "severity": "High",
+               "confidence": 0.9, "trigger": "x", "trace": "y", "impact": "z"}
+        r = run_cli(["merge", "-", "--strict", "--fail-on", "none"], self.dir,
+                    stdin=doc([make_finding(), bad]))
+        self.assertEqual(r.returncode, 3)
+        self.assertIn("strict merge rejected", r.stderr)
+
+    def test_require_verified_rejects_missing_verdict(self):
+        r = run_cli(["merge", "-", "--require-verified", "--fail-on", "none"], self.dir,
+                    stdin=doc([make_finding()]))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(out["summary"]["invalidDropped"], 1)
+        self.assertEqual(out["findings"], [])
+
+        verified = make_finding(verified={"by": "skeptic-pass", "method": "static-refutation",
+                                          "verdict": "upheld", "note": "no guard"})
+        r = run_cli(["merge", "-", "--require-verified", "--strict", "--fail-on", "none"],
+                    self.dir, stdin=doc([verified]))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(len(out["findings"]), 1)
+
+    def test_uncertain_capped_to_speculative(self):
+        uncertain = make_finding(confidence=0.95,
+                                 verified={"by": "skeptic-pass",
+                                           "method": "static-refutation",
+                                           "verdict": "uncertain",
+                                           "note": "could not prove or refute"})
+        out, _ = self.merge([uncertain])
+        f = out["findings"][0]
+        self.assertLess(f["confidence"], 0.5)
+        self.assertEqual(f["confidenceLabel"], "Speculative")
+        self.assertIn("uncertain", f["tags"])
+
+    def test_dedupe_prefers_upheld_over_uncertain(self):
+        uncertain = make_finding(title="uncertain duplicate",
+                                 confidence=0.95,
+                                 verified={"by": "skeptic-pass",
+                                           "method": "static-refutation",
+                                           "verdict": "uncertain",
+                                           "note": "could not prove or refute"})
+        upheld = make_finding(title="upheld duplicate",
+                              confidence=0.48,
+                              verified={"by": "skeptic-pass",
+                                        "method": "static-refutation",
+                                        "verdict": "upheld",
+                                        "note": "no guard"})
+        out, _ = self.merge([uncertain, upheld])
+        self.assertEqual(len(out["findings"]), 1)
+        f = out["findings"][0]
+        self.assertEqual(f["title"], "upheld duplicate")
+        self.assertEqual(f["verified"]["verdict"], "upheld")
+
+    def test_upheld_duplicate_wins_over_uncertain_cluster(self):
+        uncertain = make_finding(title="uncertain critical candidate",
+                                 severity="Critical",
+                                 confidence=0.95,
+                                 verified={"by": "skeptic-pass",
+                                           "method": "static-refutation",
+                                           "verdict": "uncertain",
+                                           "note": "could not prove or refute"})
+        upheld = make_finding(title="upheld high duplicate",
+                              lens="dataflow-taint",
+                              severity="High",
+                              confidence=0.9,
+                              verified={"by": "skeptic-pass",
+                                        "method": "static-refutation",
+                                        "verdict": "upheld",
+                                        "note": "no guard"})
+        out, _ = self.merge([uncertain, upheld])
+        self.assertEqual(len(out["findings"]), 1)
+        f = out["findings"][0]
+        self.assertEqual(f["title"], "upheld high duplicate")
+        self.assertEqual(f["verified"]["verdict"], "upheld")
+        self.assertEqual(f["confidenceLabel"], "Confirmed")
+        self.assertEqual(f["alsoFlaggedBy"][0]["title"], "uncertain critical candidate")
+
+    def test_all_uncertain_cluster_stays_speculative(self):
+        a = make_finding(confidence=0.95,
+                         verified={"by": "skeptic-pass",
+                                   "method": "static-refutation",
+                                   "verdict": "uncertain",
+                                   "note": "could not prove or refute"})
+        b = make_finding(lens="dataflow-taint",
+                         title="taint maybe reaches query",
+                         confidence=0.9,
+                         verified={"by": "skeptic-pass",
+                                   "method": "static-refutation",
+                                   "verdict": "uncertain",
+                                   "note": "caller unclear"})
+        out, _ = self.merge([a, b])
+        self.assertEqual(len(out["findings"]), 1)
+        f = out["findings"][0]
+        self.assertEqual(f["verified"]["verdict"], "uncertain")
+        self.assertLess(f["confidence"], 0.5)
+        self.assertEqual(f["confidenceLabel"], "Speculative")
+
+    def test_coverage_preserved(self):
+        raw = {
+            "schemaVersion": "1.0",
+            "coverage": {
+                "plannedCells": 2,
+                "executedCells": 1,
+                "skippedCells": [{"lens": "concurrency", "area": "sync", "reason": "budget"}],
+                "filesRead": ["routes/invoices.js"],
+                "commandsRun": ["bughunt.py hotspots"],
+                "notExamined": ["admin console"],
+            },
+            "findings": [make_finding()],
+        }
+        out, _ = self.merge([], stdin_doc=json.dumps(raw))
+        self.assertEqual(out["coverage"]["plannedCells"], 2)
+        self.assertEqual(out["coverage"]["notExamined"], ["admin console"])
+
+    def test_require_coverage_fails_without_metadata(self):
+        r = run_cli(["merge", "-", "--require-coverage", "--fail-on", "none"], self.dir,
+                    stdin=doc([make_finding()]))
+        self.assertEqual(r.returncode, 3)
+        self.assertIn("coverage metadata required", r.stderr)
+
+    def test_require_coverage_passes_with_metadata(self):
+        raw = {
+            "schemaVersion": "1.0",
+            "coverage": {"plannedCells": 1, "executedCells": 1},
+            "findings": [make_finding()],
+        }
+        r = run_cli(["merge", "-", "--require-coverage", "--fail-on", "none"], self.dir,
+                    stdin=json.dumps(raw))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(out["coverage"]["executedCells"], 1)
+
     def test_fingerprint_and_label_filled(self):
         out, _ = self.merge([make_finding()])
         f = out["findings"][0]
@@ -295,8 +441,13 @@ class TestMerge(TempRepo):
         # new High -> 1
         r = run_cli(["merge", "-"], self.dir, stdin=doc([make_finding()]))
         self.assertEqual(r.returncode, 1)
-        # new Medium only -> 2
+        # new Medium only -> 0 under default critical-high gate
         r = run_cli(["merge", "-"], self.dir, stdin=doc(
+            [make_finding(severity="Medium", title="meh",
+                          location={"file": "lib/pricing.js", "startLine": 2})]))
+        self.assertEqual(r.returncode, 0)
+        # new Medium only -> 2 under fail-on any
+        r = run_cli(["merge", "-", "--fail-on", "any"], self.dir, stdin=doc(
             [make_finding(severity="Medium", title="meh",
                           location={"file": "lib/pricing.js", "startLine": 2})]))
         self.assertEqual(r.returncode, 2)

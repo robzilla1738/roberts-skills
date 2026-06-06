@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "bughunt-suite",
   "displayName": "Bughunt Suite",
-  "version": "2.0.0",
-  "description": "Offensive whole-codebase hunter for bugs, pain points, and inefficiencies — 13 analysis lenses, a zero-dependency toolkit (deterministic hotspots, structured findings, fingerprinted dedupe, baseline diffing, SARIF/HTML/markdown reports, CI exit codes), a mandatory adversarial verify pass, plus companion triage and fuzz skills. Report-only.",
+  "version": "2.1.0",
+  "description": "Offensive hotspot-driven hunt workflow for bugs, pain points, and inefficiencies — 13 analysis lenses, a zero-dependency toolkit (deterministic hotspots, structured findings, fingerprinted dedupe, baseline diffing, SARIF/HTML/markdown reports, CI exit codes), enforceable verification and coverage in CI, plus companion triage and fuzz skills. Report-only.",
   "author": {
     "name": "Robert Courson",
     "url": "https://robertcourson.com"

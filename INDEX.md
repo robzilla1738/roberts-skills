@@ -5,7 +5,7 @@
 
 | Doc | Category | Summary | Tags | Updated |
 |-----|----------|---------|------|---------|
-| plugins/bughunt-suite/skills/bughunt/SKILL.md | workflow | Offensive whole-codebase hunter for bugs, pain points & inefficiencies — zero-dep toolkit ranks hotspots, parallel fan-out across 13 lenses × hotspots, mandatory skeptic-verify, fingerprint/dedupe/baseline-diff, markdown/HTML/SARIF + CI exit codes (report-only) | bughunt, bug-hunting, code-review, static-analysis, taint, concurrency, authz, performance, supply-chain, technical-debt, sarif, ci, fan-out, security, workflow | 2026-06-06 |
+| plugins/bughunt-suite/skills/bughunt/SKILL.md | workflow | Evidence-first, hotspot-driven bug hunt for bugs, pain points & inefficiencies — zero-dep toolkit ranks hotspots, agents sweep 13 lenses, CI can enforce verification + coverage, fingerprint/dedupe/baseline-diff, markdown/HTML/SARIF + CI exit codes (report-only) | bughunt, bug-hunting, code-review, static-analysis, taint, concurrency, authz, performance, supply-chain, technical-debt, sarif, ci, fan-out, security, workflow | 2026-06-06 |
 | plugins/bughunt-suite/skills/triage/SKILL.md | workflow | Triage a bug or findings into a ranked, evidence-backed report — severity × confidence + impact rubric, minimal repro, finding schema (markdown + JSON), baseline diff | triage, repro, severity, confidence, impact-rubric, bug-report, workflow | 2026-06-06 |
 | plugins/bughunt-suite/skills/fuzz/SKILL.md | workflow | Flush out hidden bugs dynamically — discover, generate, and RUN property/fuzz/differential harnesses, shrink to regression test, emit confirmed findings | fuzz, property-based-testing, fuzzing, differential-testing, regression, workflow | 2026-06-06 |
 | plugins/bughunt-suite/GUIDE.md | guide / reference | Complete bughunt-suite manual — architecture, the hunt loop, all 13 lenses, every bughunt.py subcommand, the findings schema, scoping, baselines/suppressions, CI/SARIF, the capability ladder, and a full worked example | bughunt, guide, documentation, manual, cli, ci, sarif, reference | 2026-06-06 |
@@ -23,7 +23,7 @@
 
 ### workflow
 
-- [bughunt-suite/skills/bughunt](plugins/bughunt-suite/skills/bughunt/SKILL.md) — Offensive whole-codebase hunter (bugs, pain points, inefficiencies): zero-dep toolkit + 13-lens fan-out + mandatory verify + baseline-diff/SARIF/CI (`/bughunt`)
+- [bughunt-suite/skills/bughunt](plugins/bughunt-suite/skills/bughunt/SKILL.md) — Evidence-first hotspot-driven hunt (bugs, pain points, inefficiencies): zero-dep toolkit + 13-lens fan-out + enforced verify/coverage gates + baseline-diff/SARIF/CI (`/bughunt`)
 - [bughunt-suite/skills/triage](plugins/bughunt-suite/skills/triage/SKILL.md) — Rank & reproduce findings: severity × confidence + impact rubric + repro (`/triage`)
 - [bughunt-suite/skills/fuzz](plugins/bughunt-suite/skills/fuzz/SKILL.md) — Discover, generate, and RUN property/fuzz/differential harnesses to confirm bugs (`/fuzz`)
 - [bughunt-suite/GUIDE.md](plugins/bughunt-suite/GUIDE.md) — 📖 the complete bughunt-suite manual (how it works, every subcommand, CI, worked example)

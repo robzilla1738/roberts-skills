@@ -4,7 +4,7 @@ A deep, practical guide to **how bughunt-suite works** and **how to use it** —
 hunt to wiring it into CI. For install-only instructions see the [README](README.md); this
 document is the manual.
 
-> **What it is in one sentence:** an offensive, whole-codebase hunter for **bugs, pain points,
+> **What it is in one sentence:** an offensive, hotspot-driven hunt workflow for **bugs, pain points,
 > and inefficiencies** that ranks risk deterministically, sweeps your code through 13 analysis
 > lenses in parallel, makes a skeptic try to *disprove* every finding, and emits a ranked,
 > fingerprinted, baseline-diffed report (markdown / HTML / SARIF) — **report-only by default.**
@@ -29,7 +29,7 @@ document is the manual.
 14. [The capability ladder (how it runs anywhere)](#14-the-capability-ladder-how-it-runs-anywhere)
 15. [`/triage` and `/fuzz`](#15-triage-and-fuzz)
 16. [Portability & the markdown fallback](#16-portability--the-markdown-fallback)
-17. [The eval fixture (how recall was measured)](#17-the-eval-fixture-how-recall-was-measured)
+17. [The eval fixture](#17-the-eval-fixture)
 18. [Troubleshooting & FAQ](#18-troubleshooting--faq)
 19. [A full worked example](#19-a-full-worked-example)
 
@@ -45,13 +45,14 @@ Four principles drive everything:
   impact. No evidence → it's a question, not a finding.
 - **Signal over noise.** A short list of real, reproducible bugs beats a long list of maybes.
   A skeptic tries to kill every finding before it's reported; survivors are clustered, ranked,
-  and proved.
+  and clearly labeled as static, uncertain, or runtime-confirmed.
 - **Report, don't edit.** The hunt surfaces and proves defects; fixing is handed to a human or
   to a review/fix tool. It never edits product code unless you ask.
 
 Bughunt is the **offensive** counterpart to a defensive review gate: where a review checks
-*your own diff*, bughunt assumes the whole codebase is hiding defects and goes looking — across
-correctness, security, performance, reliability, **and** developer/user pain.
+*your own diff*, bughunt assumes risky code paths are hiding defects and uses hotspot-ranked
+coverage to look across correctness, security, performance, reliability, **and** developer/user
+pain.
 
 ---
 
@@ -109,7 +110,7 @@ bughunt-suite/
     │       ├── bughunt.py       the zero-dependency toolkit (python3 stdlib only)
     │       ├── hunt-workflow.js  the Workflow-tool fan-out script (Rung A)
     │       ├── schema/finding.schema.json   the findings contract
-    │       └── selftest.py      23 stdlib unit tests
+    │       └── selftest.py      31 stdlib unit tests
     ├── triage/                  severity × confidence, repro, report format
     └── fuzz/                    property/fuzz/differential harnesses that RUN
 ```
@@ -122,9 +123,11 @@ bughunt-suite/
   to confirm a suspicion dynamically.
 
 The **toolkit** (`bughunt.py`) is the deterministic spine: it ranks hotspots, mines pain
-signals, audits dependencies, and owns the entire findings pipeline (validate → fingerprint →
-dedupe → cluster → suppress → baseline-diff → render). The **lenses** are the judgment; the
-toolkit is the bookkeeping.
+signals, audits dependency risk signals, and owns the entire findings pipeline (validate →
+fingerprint → dedupe → cluster → suppress → baseline-diff → render). The **lenses** are the
+judgment; the toolkit is the bookkeeping. Automated dependency support is strongest for
+npm/Python-style manifests today; other ecosystems rely more on platform catalogs and agent
+inspection.
 
 ---
 
@@ -262,18 +265,22 @@ Parses manifests and lockfiles and flags issues with codes: `UNPINNED`, `NO_LOCK
 
 ```bash
 bughunt.py merge <files...|-> [--baseline P] [--suppress P] \
-    [--write-baseline] [--out P] [--fail-on critical-high|any|none] [--no-cluster]
+    [--write-baseline] [--out P] [--fail-on critical-high|any|none] \
+    [--require-verified] [--require-coverage] [--strict] [--no-cluster]
 ```
 
 Takes one or more hunter findings-JSON files (or `-` for stdin) and **owns**:
 
-1. **Validation** — the executable form of `schema/finding.schema.json`. Invalid findings are dropped with a stderr warning; merge **never aborts** on one bad finding.
-2. **Fingerprinting** — a stable id per finding (see [§7](#7-the-findings-schema)).
-3. **Dedupe** — collapses identical fingerprints, keeping the clearer write-up.
-4. **Cross-lens clustering** — see [§9](#9-cross-lens-clustering); `--no-cluster` disables it.
-5. **Suppression** — mutes fingerprints listed in `suppressions.json`.
-6. **Baseline diff** — marks each finding `new` / `existing` / `fixed`.
-7. **Id renumbering** — stable, severity-sorted `BH-001…` ids.
+1. **Validation** — the executable form of `schema/finding.schema.json`. Invalid findings are dropped with a stderr warning by default; `--strict` makes malformed findings fail with exit `3`.
+2. **Verification enforcement** — `--require-verified` rejects findings without `verified.verdict`; use it with `--strict` in CI.
+3. **Coverage enforcement** — `--require-coverage` exits `3` when the input lacks top-level coverage metadata.
+4. **Fingerprinting** — a stable id per finding (see [§7](#7-the-findings-schema)).
+5. **Dedupe** — collapses identical fingerprints, keeping the clearer write-up.
+6. **Cross-lens clustering** — see [§9](#9-cross-lens-clustering); `--no-cluster` disables it.
+7. **Suppression** — mutes fingerprints listed in `suppressions.json`.
+8. **Baseline diff** — marks each finding `new` / `existing` / `fixed`.
+9. **Id renumbering** — stable, severity-sorted `BH-001…` ids.
+10. **Uncertainty routing** — `uncertain` findings are capped to Speculative; `refuted` findings move to the appendix and are excluded from the gate.
 
 It writes the merged document to `--out` (default `.bughunt/findings.json`) and **exits** with
 a CI-gate code (see [§13](#13-ci-integration)).
@@ -320,7 +327,7 @@ Suggested `.gitignore`:
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/bughunt/scripts/selftest.py
 ```
 
-23 stdlib unit tests cover the whole pipeline (schema round-trip, fingerprint stability,
+31 stdlib unit tests cover the whole pipeline (schema round-trip, fingerprint stability,
 dedupe, clustering, suppression, baseline diff, exit codes, SARIF/HTML). Run it after editing
 `bughunt.py`.
 
@@ -355,9 +362,9 @@ either. The full contract is `scripts/schema/finding.schema.json`.
 }
 ```
 
-**Required fields:** `title`, `lens`, `severity`, `confidence`, `location.file`,
-`location.startLine`, `trigger`, `trace`, `impact`. Everything else is filled in by `merge` or
-optional.
+**Required candidate fields:** `title`, `lens`, `severity`, `confidence`, `location.file`,
+`location.startLine`, `trigger`, `trace`, `impact`. `id`, `fingerprint`, `confidenceLabel`,
+and `baselineStatus` are filled or renumbered by `merge`.
 
 **The fingerprint** is `sha256(lens + NUL + relpath + NUL + normalized_snippet)[:16]`, where
 the snippet is the anchor line(s) with whitespace collapsed and string/number literals
@@ -380,7 +387,9 @@ through four refutation questions:
 
 It returns a verdict — `upheld`, `refuted`, or `uncertain` — biased toward **refuted** on
 genuine doubt. `merge` moves `refuted` findings into a transparency appendix and excludes them
-from the report body and the CI gate; `uncertain` survives but is capped at Speculative.
+from the report body and the CI gate; `uncertain` survives but is capped at Speculative. CI
+should run `merge --require-verified --require-coverage --strict` so missing verifier
+verdicts or missing coverage metadata fail rather than becoming trusted findings.
 
 This pass is **mandatory on every rung** of the capability ladder — it is never skipped, even
 in the single-agent fallback.
@@ -392,9 +401,9 @@ in the single-agent fallback.
 The same bug often trips multiple lenses — an off-by-one loop looks wrong to
 `boundaries-numeric`, `logic-correctness`, *and* `contract-spec`. Reporting it three times is
 noise. So `merge` **clusters** findings that different lenses raised at overlapping lines into
-**one primary finding** (the highest-severity / highest-confidence write-up), attaching the
-others as an `alsoFlaggedBy` list and bumping confidence for the convergence (agreement across
-independent lenses is strong signal).
+**one primary finding** (upheld verdict first, then highest-severity / highest-confidence
+write-up), attaching the others as an `alsoFlaggedBy` list and bumping confidence for the
+convergence (agreement across independent lenses is strong signal).
 
 Same-lens findings are never merged this way (fingerprint dedupe already handles exact
 repeats; two distinct bugs the same lens found stay separate). Pass `--no-cluster` to keep
@@ -488,17 +497,18 @@ suppression survives refactors.
 
 ## 13. CI integration
 
-`/bughunt ci` runs non-interactively and surfaces `merge`'s exit code:
+`/bughunt ci` runs non-interactively and surfaces `merge`'s exit code. Default CI behavior is
+`merge --require-verified --require-coverage --strict --fail-on critical-high`:
 
 | Exit code | Meaning |
 |-----------|---------|
-| `0` | no new findings (clean) |
+| `0` | no new Critical/High findings under the default gate |
 | `1` | new **Critical/High** finding(s) — fail the build |
-| `2` | new **Medium/Low** finding(s) — warn |
-| `3` | usage / IO error |
+| `2` | new **Medium/Low** finding(s), only when `--fail-on any` is selected |
+| `3` | usage / IO / malformed finding / missing coverage error |
 
 `--fail-on` tunes the gate: `critical-high` (default), `any`, or `none` (always 0 — report
-without gating).
+without gating). Under `critical-high`, Medium/Low findings are reported but exit `0`.
 
 A minimal pipeline step:
 
@@ -512,7 +522,7 @@ python3 "$ROOT" signals > signals.json
 # 2. ...drive the hunt, collecting hunter findings into hunters/*.json...
 
 # 3. gate against the committed baseline; fail on new Critical/High
-python3 "$ROOT" merge hunters/*.json --fail-on critical-high
+python3 "$ROOT" merge hunters/*.json --require-verified --require-coverage --strict --fail-on critical-high
 GATE=$?
 
 # 4. render SARIF for GitHub code scanning
@@ -535,7 +545,7 @@ whichever rung is available:
 - **Rung A — Workflow tool present (Claude Code).** The agent runs the pre-pass via Bash,
   builds the grid, and invokes the shipped `scripts/hunt-workflow.js` through the Workflow
   tool. That script fans out one hunter per cell and one skeptic per candidate (pipelined), and
-  returns the upheld findings as JSON; the agent pipes them through `merge` + `render`.
+  returns findings with verifier verdicts as JSON; the agent pipes them through `merge` + `render`.
 - **Rung B — standard Claude Code.** Identical phases by hand: parallel Task/Agent calls for
   the hunters, then a skeptic Task per surviving candidate, then `merge` + `render` via Bash.
 - **Rung C — single-agent tools (Cursor / Codex).** A sequential walk of the grid: for each
@@ -587,7 +597,7 @@ suite is portable across all three (see the [README](README.md) for per-tool ins
 
 ---
 
-## 17. The eval fixture (how recall was measured)
+## 17. The eval fixture
 
 `eval/bughunt-fixture/` (in the marketplace repo, *outside* the plugin so installs stay lean)
 is a deliberately buggy mini billing service — **29 planted bugs across all 13 lenses**, each
@@ -602,10 +612,10 @@ blank the marker lines (preserving line numbers so the answer key stays valid), 
 against the copy, then score reported findings against `answer-key.json` by lens + file +
 line (±a few).
 
-**Measured result:** with markers stripped, **90% recall (26/29)** and a **~0% true
-false-positive rate** — every reported finding was a real defect, and clustering reduced 49 raw
-findings to 26 clean ones. See `eval/bughunt-fixture/RUNBOOK.md` for the exact scoring recipe
-and targets (recall ≥ 80%, FP < 20%).
+Use the fixture as a regression guard, not as a broad marketing claim. See
+`eval/bughunt-fixture/RUNBOOK.md` for the scoring recipe and targets (recall ≥ 80%, FP < 20%).
+Only publish measured recall/precision when the exact run artifacts and scorer output are
+available.
 
 This fixture is also a regression guard: re-run it after changing a lens or the toolkit to
 confirm recall hasn't dropped.

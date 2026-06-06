@@ -10,8 +10,10 @@
  *
  * It fans out one HUNTER agent per (lens x hotspot) cell, then runs the mandatory
  * adversarial VERIFY pass — one SKEPTIC agent per candidate finding — and returns the
- * findings that survived as a strict {schemaVersion:"1.0", findings:[...]} document. The
- * orchestrating agent pipes that to `python3 bughunt.py merge - --write-baseline` and renders.
+ * findings with verifier verdicts as a strict {schemaVersion:"1.0", coverage, findings:[...]}
+ * document. The orchestrating agent pipes that to
+ * `python3 bughunt.py merge - --require-verified --require-coverage --strict --write-baseline`,
+ * which routes refuted findings into the transparency appendix and renders.
  *
  * EVERYTHING comes in via the global `args` (cells + the two prompt strings). The script
  * builds NO state of its own from the outside world.
@@ -162,8 +164,17 @@ const perCell = await pipeline(
   ))
 )
 
-// Flatten the per-cell arrays, drop anything the skeptic refuted. merge re-quarantines
-// refuted findings too, but dropping them here keeps the returned document clean.
-const findings = perCell.flat().filter(Boolean).filter(f => !(f.verified && f.verified.verdict === 'refuted'))
-log(findings.length + ' findings upheld after verify')
-return { schemaVersion: '1.0', findings }
+// Flatten the per-cell arrays and preserve every verifier verdict. merge owns the routing:
+// upheld/uncertain stay in the body, refuted findings move to the transparency appendix.
+const findings = perCell.flat().filter(Boolean)
+const filesRead = Array.from(new Set(A.cells.flatMap(cell => cell.files || []))).sort()
+const coverage = {
+  plannedCells: A.cells.length,
+  executedCells: A.cells.length,
+  skippedCells: A.skippedCells || [],
+  filesRead,
+  commandsRun: A.commandsRun || [],
+  notExamined: A.notExamined || [],
+}
+log(findings.length + ' findings returned after verify')
+return { schemaVersion: '1.0', coverage, findings }
