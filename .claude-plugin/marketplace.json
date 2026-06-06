@@ -14,9 +14,9 @@
       "name": "bughunt-suite",
       "displayName": "Bughunt Suite",
       "source": "bughunt-suite",
-      "description": "Offensive whole-codebase bug hunter for any project type. Recon, then fan out parallel hunters across 9 analysis lenses × risk hotspots; merge, cross-validate, and report ranked, reproducible findings. Includes triage (severity × confidence + repro) and fuzz (property/fuzz harnesses). Report-only. Commands: /bughunt, /triage, /fuzz.",
+      "description": "Offensive whole-codebase hunter for bugs, pain points, and inefficiencies. A zero-dependency toolkit ranks hotspots deterministically, then parallel hunters sweep 13 analysis lenses × risk hotspots; a mandatory skeptic pass refutes false positives; findings are fingerprinted, deduped, baseline-diffed, and rendered to markdown/HTML/SARIF with CI exit codes. Includes triage (severity × confidence + repro) and fuzz (runs property/fuzz harnesses). Report-only. Commands: /bughunt, /triage, /fuzz.",
       "category": "code-quality",
-      "keywords": ["bug-hunting", "code-review", "security", "static-analysis", "taint", "concurrency", "authz", "performance", "triage", "fuzzing"]
+      "keywords": ["bug-hunting", "code-review", "security", "static-analysis", "taint", "concurrency", "authz", "performance", "supply-chain", "technical-debt", "triage", "fuzzing", "sarif", "ci"]
     },
     {
       "name": "autoreview",

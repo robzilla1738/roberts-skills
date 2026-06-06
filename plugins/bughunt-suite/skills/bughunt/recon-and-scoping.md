@@ -5,6 +5,26 @@ The hunt is only as good as its map. Before hunting, build a **target map**, ide
 platform catalogs. Don't spray attention evenly — concentrate it where risk and change
 collide.
 
+## 0. Deterministic pre-pass (run first)
+
+When `python3` is available, run the bundled toolkit to replace guesswork with data before
+you reason about anything. Probe `python3 --version` first; if it's absent, skip this section
+and use the manual heuristics below.
+
+```bash
+TK=${CLAUDE_PLUGIN_ROOT}/skills/bughunt/scripts/bughunt.py
+python3 "$TK" census    # the map: languages, sizes, generated/vendored/tests
+python3 "$TK" hotspots  # ranked targets — feeds the grid directly (see step 3)
+python3 "$TK" signals   # aged TODOs, feature flags, config drift — feeds dx-pain & product-ux
+python3 "$TK" deps      # manifest/lockfile audit — feeds dependency-supply
+```
+
+`census` builds the target map (step 1 below), `hotspots` does the deterministic hotspot
+ranking (step 3), `signals` and `deps` seed the pain-point and supply-chain lenses. See
+[tooling.md](tooling.md) for the full reference — every subcommand, its flags, and the exact
+JSON it returns. The manual steps below still apply: use them to interpret and sanity-check
+the toolkit's output, and as the **complete fallback** when python3 isn't present.
+
 ## 1. Detect platform & stack
 
 Identify language(s), frameworks, and the trust model from the project's own signals:
@@ -40,6 +60,12 @@ This directly seeds the [taint](lens-dataflow-taint.md) and [error/failure](lens
 lenses.
 
 ## 3. Rank hotspots
+
+`bughunt.py hotspots` computes this ranking **deterministically** — a weighted blend of
+churn × complexity × recency × boundary × test-gap (see [tooling.md](tooling.md) for the
+weights and what each signal means). When python3 is present, that ranked list feeds the grid
+directly; the manual heuristics below are the **fallback** when python3 is absent, and a lens
+for sanity-checking the script's output.
 
 Score files/modules by likelihood-of-defect, highest first:
 
@@ -98,5 +124,5 @@ to it:
 
 ## 5. Hand off
 
-Pass the hunt plan to [fanout-orchestration.md](fanout-orchestration.md), which turns the
+Pass the hunt plan to [orchestration.md](orchestration.md), which turns the
 ranked hotspots × selected lenses into the actual hunter assignments.

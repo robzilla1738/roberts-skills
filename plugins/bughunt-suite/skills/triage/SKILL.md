@@ -3,15 +3,16 @@ name: triage
 description: >
   Triage a suspected bug or a set of findings into a ranked, evidence-backed report:
   assign severity and confidence, build a minimal reproduction or failing test, and
-  emit a standard finding schema. Use when the user invokes /triage, hands you a crash
-  or suspicious behavior to assess, or when bughunt needs to score and prove findings.
+  emit the standard finding schema (markdown + JSON). Use when the user invokes /triage,
+  hands you a crash or suspicious behavior to assess, or when bughunt needs to score,
+  prove, baseline-diff, and report findings.
 disable-model-invocation: true
-version: 2026-06-06.2
+version: 2026-06-06.3
 platforms: [language-agnostic]
 primary_use_cases:
   - Turn a vague "something is wrong here" into a precise, reproducible finding
-  - Assign severity x confidence to one or many candidate bugs
-  - Produce the canonical finding + report format that bughunt emits
+  - Assign severity x confidence to one or many candidate bugs (security and non-security)
+  - Produce the canonical finding + report format that bughunt emits (markdown and JSON)
   - Build a minimal repro or failing test that proves a defect
 ---
 
@@ -48,6 +49,27 @@ Rate **impact if triggered**, independent of how likely it is.
 | **High** | Wrong result users rely on, privilege issue, leak/exhaustion under normal load, crash on a real edge |
 | **Medium** | Incorrect behavior on an uncommon-but-reachable path; degraded reliability; recoverable |
 | **Low** | Minor correctness/robustness issue, narrow edge, cosmetic-but-wrong |
+
+## Impact rubric (what "severity" *means* per finding class)
+
+bughunt hunts more than security bugs. A finding's `impactClass` tells you which yardstick
+to hold its severity against, so a pain-point or inefficiency isn't force-fit into a
+security frame (and isn't dismissed because it isn't a CVE). Same four severity levels,
+calibrated per class:
+
+| impactClass | What Critical/High looks like here | What Low looks like |
+|-------------|-----------------------------------|---------------------|
+| **security** | auth bypass, RCE, secret/PII disclosure, injection on a reachable path | theoretical issue behind strong guards |
+| **correctness** | wrong result users act on; silent data divergence | wrong only on a contrived edge |
+| **reliability** | crash/hang/outage under normal load; fail-open | degrades only under rare conditions |
+| **performance** | O(n²)/N+1/unbounded growth that breaks at real scale | constant-factor waste on a cold path |
+| **data-integrity** | destructive/irreversible migration, corruption, lost writes | recoverable, narrow-window skew |
+| **dx** | broken build/test, footgun that routinely costs dev hours | stale TODO, cosmetic friction |
+| **ux** | user can't recover (white screen, silent failure, double-charge) | minor polish / missing affordance |
+| **supply-chain** | known-vulnerable/typosquat dep on a reachable path | unpinned but low-risk dev dep |
+
+Score by **user/operator/developer impact**, not by how clever the bug is. A High-severity
+DX or UX finding is legitimate and belongs above a Low-severity security nit.
 
 ## Confidence rubric
 
@@ -91,7 +113,13 @@ caveat stated).
 
 ## Finding schema
 
-Emit each finding in this exact shape so reports are scannable and mergeable:
+Each finding has two equivalent shapes: the **markdown block** below (what humans read) and
+a **JSON object** (what the toolkit dedupes, fingerprints, baselines, and exports). They are
+the same finding — `bughunt.py render` produces the markdown from the JSON, so you can author
+either. The JSON contract lives at `bughunt/scripts/schema/finding.schema.json`; see
+[the toolkit](../bughunt/tooling.md).
+
+Emit each finding in this exact markdown shape so reports are scannable and mergeable:
 
 ```markdown
 ### [SEV-CONF] <short title>
@@ -109,6 +137,15 @@ Emit each finding in this exact shape so reports are scannable and mergeable:
 
 `SEV-CONF` tag examples: `[Critical-Confirmed]`, `[High-Probable]`, `[Low-Speculative]`.
 
+**JSON ⇄ label mapping.** In JSON, `confidence` is a float `0.0–1.0`; the label you show is
+derived (`≥0.85` → Confirmed, `≥0.5` → Probable, else Speculative). Set `impactClass` (see the
+impact rubric) so non-security findings sort correctly. The mandatory verify pass records its
+result in `verified.verdict` (`upheld`/`refuted`/`uncertain`); `bughunt.py merge` quarantines
+`refuted` findings into a report appendix. You do not fingerprint, dedupe, or cluster by hand —
+`merge` owns that, including collapsing the same bug seen by multiple lenses into one finding
+with an `alsoFlaggedBy` list. See [verification.md](../bughunt/verification.md) and
+[orchestration.md](../bughunt/orchestration.md).
+
 ## Report layout
 
 This is the canonical report `bughunt` produces and what `/triage` emits for a set:
@@ -119,11 +156,17 @@ This is the canonical report `bughunt` produces and what `/triage` emits for a s
 ## Summary
 <N findings: X critical, Y high, Z medium, W low. K confirmed, ... One-line headline.>
 
+## Baseline diff            <!-- only when a baseline exists; from `bughunt.py merge` -->
+<N new, M fixed, K suppressed since the last baselined run. List the fixed ones.>
+
 ## Confirmed & Probable findings
 <findings, sorted by severity then confidence, using the schema above>
 
 ## Speculative (needs a human eye)
 <lower-confidence items, clearly separated>
+
+## Refuted (appendix)       <!-- candidates the verify pass killed; transparency only -->
+<title, location, and why it was refuted>
 
 ## Coverage & gaps
 <what was hunted (lenses x areas), what was NOT examined and why>
@@ -132,7 +175,9 @@ This is the canonical report `bughunt` produces and what `/triage` emits for a s
 <e.g. "fix BH-001/BH-003 then run /review (autoreview)">
 ```
 
-Single-bug `/triage` runs skip the multi-finding sections and emit one finding plus its repro.
+`bughunt.py render` emits exactly this layout from the merged findings JSON (Baseline diff and
+Refuted sections appear only when there's something to show). Single-bug `/triage` runs skip the
+multi-finding sections and emit one finding plus its repro.
 
 ## Worked example
 

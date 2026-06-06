@@ -1,0 +1,263 @@
+[
+  {
+    "id": "BUG-001",
+    "lens": "error-failure",
+    "file": "app/lib/auth.js",
+    "line": 30,
+    "severity": "Critical",
+    "impactClass": "security",
+    "blurb": "Fail-open auth: a malformed/forged token is caught and the request is assigned an admin identity instead of being rejected with 401."
+  },
+  {
+    "id": "BUG-002",
+    "lens": "auth-access",
+    "file": "app/routes/invoices.js",
+    "line": 22,
+    "severity": "High",
+    "impactClass": "security",
+    "blurb": "IDOR on GET /invoices/:id — invoice returned without checking invoice.ownerId === req.user.userId, so any user reads any invoice."
+  },
+  {
+    "id": "BUG-003",
+    "lens": "dataflow-taint",
+    "file": "app/routes/invoices.js",
+    "line": 31,
+    "severity": "Critical",
+    "impactClass": "security",
+    "blurb": "SQL injection: req.query.status is string-concatenated into the WHERE clause of the list query."
+  },
+  {
+    "id": "BUG-004",
+    "lens": "dataflow-taint",
+    "file": "app/routes/invoices.js",
+    "line": 42,
+    "severity": "High",
+    "impactClass": "security",
+    "blurb": "Path traversal: req.query.file is path.join'd onto RECEIPT_DIR with no containment check, allowing ../../ escapes."
+  },
+  {
+    "id": "BUG-005",
+    "lens": "auth-access",
+    "file": "app/routes/invoices.js",
+    "line": 55,
+    "severity": "High",
+    "impactClass": "security",
+    "blurb": "Missing role check: POST /invoices/:id/refund is a privileged admin action but never asserts req.user.role === 'admin'."
+  },
+  {
+    "id": "BUG-006",
+    "lens": "error-failure",
+    "file": "app/routes/invoices.js",
+    "line": 77,
+    "severity": "High",
+    "impactClass": "reliability",
+    "blurb": "Swallowed write error returns a 200 {ok:true}; a failed invoice create is reported to the client as success."
+  },
+  {
+    "id": "BUG-007",
+    "lens": "boundaries-numeric",
+    "file": "app/lib/pricing.js",
+    "line": 14,
+    "severity": "High",
+    "impactClass": "correctness",
+    "blurb": "Off-by-one: subtotal loop uses i <= items.length and reads items[length], producing NaN on the last iteration."
+  },
+  {
+    "id": "BUG-008",
+    "lens": "logic-correctness",
+    "file": "app/lib/pricing.js",
+    "line": 30,
+    "severity": "High",
+    "impactClass": "correctness",
+    "blurb": "Inverted condition: applyDiscount only applies the discount when pct is out of range (invalid), and returns the amount unchanged for valid discounts."
+  },
+  {
+    "id": "BUG-009",
+    "lens": "boundaries-numeric",
+    "file": "app/lib/pricing.js",
+    "line": 45,
+    "severity": "Medium",
+    "impactClass": "data-integrity",
+    "blurb": "Float rounding via parseInt(amount*100): truncates instead of half-up rounding, dropping sub-cent values (10.005 -> 10.00)."
+  },
+  {
+    "id": "BUG-010",
+    "lens": "logic-correctness",
+    "file": "app/lib/pricing.js",
+    "line": 60,
+    "severity": "High",
+    "impactClass": "correctness",
+    "blurb": "Discount applied AFTER tax, contradicting the JSDoc; customers are taxed on the pre-discount amount and overcharged."
+  },
+  {
+    "id": "BUG-011",
+    "lens": "contract-spec",
+    "file": "app/lib/pricing.js",
+    "line": 71,
+    "severity": "Medium",
+    "impactClass": "correctness",
+    "blurb": "taxableCount contradicts its JSDoc: doc says it counts taxable (non-exempt) items but it returns the count of EXEMPT items."
+  },
+  {
+    "id": "BUG-012",
+    "lens": "resource-performance",
+    "file": "app/db/invoices.js",
+    "line": 27,
+    "severity": "Medium",
+    "impactClass": "performance",
+    "blurb": "Unbounded result set: listWithLineItems selects the whole invoices table with no LIMIT/pagination."
+  },
+  {
+    "id": "BUG-013",
+    "lens": "resource-performance",
+    "file": "app/db/invoices.js",
+    "line": 30,
+    "severity": "High",
+    "impactClass": "performance",
+    "blurb": "N+1 queries: one extra line-items query per invoice in a loop instead of a single JOIN or batched IN(...)."
+  },
+  {
+    "id": "BUG-014",
+    "lens": "state-lifecycle",
+    "file": "app/db/invoices.js",
+    "line": 43,
+    "severity": "Medium",
+    "impactClass": "reliability",
+    "blurb": "Connection/handle leak: exportAll opens a second DB handle (and a file handle) that are never closed, leaking on every export."
+  },
+  {
+    "id": "BUG-015",
+    "lens": "concurrency",
+    "file": "app/cache/worker.js",
+    "line": 19,
+    "severity": "High",
+    "impactClass": "correctness",
+    "blurb": "Check-then-act TOCTOU: the refunding.has()/add() gap spans an await, so two concurrent calls both pass the guard and double-refund."
+  },
+  {
+    "id": "BUG-016",
+    "lens": "concurrency",
+    "file": "app/cache/worker.js",
+    "line": 40,
+    "severity": "High",
+    "impactClass": "correctness",
+    "blurb": "Shared-mutable-state race: read-modify-write of module-level `total` across an await interleaves and loses updates."
+  },
+  {
+    "id": "BUG-017",
+    "lens": "state-lifecycle",
+    "file": "app/cache/worker.js",
+    "line": 51,
+    "severity": "Medium",
+    "impactClass": "reliability",
+    "blurb": "Unbounded cache growth: the `seen` Map is added to but never evicted or TTL'd, leaking memory for the life of the process."
+  },
+  {
+    "id": "BUG-018",
+    "lens": "product-ux",
+    "file": "app/ui/InvoiceList.jsx",
+    "line": 22,
+    "severity": "Medium",
+    "impactClass": "ux",
+    "blurb": "Swallowed fetch error blanks the UI: .catch(() => {}) leaves the user on an empty list with no error message or retry."
+  },
+  {
+    "id": "BUG-019",
+    "lens": "product-ux",
+    "file": "app/ui/InvoiceList.jsx",
+    "line": 25,
+    "severity": "Low",
+    "impactClass": "ux",
+    "blurb": "Missing loading/empty/error states: in-flight and zero-row renders look identical to a broken page (no spinner, no empty state)."
+  },
+  {
+    "id": "BUG-020",
+    "lens": "product-ux",
+    "file": "app/ui/InvoiceList.jsx",
+    "line": 39,
+    "severity": "Low",
+    "impactClass": "ux",
+    "blurb": "Dead feature flag: FEATURE_BULK_EXPORT is missing from .env so the branch is permanently false and the export button never renders."
+  },
+  {
+    "id": "BUG-021",
+    "lens": "contract-spec",
+    "file": "app/ui/InvoiceList.jsx",
+    "line": 57,
+    "severity": "Medium",
+    "impactClass": "correctness",
+    "blurb": "Copy-paste divergence: bulkExport hits '/invoice/export' (singular) while the doc and sibling code use '/invoices', so it 404s."
+  },
+  {
+    "id": "BUG-022",
+    "lens": "data-migration",
+    "file": "scripts/migrate_invoices.py",
+    "line": 26,
+    "severity": "High",
+    "impactClass": "data-integrity",
+    "blurb": "Destructive backfill: single unbounded UPDATE of the whole table in one transaction, no backup/snapshot and no chunked/resumable batching."
+  },
+  {
+    "id": "BUG-023",
+    "lens": "data-migration",
+    "file": "scripts/migrate_invoices.py",
+    "line": 37,
+    "severity": "High",
+    "impactClass": "reliability",
+    "blurb": "Schema/code skew: migration SELECTs tax_region, a column added by a later migration, so it raises 'no such column' on the current schema."
+  },
+  {
+    "id": "BUG-024",
+    "lens": "dx-pain",
+    "file": "scripts/parse_receipts.py",
+    "line": 12,
+    "severity": "Low",
+    "impactClass": "dx",
+    "blurb": "Aged FIXME debt: a years-old FIXME guards a legacy date-format branch that was never removed; rotting, unowned tech debt."
+  },
+  {
+    "id": "BUG-025",
+    "lens": "dx-pain",
+    "file": "scripts/parse_receipts.py",
+    "line": 32,
+    "severity": "Medium",
+    "impactClass": "reliability",
+    "blurb": "Serialization/format drift: new OCR build sends amounts as '$12.34' strings but the parser does float(data['amount']) and throws."
+  },
+  {
+    "id": "BUG-026",
+    "lens": "dx-pain",
+    "file": "scripts/parse_receipts.py",
+    "line": 44,
+    "severity": "Low",
+    "impactClass": "dx",
+    "blurb": "Unhelpful catch: bare `except Exception: continue` discards which receipt failed and why, making bad batches undebuggable."
+  },
+  {
+    "id": "BUG-027",
+    "lens": "dx-pain",
+    "file": "scripts/parse_receipts.py",
+    "line": 53,
+    "severity": "Low",
+    "impactClass": "reliability",
+    "blurb": "Flaky sleep-based wait: a fixed time.sleep(2) stands in for a real readiness poll; under load the worker isn't ready and the caller intermittently fails."
+  },
+  {
+    "id": "BUG-028",
+    "lens": "dependency-supply",
+    "file": "package.json",
+    "line": 14,
+    "severity": "Medium",
+    "impactClass": "supply-chain",
+    "blurb": "Unpinned express range '^4.17.1' combined with no lockfile in the repo, so installs float to arbitrary newer minor/patch versions."
+  },
+  {
+    "id": "BUG-029",
+    "lens": "dependency-supply",
+    "file": "package.json",
+    "line": 16,
+    "severity": "High",
+    "impactClass": "supply-chain",
+    "blurb": "Typosquat-shaped dependency 'axxios' (edit-distance-1 from popular 'axios'); likely a malicious/confused package name."
+  }
+]

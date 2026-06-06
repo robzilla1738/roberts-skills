@@ -16,7 +16,7 @@ copy the skill folder into Cursor/Codex.
 
 | Plugin | Skills / commands | Description |
 | --- | --- | --- |
-| [bughunt-suite](plugins/bughunt-suite/) | `/bughunt` `/triage` `/fuzz` | **Flagship.** Offensive whole-codebase bug hunter for any project type — recon, then parallel fan-out across 9 analysis lenses × risk hotspots; merge, cross-validate, report ranked reproducible findings. Plus triage (severity × confidence + repro) and fuzz (property/fuzz harnesses). Report-only. |
+| [bughunt-suite](plugins/bughunt-suite/) | `/bughunt` `/triage` `/fuzz` | **Flagship.** Offensive whole-codebase hunter for bugs, pain points, and inefficiencies — a zero-dependency toolkit ranks hotspots, parallel hunters sweep 13 lenses × risk hotspots, a mandatory skeptic pass refutes false positives, and findings are fingerprinted, baseline-diffed, and rendered to markdown/HTML/SARIF with CI exit codes. Plus triage (severity × confidence + repro) and fuzz (runs property/fuzz harnesses). Report-only. |
 | [autoreview](plugins/autoreview/) | `/review` | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, architecture, maintainability, security, testing, cleanup. |
 | [scaffold](plugins/scaffold/) | `/scaffold` | Product-driven greenfield Next.js — intake profiles, typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. |
 | [macos-design](plugins/macos-design/) | `/macos-design` | Design, critique, and scaffold native macOS apps — HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI/AppKit. |

@@ -1,0 +1,23 @@
+{
+  "name": "billing-fixture",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Deliberately buggy mini billing/invoices service used as the bughunt eval fixture. Static analysis only — DO NOT npm install or deploy. The 'axxios' dependency is an intentional typosquat seed for the dependency-supply lens; never resolve it.",
+  "main": "app/server.js",
+  "scripts": {
+    "preinstall": "node -e \"console.error('\\n[bughunt eval fixture] Refusing to install. This package intentionally lists a typosquat dependency (axxios) as a supply-chain bug seed. The eval is fully STATIC — bughunt reads package.json, it never installs. Do not npm install.\\n'); process.exit(1)\"",
+    "start": "node app/server.js",
+    "dev": "node app/server.js",
+    "migrate": "python3 scripts/migrate_invoices.py",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "better-sqlite3": "^9.4.0",
+    "axxios": "^1.6.0",
+    "dotenv": "16.3.1"
+  },
+  "devDependencies": {
+    "node-fetch": "^3.3.0"
+  }
+}

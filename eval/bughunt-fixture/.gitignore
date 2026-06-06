@@ -1,0 +1,7 @@
+# This fixture INTENTIONALLY commits a .env (fake values only) so the config-drift
+# seed — signals compares .env against .env.example — ships to anyone running the eval.
+# Re-include it despite the repo-root `.env` ignore.
+!.env
+
+# Never commit hunt artifacts generated when the eval runs here.
+.bughunt/
