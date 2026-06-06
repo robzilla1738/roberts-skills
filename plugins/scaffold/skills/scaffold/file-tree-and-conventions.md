@@ -18,6 +18,8 @@ app/
   api/
     trpc/[trpc]/route.ts
     webhooks/clerk/route.ts  # if auth
+    chat/route.ts            # if ai-sdk add-on — streaming LLM (not tRPC)
+    webhooks/stripe/route.ts # if stripe add-on
 components/
   providers/
     TrpcProvider.tsx         # or lib/trpc/client.tsx exports TrpcProvider
@@ -36,6 +38,8 @@ lib/
   auth/
     current.ts               # getCurrentUser (if auth)
     config.ts                # isClerkConfigured (optional)
+  ai/
+    models.ts                # if ai-sdk add-on — model ids, gateway config
   trpc/
     server.ts
     context.ts
@@ -77,6 +81,9 @@ proxy.ts                     # Clerk (Next 16) — if auth
 | `/sign-in`, `/sign-up` | Public (Clerk) |
 | `/app/*` | Protected (Clerk + `protectedProcedure` demos) |
 | `/api/trpc/*` | Public handler; auth inside procedures |
+| `/api/chat` | Protected when Clerk enabled; rate-limit before launch |
+
+**AI features:** streaming routes only under `app/api/*`; see [ai-sdk-and-integrations.md](ai-sdk-and-integrations.md).
 
 ---
 

@@ -165,3 +165,5 @@ Wire into tRPC in [trpc-and-query.md](trpc-and-query.md) `errorFormatter`.
 - tRPC formatter maps `AppError` and `ZodError`
 
 Next: [foundation-testing.md](foundation-testing.md).
+
+**AI / billing keys:** extend `serverSchema` when add-ons ship — see [ai-sdk-and-integrations.md](ai-sdk-and-integrations.md#env-extensions-libenvts).

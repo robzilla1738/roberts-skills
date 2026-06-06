@@ -158,9 +158,24 @@ Commit `.env.example` only.
 
 ---
 
+## Phase 9 packages (intake add-ons only)
+
+Install in Phase 9 — not during Phase 2. See [phase-integrations.md](phase-integrations.md).
+
+| Add-on | Packages |
+|--------|----------|
+| `ai-sdk` | `ai`, `@ai-sdk/react` |
+| `resend` | `resend` |
+| `stripe` | `stripe` |
+| `sentry` | `@sentry/nextjs` |
+| `posthog` | `posthog-js` |
+
+---
+
 ## Pitfalls
 
 - Using `src/` directory while docs assume `@/*` at repo root — pick one and align tree.
+- Installing Phase 9 packages in Phase 2 before intake is confirmed — wait for add-on list.
 - Installing Prisma alongside Drizzle — pick Drizzle for this stack.
 - Missing `typecheck` script — CI will not catch TS errors before build.
 

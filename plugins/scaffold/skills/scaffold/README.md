@@ -1,6 +1,6 @@
 # Stack Scaffold
 
-Greenfield a **Next.js 16 + Tailwind v4 + tRPC + TanStack Query + Neon/Drizzle + Vercel** app with **product-driven intake** — typed env, Vitest, optional Clerk, and production-habits checklist.
+Greenfield a **Next.js 16 + Tailwind v4 + tRPC + TanStack Query + Neon/Drizzle + Vercel** app with **product-driven intake** — typed env, Vitest, optional Clerk, **intake-selected integrations fully installed** (AI SDK, Resend, Stripe, Sentry, PostHog), and production-habits checklist.
 
 Works with any AI coding assistant that loads skills from markdown files.
 
@@ -18,6 +18,8 @@ Works with any AI coding assistant that loads skills from markdown files.
 | `foundation-testing.md` | Vitest |
 | `foundation-ui.md` | shadcn vs minimal |
 | `production-habits.md` | Post-scaffold industry checklist |
+| `phase-integrations.md` | Phase 9 — install all intake add-ons |
+| `ai-sdk-and-integrations.md` | AI SDK patterns + verification |
 | + stack, DB, tRPC, auth, Vercel, verify spokes |
 
 ---
@@ -34,7 +36,7 @@ Copy `scaffold/` to `~/.cursor/skills/scaffold/` (or Claude/Codex paths in hub).
 /scaffold — B2B SaaS dashboard for Acme with teams and billing later
 ```
 
-The agent should ask **what you are building**, pick a profile (`saas-dashboard`, `internal-tool`, `api-first`, etc.), then run phases 0–9.
+The agent should ask **what you are building**, pick a profile and add-ons, then run phases 0–10 (integrations in Phase 9 when selected).
 
 ---
 
@@ -60,6 +62,6 @@ The agent should ask **what you are building**, pick a profile (`saas-dashboard`
 
 ## Version
 
-`2026-06-03.2` — see `SKILL.md` front matter.
+`2026-06-03.4` — see `SKILL.md` front matter.
 
 `disable-model-invocation: true` — invoke with `/scaffold`.

@@ -125,15 +125,26 @@ pnpm create next-app@latest {{project-name}} \
 
 ---
 
-## Phase 9 — Verify
+## Phase 9 — Integrations (intake add-ons)
 
 | | |
 |--|--|
-| **Actions** | [verification-checklist.md](verification-checklist.md); README with profile + [production-habits.md](production-habits.md) |
-| **Exit** | All automated checks green |
+| **Actions** | Install and wire every add-on from intake (#8): packages, `lib/env.ts`, routes, demos |
+| **Spoke** | [phase-integrations.md](phase-integrations.md), [ai-sdk-and-integrations.md](ai-sdk-and-integrations.md) |
+| **Skip** | Add-ons = `none` only |
+| **Exit** | All selected add-ons in `package.json` + code; ready for Phase 10 build gate |
+
+---
+
+## Phase 10 — Verify
+
+| | |
+|--|--|
+| **Actions** | [verification-checklist.md](verification-checklist.md); README with profile, **installed add-ons**, [production-habits.md](production-habits.md) |
+| **Exit** | All automated checks green; integration smoke tests for selected add-ons |
 
 ---
 
 ## Handoff
 
-Suggest **`/review`** (the **autoreview** skill (`/review`)). List post-scaffold add-ons from intake in README only.
+Scaffold is **complete** only after Phase 10 passes. Suggest **`/review`** (the **autoreview** skill). Tell the user which env keys activate each installed integration (AI, Resend, Stripe, etc.).

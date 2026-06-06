@@ -29,6 +29,7 @@ Map the answer to a **scaffold profile** below. If unclear, default to **`saas-d
 - `/app` protected shell, Clerk webhook user sync
 - README: “workspace-ready” — add `workspaceId` / `workspaceProcedure` when multi-tenant (see [production-habits.md](production-habits.md))
 - Foundations: env, errors, vitest, shadcn
+- If product mentions chat/copilot/billing/email, include matching add-ons in intake (#8) — they will be **installed in Phase 9**
 
 **`internal-tool`**
 
@@ -47,7 +48,7 @@ Map the answer to a **scaffold profile** below. If unclear, default to **`saas-d
 
 **`extend-existing`**
 
-- Inventory repo; run only missing phases/spokes (see [intake-and-variants.md](intake-and-variants.md)).
+- Inventory repo; run only missing phases/spokes (see [intake-and-variants.md](intake-and-variants.md)). Include Phase 9 for any add-on not yet wired.
 
 ---
 
@@ -62,7 +63,7 @@ Map the answer to a **scaffold profile** below. If unclear, default to **`saas-d
 
 ---
 
-## Secondary intake (five quick picks)
+## Secondary intake (required picks)
 
 | # | Question | Options | Default |
 |---|----------|---------|---------|
@@ -73,8 +74,19 @@ Map the answer to a **scaffold profile** below. If unclear, default to **`saas-d
 | 5 | DB workflow | `push` (solo) \| `migrate` (team) | `migrate` for saas-dashboard, `push` for prototypes |
 | 6 | Repo shape | `single-app` \| `turborepo` | `single-app` |
 | 7 | `NEXT_PUBLIC_APP_URL` | URL | `http://localhost:3000` |
+| 8 | **Add-ons** (installed in Phase 9) | `none` or comma-separated: `ai-sdk`, `resend`, `stripe`, `sentry`, `posthog` | Infer from product sentence; else `none` |
+| 9 | AI provider (if `ai-sdk`) | `gateway` \| `openai` \| `anthropic` | `gateway` |
+| 10 | AI chat persistence (if `ai-sdk`) | `yes` \| `no` | `yes` for saas-dashboard, `no` for api-first |
 
-Optional: post-scaffold add-ons to **document only** in README (not install): `stripe`, `resend`, `sentry`, `posthog`, `ai-sdk`.
+**Add-ons rule:** every ID listed in #8 must be fully wired in [phase-integrations.md](phase-integrations.md) before Phase 10. Do not document-only.
+
+| Add-on | Typical trigger |
+|--------|-----------------|
+| `ai-sdk` | Chat, copilot, RAG, agents, tool calling |
+| `resend` | Transactional email |
+| `stripe` | Subscriptions or payments |
+| `sentry` | Error monitoring from day one |
+| `posthog` | Product analytics |
 
 ---
 
@@ -91,7 +103,7 @@ Optional: post-scaffold add-ons to **document only** in README (not install): `s
 
 ## Intake output template
 
-Post this plan before coding:
+Post this plan before coding; wait for user confirmation:
 
 ```text
 Scaffold profile: saas-dashboard
@@ -103,15 +115,16 @@ UI: shadcn
 DB workflow: migrate
 Repo shape: single-app
 NEXT_PUBLIC_APP_URL: http://localhost:3000
+Add-ons (Phase 9 install): ai-sdk, resend
+AI provider: gateway
+AI persistence: yes
 
-Phases: 0, 1, 2, 2b, 2c, 3, 4, 5, 6, 7, 8, 9
+Phases: 0, 1, 2, 2b, 2c, 3, 4, 5, 6, 7, 8, 9, 10
 Skipped: —
 Spokes: intake-product-profiles, stack-and-tooling, foundation-env-and-errors,
   foundation-testing, foundation-ui, database-neon-drizzle, trpc-and-query,
-  auth-clerk-optional, file-tree, vercel-and-env, verification-checklist,
-  production-habits (read)
-
-Post-scaffold add-ons (README only): —
+  auth-clerk-optional, file-tree, vercel-and-env, phase-integrations,
+  ai-sdk-and-integrations, verification-checklist, production-habits (read)
 ```
 
 Proceed to [phases-greenfield.md](phases-greenfield.md).

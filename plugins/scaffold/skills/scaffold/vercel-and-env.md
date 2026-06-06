@@ -33,11 +33,31 @@ NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 CLERK_WEBHOOK_SECRET=
 
+# --- AI (Phase 9 if ai-sdk) ----------------------------------------------
+AI_GATEWAY_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+
+# --- Email (Phase 9 if resend) -------------------------------------------
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=
+
+# --- Stripe (Phase 9 if stripe) ------------------------------------------
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+
+# --- Observability (Phase 9) ---------------------------------------------
+SENTRY_DSN=
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+POSTHOG_API_KEY=
+
 # --- Vercel (set in dashboard, not locally) ------------------------------
 # VERCEL_URL is auto-injected on preview/production
 ```
 
-Extend `lib/env.ts` when adding domain keys (Stripe, Resend, etc.) — list planned add-ons from intake in README; see [production-habits.md](production-habits.md).
+Include only sections for add-ons selected in intake. Phase 9 extends `lib/env.ts` to match — see [phase-integrations.md](phase-integrations.md).
 
 ---
 
@@ -124,4 +144,4 @@ Include:
 - Using production Neon branch for every preview without isolation
 - Forgetting `NEXT_PUBLIC_APP_URL` in production (broken metadata/redirects)
 
-Next: [verification-checklist.md](verification-checklist.md).
+Next: Phase 9 [phase-integrations.md](phase-integrations.md) if add-ons selected, then [verification-checklist.md](verification-checklist.md) (Phase 10).

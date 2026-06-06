@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "scaffold",
   "displayName": "Scaffold",
-  "version": "1.0.0",
-  "description": "Product-driven greenfield Next.js: intake profiles, typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel.",
+  "version": "1.1.0",
+  "description": "Product-driven greenfield Next.js: intake profiles, typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel, intake add-ons (AI SDK, Resend, Stripe, Sentry, PostHog).",
   "author": {
     "name": "Robert Courson",
     "url": "https://robertcourson.com"
