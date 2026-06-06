@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "bughunt-suite",
+  "displayName": "Bughunt Suite",
+  "version": "1.0.0",
+  "description": "Offensive whole-codebase bug hunter for any project type, with companion triage and fuzz skills. Report-only.",
+  "author": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/bughunt-suite",
+  "repository": "https://github.com/robzilla1738/roberts-skills",
+  "license": "MIT",
+  "keywords": ["bug-hunting", "code-review", "security", "static-analysis", "triage", "fuzzing"]
+}

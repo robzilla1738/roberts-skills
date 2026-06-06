@@ -60,7 +60,7 @@ Do not list “UI library” if shadcn profile was applied.
 
 ## Optional: autoreview
 
-If scaffold was done in one agent session, invoke **`/review`** using [autoreview](../autoreview/SKILL.md) before the first feature commit.
+If scaffold was done in one agent session, invoke **`/review`** using the **autoreview** skill (`/review`) before the first feature commit.
 
 ---
 

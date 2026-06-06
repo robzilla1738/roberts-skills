@@ -136,4 +136,4 @@ pnpm create next-app@latest {{project-name}} \
 
 ## Handoff
 
-Suggest **`/review`** ([autoreview](../autoreview/SKILL.md)). List post-scaffold add-ons from intake in README only.
+Suggest **`/review`** (the **autoreview** skill (`/review`)). List post-scaffold add-ons from intake in README only.

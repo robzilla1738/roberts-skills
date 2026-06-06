@@ -56,5 +56,5 @@ For `saas-dashboard` profile, README should say:
 
 ## Related
 
-- [autoreview](../autoreview/SKILL.md) — `/review` before merge
+- the **autoreview** skill (`/review`) — `/review` before merge
 - [vercel-and-env.md](vercel-and-env.md) — deploy env

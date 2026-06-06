@@ -43,7 +43,7 @@ Map the answer to a **scaffold profile** below. If unclear, default to **`saas-d
 
 **`marketing-only`**
 
-- Stop scaffold. Open [web-marketing-landing](../../design-skills/web-marketing-landing/SKILL.md).
+- Stop scaffold. Open the **web-marketing-landing** skill.
 
 **`extend-existing`**
 

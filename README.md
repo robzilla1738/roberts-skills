@@ -1,85 +1,108 @@
 # Robert's Skills
 
-Provider-agnostic agent skills for AI coding assistants.
+Provider-agnostic agent skills for AI coding assistants — packaged as a **plugin marketplace**
+that works with **Claude Code, Cursor, and Codex**.
 
-Each skill is a folder of markdown files that teach an agent how to do one kind of work well: design review, native UI scaffolding, domain-specific workflows. Plain files, no lock-in. Copy a folder into wherever your assistant loads skills and use it.
+Each skill is a folder of markdown files (`SKILL.md` + references) that teaches an agent how to
+do one kind of work well: hunt bugs, review code, design native macOS/iOS UI, scaffold a
+full-stack app. Plain files, no lock-in. Install as a Claude Code plugin in one command, or
+copy the skill folder into Cursor/Codex.
 
 **Author:** [Robert Courson](https://robertcourson.com) · [robertcourson.com](https://robertcourson.com)
 
 ---
 
-## Why these exist
+## Available plugins
 
-Most assistants can write code. Fewer of them know how to design a macOS app that actually feels native, or when to stop before every panel turns into Liquid Glass. Skills fix that gap by giving the agent a structured playbook instead of hoping general knowledge is enough.
+| Plugin | Skills / commands | Description |
+| --- | --- | --- |
+| [bughunt-suite](plugins/bughunt-suite/) | `/bughunt` `/triage` `/fuzz` | **Flagship.** Offensive whole-codebase bug hunter for any project type — recon, then parallel fan-out across 9 analysis lenses × risk hotspots; merge, cross-validate, report ranked reproducible findings. Plus triage (severity × confidence + repro) and fuzz (property/fuzz harnesses). Report-only. |
+| [autoreview](plugins/autoreview/) | `/review` | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, architecture, maintainability, security, testing, cleanup. |
+| [scaffold](plugins/scaffold/) | `/scaffold` | Product-driven greenfield Next.js — intake profiles, typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. |
+| [macos-native](plugins/macos-native/) | `/macos-design` `/macos-notch` | Design, critique, and scaffold native macOS apps (HIG, Liquid Glass, SwiftUI/AppKit) plus Dynamic Island / notch-style apps. |
+| [macos-sandbox](plugins/macos-sandbox/) | `/macos-sandbox` | Smoke-test macOS `.app`/`.pkg` in disposable Tart VMs via [macbox](https://github.com/robzilla1738/macbox) CLI or MCP. |
+| [web-marketing-landing](plugins/web-marketing-landing/) | `/landing-page` | Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, bento grid) on Next.js + Tailwind v4. |
 
-I use these in my own projects and publish the ones that hold up outside a single codebase.
+Portable replication guides (patterns captured from real projects) live in [guides/](guides/)
+and are cataloged in **[INDEX.md](INDEX.md)**.
 
-## Quick start
+## Install
+
+### Claude Code — plugin marketplace (one command)
+
+```text
+/plugin marketplace add robzilla1738/roberts-skills
+/plugin install bughunt-suite@roberts-skills
+```
+
+Install any other plugin the same way (`/plugin install <name>@roberts-skills`). Update with
+`/plugin marketplace update roberts-skills`. Browse with `/plugin`.
+
+### Cursor
+
+Cursor loads skills from `SKILL.md`. Copy the skill folder(s) into a Cursor skills location:
 
 ```bash
 git clone https://github.com/robzilla1738/roberts-skills.git
+cp -R roberts-skills/plugins/bughunt-suite/skills/* ~/.cursor/skills/     # global
+# or project scope: .cursor/skills/
 ```
 
-Pick a skill from the table below, open its README, and copy the whole folder into your assistant's skills directory (personal or project scope). Mention the skill in a prompt or attach it if your tool supports that.
+Invoke with `/<skill-name>` (e.g. `/bughunt`) or attach with `@<skill-name>`.
 
-For portable replication guides (patterns captured from real projects), see **[INDEX.md](INDEX.md)** — the searchable catalog of everything in this repo.
+### Codex
 
-Every skill README explains the exact folder layout and how to update when new versions land here.
+Codex loads skills from `.agents/skills/`. Copy the skill folder(s) there:
 
-## Available skills
-
-### [Design skills](design-skills/)
-
-| Skill | Description |
-| --- | --- |
-| [macOS Design](design-skills/macos-design/) | Design, critique, and scaffold native macOS apps. HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI and AppKit. Hub-and-spoke layout with 10 reference modules. |
-| [Web Marketing Landing](design-skills/web-marketing-landing/) | Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, connector hub, bento grid, CSS motion). Next.js + Tailwind v4. |
-| [macOS Notch](design-skills/macos-notch/) | Design and implement macOS Dynamic Island / notch-style apps (NSPanel, modules, OSS patterns). Hub-and-spoke; synced from macbook-notch ecosystem audit. |
-
-### [Workflow skills](workflow-skills/)
-
-| Skill | Description |
-| --- | --- |
-| [Autoreview](workflow-skills/autoreview/) | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, code quality, architecture, maintainability, security, testing, and cleanup. Invoke with `/review`. |
-| [macOS Sandbox](workflow-skills/macos-sandbox/) | Smoke-test macOS apps in disposable Tart VMs via macbox CLI or MCP. Upload, launch, logs, screenshots, crashes, guest automation. Synced from [macbox](https://github.com/robzilla1738/macbox). |
-| [Scaffold](workflow-skills/scaffold/) | Product-driven greenfield Next.js: intake profiles (SaaS, internal tool, API-first), typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. Invoke with `/scaffold`. |
-
-More categories and skills will show up here as they're published.
-
-## How skills are structured
-
-**Simple skill** — one `SKILL.md` file with everything inline.
-
-**Hub-and-spoke skill** — `SKILL.md` routes the agent to reference files it reads only when the task needs them. The macOS Design skill works this way: the hub stays small, spokes cover layout, navigation, accessibility, SwiftUI patterns, and so on.
-
-```
-design-skills/
-  macos-design/
-    README.md          setup instructions
-    SKILL.md           hub — read first
-    foundations.md     reference modules
-    layout-and-windowing.md
-    ...
+```bash
+cp -R roberts-skills/plugins/bughunt-suite/skills/* ~/.agents/skills/     # global
+# or project scope: .agents/skills/ (read from CWD up to repo root)
 ```
 
-Skills use YAML front matter (`name`, `description`, `version`) so assistants can discover and route to them.
+Invoke with `/skills` or `$<skill-name>`.
+
+> `.agents/skills/` is read by **both** Cursor and Codex, so one copy there covers both tools.
+
+## How it's structured
+
+```
+roberts-skills/
+  .claude-plugin/marketplace.json     # lists every plugin
+  plugins/
+    bughunt-suite/
+      .claude-plugin/plugin.json      # plugin manifest
+      commands/                       # slash commands (/bughunt, /triage, /fuzz)
+      skills/
+        bughunt/  SKILL.md + spokes   # the actual skill content
+        triage/   SKILL.md
+        fuzz/     SKILL.md
+    autoreview/ · scaffold/ · macos-native/ · macos-sandbox/ · web-marketing-landing/
+  guides/                             # portable replication write-ups (not skills)
+  INDEX.md
+```
+
+- **Skill** — a `skills/<name>/` folder with a `SKILL.md` (YAML front matter: `name`,
+  `description`, `version`). Simple skills are one file; complex ones use **hub-and-spoke**
+  (a small `SKILL.md` that routes to reference spokes read on demand).
+- **Plugin** — a bundle of one or more related skills plus slash commands, installable in
+  Claude Code via the marketplace.
+- The same `SKILL.md` files are the native format for all three assistants.
 
 ## Compatibility
 
-These skills target any assistant that loads custom instructions from markdown on disk. Install paths differ by tool (`~/.<assistant>/skills/`, `.agents/skills/`, project-scoped rules folders), but the content is the same everywhere.
-
-No vendor-specific APIs. No scripts required unless a skill explicitly ships them.
+No vendor-specific APIs. No scripts required unless a skill explicitly ships them. Claude Code
+gets one-command plugin install; Cursor and Codex read the same `SKILL.md` files directly.
 
 ## Updates
 
-Pull this repo or re-copy the skill folder when you want the latest version. Compare the `version` field in a skill's `SKILL.md` front matter to see what you're running.
+In Claude Code: `/plugin marketplace update roberts-skills`. For Cursor/Codex: pull this repo
+and re-copy the skill folder. Compare the `version` field in a skill's `SKILL.md` front matter.
 
 ## Related projects
 
-Other open-source work from Robert:
-
 - [supergoal](https://github.com/robzilla1738/supergoal) — plan deeply, ship autonomously
 - [htmlshop](https://github.com/robzilla1738/htmlshop) — local visual editor for HTML designs
+- [macbox](https://github.com/robzilla1738/macbox) — disposable macOS VMs for smoke-testing
 - [Memorwise](https://github.com/robzilla1738/Memorwise) — local-first NotebookLM alternative
 
 Full list at [robertcourson.com](https://robertcourson.com).

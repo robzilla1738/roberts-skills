@@ -43,7 +43,7 @@ The first commit should be **boring infrastructure**. No product features until 
 
 ## When not to use
 
-- **Marketing-only** → [web-marketing-landing](../../design-skills/web-marketing-landing/SKILL.md)
+- **Marketing-only** → the **web-marketing-landing** skill
 - **Supabase / Prisma-first** → custom plan (not default spokes)
 - **Expo / mobile-only** → separate skill
 - **macOS / non-Next** → out of scope
@@ -81,7 +81,7 @@ Execute in order. Details: [phases-greenfield.md](phases-greenfield.md).
 
 Skip phases per profile (e.g. `api-first` skips shadcn and often auth).
 
-After verification, recommend **`/review`** via [autoreview](../autoreview/SKILL.md).
+After verification, recommend **`/review`** via the **autoreview** skill (`/review`).
 
 ## Spoke index
 
@@ -104,8 +104,8 @@ After verification, recommend **`/review`** via [autoreview](../autoreview/SKILL
 
 ## Related skills
 
-- [autoreview](../autoreview/SKILL.md)
-- [web-marketing-landing](../../design-skills/web-marketing-landing/SKILL.md)
+- the **autoreview** skill (`/review`)
+- the **web-marketing-landing** skill
 - **clerk-auth** (global) — deep Clerk patterns
 
 ## Default stack

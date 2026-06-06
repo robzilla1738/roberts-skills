@@ -52,8 +52,8 @@ The agent should ask **what you are building**, pick a profile (`saas-dashboard`
 
 ## Related skills
 
-- [autoreview](../autoreview/) — `/review` after scaffold
-- [web-marketing-landing](../../design-skills/web-marketing-landing/) — marketing-only
+- the **autoreview** skill (`/review`) — `/review` after scaffold
+- the **web-marketing-landing** skill — marketing-only
 - **clerk-auth** — advanced Clerk
 
 ---

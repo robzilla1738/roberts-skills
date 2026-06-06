@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "macos-sandbox",
+  "displayName": "macOS Sandbox",
+  "version": "1.0.0",
+  "description": "Smoke-test macOS .app/.pkg in disposable Tart VMs via the macbox CLI or MCP.",
+  "author": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/macos-sandbox",
+  "repository": "https://github.com/robzilla1738/roberts-skills",
+  "license": "MIT",
+  "keywords": ["macos", "tart", "vm", "sandbox", "smoke-test", "macbox"]
+}
