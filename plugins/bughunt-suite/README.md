@@ -9,6 +9,9 @@ deduped, baseline-diffed, and rendered to **markdown / HTML / SARIF** with **CI 
 
 **Author:** [Robert Courson](https://robertcourson.com) · Part of [Robert's Skills](https://github.com/robzilla1738/roberts-skills)
 
+> 📖 **New here? Read the [complete guide →](GUIDE.md)** — how it works, every subcommand,
+> scoping, baselines/suppressions, CI integration, and a full worked example.
+
 ---
 
 ## What's inside
