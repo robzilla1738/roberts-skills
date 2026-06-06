@@ -230,9 +230,11 @@ hardware-aligned black shell
 
 ## Related topics
 
-- [../macos-design/layout-and-windowing.md](../macos-design/layout-and-windowing.md) — safe areas vs notch apps; when not to fake a notch in standard windows
-- [../macos-design/appkit-patterns.md](../macos-design/appkit-patterns.md) — `NSPanel`, screen geometry, safe-area helpers
-- [../macos-design/toolbars-and-menus.md](../macos-design/toolbars-and-menus.md) — menu bar extra fallback controls
-- [../macos-design/accessibility.md](../macos-design/accessibility.md) — Reduce Motion, permissions, keyboard access
-- [../macos-design/swiftui-patterns.md](../macos-design/swiftui-patterns.md) — SwiftUI hosting and composition patterns
-- [../macos-design/critique-checklists.md](../macos-design/critique-checklists.md) — launch checklist and anti-patterns
+In the **macos-design** skill (separate plugin):
+
+- `layout-and-windowing.md` — safe areas vs notch apps; when not to fake a notch in standard windows
+- `appkit-patterns.md` — `NSPanel`, screen geometry, safe-area helpers
+- `toolbars-and-menus.md` — menu bar extra fallback controls
+- `accessibility.md` — Reduce Motion, permissions, keyboard access
+- `swiftui-patterns.md` — SwiftUI hosting and composition patterns
+- `critique-checklists.md` — launch checklist and anti-patterns

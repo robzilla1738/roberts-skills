@@ -10,10 +10,10 @@
 | plugins/bughunt-suite/skills/fuzz/SKILL.md | workflow | Flush out hidden bugs dynamically — property-based testing, fuzzing, differential oracles, shrink to regression test | fuzz, property-based-testing, fuzzing, differential-testing, regression, workflow | 2026-06-06 |
 | plugins/autoreview/skills/autoreview/SKILL.md | workflow | Hard acceptance gate — review all session changes for production quality before marking work complete | autoreview, review, production-quality, acceptance-gate, workflow | 2026-05-28 |
 | plugins/macos-sandbox/skills/macos-sandbox/SKILL.md | workflow | Smoke-test macOS .app/.pkg in disposable Tart VMs via macbox CLI or MCP — upload, launch, logs, screenshots, crashes, guest automation | macbox, macos, tart, vm, sandbox, smoke-test, mcp | 2026-06-03 |
-| plugins/scaffold/skills/scaffold/SKILL.md | workflow | Greenfield Next.js — product intake profiles, typed env, Vitest, tRPC, optional Clerk, Neon/Drizzle, Vercel | scaffold, nextjs, trpc, clerk, neon, drizzle, vercel, vitest, zod, shadcn | 2026-06-03.2 |
-| plugins/macos-native/skills/macos-design/SKILL.md | design / macOS | Design, critique, and scaffold native macOS apps — HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI/AppKit | macos, swiftui, appkit, liquid-glass, hig, design | 2026-05-28 |
-| plugins/macos-native/skills/macos-design/macos_immersive_onboarding_guide.md | design / macOS | Immersive first-launch onboarding wizard with blur, motion, and permission steps | swiftui, macos, onboarding, appkit, animation, permissions | 2026-05-30 |
-| plugins/macos-native/skills/macos-notch/SKILL.md | design / macOS | Dynamic Island notch apps — NSPanel, geometry, state machine, module widgets (media, HUD, shelf, agents) | macos, notch, nspanel, dynamic-island, swiftui, appkit, menubar | 2026-06-03.2 |
+| plugins/scaffold/skills/scaffold/SKILL.md | workflow | Greenfield Next.js — product intake profiles, typed env, Vitest, tRPC, optional Clerk, Neon/Drizzle, Vercel, intake add-ons installed (AI SDK, Resend, Stripe, Sentry, PostHog) | scaffold, nextjs, trpc, clerk, neon, drizzle, vercel, vitest, zod, shadcn, ai-sdk, resend, stripe, sentry, posthog | 2026-06-03.4 |
+| plugins/macos-design/skills/macos-design/SKILL.md | design / macOS | Design, critique, and scaffold native macOS apps — HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI/AppKit | macos, swiftui, appkit, liquid-glass, hig, design | 2026-05-28 |
+| plugins/macos-design/skills/macos-design/macos_immersive_onboarding_guide.md | design / macOS | Immersive first-launch onboarding wizard with blur, motion, and permission steps | swiftui, macos, onboarding, appkit, animation, permissions | 2026-05-30 |
+| plugins/macos-notch/skills/macos-notch/SKILL.md | design / macOS | Dynamic Island notch apps — NSPanel, geometry, state machine, module widgets (media, HUD, shelf, agents) | macos, notch, nspanel, dynamic-island, swiftui, appkit, menubar | 2026-06-03.2 |
 | plugins/web-marketing-landing/skills/web-marketing-landing/SKILL.md | design / Web | Premium SaaS marketing home — aurora hero, glass nav, connector hub, bento grid, CSS motion (Next.js + Tailwind v4) | nextjs, react, tailwind, marketing, landing-page, css-animation | 2026-06-02 |
 | guides/ios/liquidglass-animation.md | guide / iOS | Expanding Liquid Glass composer shell with + menu and slash-command panels | swiftui, ios, liquid-glass, animation, composer, chat-input | 2026-05-28 |
 | guides/ios/ios-sidebar-slide.md | guide / iOS | Mobile sidebar underlay with foreground card slide, gesture-driven open/close | swiftui, ios, sidebar, drawer, gesture, navigation | 2026-05-28 |
@@ -31,9 +31,9 @@
 
 ### design / macOS
 
-- [macos-design](plugins/macos-native/skills/macos-design/SKILL.md) — Native macOS app design (`/macos-design`)
-- [macos_immersive_onboarding_guide.md](plugins/macos-native/skills/macos-design/macos_immersive_onboarding_guide.md) — Immersive first-launch onboarding wizard
-- [macos-notch](plugins/macos-native/skills/macos-notch/SKILL.md) — Dynamic Island / notch-style macOS apps (`/macos-notch`)
+- [macos-design](plugins/macos-design/skills/macos-design/SKILL.md) — Native macOS app design (`/macos-design`)
+- [macos_immersive_onboarding_guide.md](plugins/macos-design/skills/macos-design/macos_immersive_onboarding_guide.md) — Immersive first-launch onboarding wizard
+- [macos-notch](plugins/macos-notch/skills/macos-notch/SKILL.md) — Dynamic Island / notch-style macOS apps (`/macos-notch`)
 
 ### design / Web
 

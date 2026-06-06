@@ -42,7 +42,7 @@ Create a notch utility that feels like **display hardware with context**, not a 
 
 ## When not to use
 
-- Standard document-based macOS apps — see [macos-design](../macos-design/SKILL.md) and [layout-and-windowing.md](../macos-design/layout-and-windowing.md)
+- Standard document-based macOS apps — see the **macos-design** skill (its `layout-and-windowing.md` spoke)
 - Hiding the physical notch without a panel app — see [ecosystem-landscape.md](ecosystem-landscape.md)
 - Linux/GNOME notch clones — out of scope
 
@@ -93,6 +93,6 @@ Create a notch utility that feels like **display hardware with context**, not a 
 
 ## Related skills
 
-- [macos-design](../macos-design/SKILL.md) — general native macOS design (windows, HIG, Liquid Glass)
-- [macos-design/appkit-patterns.md](../macos-design/appkit-patterns.md) — AppKit panels and safe areas
-- [macos-design/accessibility.md](../macos-design/accessibility.md) — Reduce Motion, permissions
+- the **macos-design** skill (separate plugin) — general native macOS design (windows, HIG, Liquid Glass)
+- **macos-design** spoke `appkit-patterns.md` — AppKit panels and safe areas
+- **macos-design** spoke `accessibility.md` — Reduce Motion, permissions

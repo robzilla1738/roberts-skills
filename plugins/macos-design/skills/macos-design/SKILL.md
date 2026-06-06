@@ -41,7 +41,7 @@ A generated macOS app should assume the following unless the user explicitly ask
 7. **Honor safe areas and the camera housing.** Never place essential content or controls where the menu bar, toolbar, rounded display corners, or camera housing can obscure them.
 8. **Accessibility is part of the design, not a pass at the end.** Every generated design should include keyboard, VoiceOver, contrast, Reduce Transparency, Increase Contrast, Reduce Motion, and localization considerations.
 9. **Target OS matters.** A design using macOS 26-era APIs should include availability checks and graceful fallbacks for earlier macOS versions.
-10. **Do not imitate macOS superficially in standard app windows.** Fake traffic lights, fake title bars, fake menu bars, fake notches inside normal window content, and web-style side navigation usually make apps feel less native. Dedicated notch-style utility apps are a separate case — see the [macos-notch](../macos-notch/SKILL.md) skill.
+10. **Do not imitate macOS superficially in standard app windows.** Fake traffic lights, fake title bars, fake menu bars, fake notches inside normal window content, and web-style side navigation usually make apps feel less native. Dedicated notch-style utility apps are a separate case — see the **macos-notch** skill (separate plugin).
 
 ## How to use this skill
 
@@ -95,7 +95,7 @@ Use [critique-checklists.md](critique-checklists.md) for the full audit sections
 | VoiceOver, keyboard, contrast, transparency, localization | [accessibility.md](accessibility.md) |
 | SwiftUI shells, NavigationSplitView, commands, MenuBarExtra, code recipes | [swiftui-patterns.md](swiftui-patterns.md) |
 | AppKit split views, responder chain, NSScreen safe areas, Mac Catalyst | [appkit-patterns.md](appkit-patterns.md) |
-| Notch-style app, top-center panel, hardware-aligned notch UI, peek/HUD/shelf modules | [macos-notch skill](../macos-notch/SKILL.md) |
+| Notch-style app, top-center panel, hardware-aligned notch UI, peek/HUD/shelf modules | the **macos-notch** skill (separate plugin) |
 | Critique checklists, anti-patterns, output templates, source map, launch checklist | [critique-checklists.md](critique-checklists.md) |
 
 ### Common task bundles
@@ -107,7 +107,7 @@ Use [critique-checklists.md](critique-checklists.md) for the full audit sections
 | Liquid Glass audit | liquid-glass → icons-and-visual-language → critique-checklists |
 | SwiftUI scaffold | foundations → layout-and-windowing → swiftui-patterns |
 | AppKit / hybrid app | foundations → appkit-patterns → layout-and-windowing |
-| Notch-style app | [macos-notch](../macos-notch/SKILL.md) (foundations → module spokes → integration-shipping) + appkit-patterns → toolbars-and-menus → accessibility |
+| Notch-style app | the **macos-notch** skill (foundations → module spokes → integration-shipping) + appkit-patterns → toolbars-and-menus → accessibility |
 | Full design audit | All spokes + critique-checklists |
 
 ## Spoke index
@@ -123,5 +123,5 @@ Use [critique-checklists.md](critique-checklists.md) for the full audit sections
 | [accessibility.md](accessibility.md) | VoiceOver, keyboard, contrast, transparency, localization |
 | [swiftui-patterns.md](swiftui-patterns.md) | SwiftUI shells, NavigationSplitView, commands, searchable, MenuBarExtra |
 | [appkit-patterns.md](appkit-patterns.md) | AppKit split views, responder chain, safe areas, Mac Catalyst |
-| *(moved)* | Notch-style apps → **[macos-notch](../macos-notch/SKILL.md)** hub skill |
+| *(moved)* | Notch-style apps → the **macos-notch** hub skill (separate plugin) |
 | [critique-checklists.md](critique-checklists.md) | Critique checklists, anti-patterns, output templates, source map, launch checklist |

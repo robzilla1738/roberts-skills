@@ -6,7 +6,7 @@ Use this spoke when building the notch **shell** — window, geometry, custom sh
 
 GPL note: public reference implementations exist ([ecosystem-landscape.md](ecosystem-landscape.md)). Do not copy GPL source unless your project complies. Prefer original code using these patterns.
 
-For standard windowed apps that should avoid the camera housing, see [macos-design layout-and-windowing](../macos-design/layout-and-windowing.md) instead.
+For standard windowed apps that should avoid the camera housing, see the **macos-design** skill's `layout-and-windowing.md` spoke instead.
 
 ---
 

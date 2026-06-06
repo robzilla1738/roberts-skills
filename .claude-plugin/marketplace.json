@@ -43,12 +43,20 @@
       "keywords": ["macos", "tart", "vm", "sandbox", "smoke-test", "macbox", "mcp"]
     },
     {
-      "name": "macos-native",
+      "name": "macos-design",
       "displayName": "macOS Native Design",
-      "source": "macos-native",
-      "description": "Design, critique, and scaffold native macOS apps (HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI/AppKit) plus Dynamic Island / notch-style apps (NSPanel, modules). Commands: /macos-design, /macos-notch.",
+      "source": "macos-design",
+      "description": "Design, critique, and scaffold native macOS apps — HIG, Liquid Glass, menus, toolbars, sidebars, safe areas, accessibility, SwiftUI/AppKit. Pairs with macos-notch. Command: /macos-design.",
       "category": "design",
-      "keywords": ["macos", "swiftui", "appkit", "liquid-glass", "hig", "notch", "dynamic-island", "design"]
+      "keywords": ["macos", "swiftui", "appkit", "liquid-glass", "hig", "design"]
+    },
+    {
+      "name": "macos-notch",
+      "displayName": "macOS Notch Apps",
+      "source": "macos-notch",
+      "description": "Design and implement macOS Dynamic Island / notch-style apps — NSPanel, hardware-aligned geometry, state machine, module widgets (media, HUD, shelf, agents). Pairs with macos-design. Command: /macos-notch.",
+      "category": "design",
+      "keywords": ["macos", "notch", "nspanel", "dynamic-island", "swiftui", "appkit", "menubar"]
     },
     {
       "name": "web-marketing-landing",

@@ -19,7 +19,8 @@ copy the skill folder into Cursor/Codex.
 | [bughunt-suite](plugins/bughunt-suite/) | `/bughunt` `/triage` `/fuzz` | **Flagship.** Offensive whole-codebase bug hunter for any project type — recon, then parallel fan-out across 9 analysis lenses × risk hotspots; merge, cross-validate, report ranked reproducible findings. Plus triage (severity × confidence + repro) and fuzz (property/fuzz harnesses). Report-only. |
 | [autoreview](plugins/autoreview/) | `/review` | Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, architecture, maintainability, security, testing, cleanup. |
 | [scaffold](plugins/scaffold/) | `/scaffold` | Product-driven greenfield Next.js — intake profiles, typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. |
-| [macos-native](plugins/macos-native/) | `/macos-design` `/macos-notch` | Design, critique, and scaffold native macOS apps (HIG, Liquid Glass, SwiftUI/AppKit) plus Dynamic Island / notch-style apps. |
+| [macos-design](plugins/macos-design/) | `/macos-design` | Design, critique, and scaffold native macOS apps — HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI/AppKit. |
+| [macos-notch](plugins/macos-notch/) | `/macos-notch` | Design and implement macOS Dynamic Island / notch-style apps — NSPanel, geometry, state machine, module widgets. |
 | [macos-sandbox](plugins/macos-sandbox/) | `/macos-sandbox` | Smoke-test macOS `.app`/`.pkg` in disposable Tart VMs via [macbox](https://github.com/robzilla1738/macbox) CLI or MCP. |
 | [web-marketing-landing](plugins/web-marketing-landing/) | `/landing-page` | Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, bento grid) on Next.js + Tailwind v4. |
 
@@ -63,6 +64,30 @@ Invoke with `/skills` or `$<skill-name>`.
 
 > `.agents/skills/` is read by **both** Cursor and Codex, so one copy there covers both tools.
 
+### Install a single skill (any tool)
+
+Every skill works standalone — you don't need the whole repo or even the whole plugin.
+Grab just the skill folder you want:
+
+```bash
+# Claude Code (personal skills — available in every project)
+npx degit robzilla1738/roberts-skills/plugins/bughunt-suite/skills/triage ~/.claude/skills/triage
+
+# Cursor
+npx degit robzilla1738/roberts-skills/plugins/bughunt-suite/skills/triage ~/.cursor/skills/triage
+
+# Codex (also read by Cursor)
+npx degit robzilla1738/roberts-skills/plugins/bughunt-suite/skills/triage ~/.agents/skills/triage
+```
+
+Swap the path for any skill listed in [INDEX.md](INDEX.md) (`plugins/<plugin>/skills/<name>`).
+Each skill folder is self-contained — `SKILL.md` plus its reference spokes.
+
+Two caveats vs. a plugin install: you don't get the plugin's slash command registered
+(invoke the skill by name instead), and updates are manual (re-run the command). Note
+**bughunt** is the one skill best installed via its plugin — it reads its sibling skills
+`triage` and `fuzz` as part of its pipeline.
+
 ## How it's structured
 
 ```
@@ -76,7 +101,7 @@ roberts-skills/
         bughunt/  SKILL.md + spokes   # the actual skill content
         triage/   SKILL.md
         fuzz/     SKILL.md
-    autoreview/ · scaffold/ · macos-native/ · macos-sandbox/ · web-marketing-landing/
+    autoreview/ · scaffold/ · macos-design/ · macos-notch/ · macos-sandbox/ · web-marketing-landing/
   guides/                             # portable replication write-ups (not skills)
   INDEX.md
 ```

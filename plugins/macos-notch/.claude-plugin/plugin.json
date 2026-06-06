@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "macos-notch",
+  "displayName": "macOS Notch Apps",
+  "version": "1.0.0",
+  "description": "Design and implement macOS Dynamic Island / notch-style apps — NSPanel, geometry, state machine, module widgets (media, HUD, shelf, agents).",
+  "author": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/macos-notch",
+  "repository": "https://github.com/robzilla1738/roberts-skills",
+  "license": "MIT",
+  "keywords": ["macos", "notch", "nspanel", "dynamic-island", "swiftui", "appkit", "menubar"]
+}

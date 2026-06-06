@@ -22,7 +22,7 @@ Covers Human Interface Guidelines, Liquid Glass, menus and toolbars, safe areas,
 | `accessibility.md` | VoiceOver, keyboard, contrast, localization |
 | `swiftui-patterns.md` | SwiftUI shells, NavigationSplitView, commands |
 | `appkit-patterns.md` | AppKit split views, responder chain, Mac Catalyst |
-| *(moved)* | Notch-style apps → [macos-notch](../macos-notch/SKILL.md) skill |
+| *(moved)* | Notch-style apps → the **macos-notch** skill (separate plugin) |
 | `macos_immersive_onboarding_guide.md` | Immersive first-launch onboarding wizard (blur, motion, permissions) |
 | `critique-checklists.md` | Audit checklists, anti-patterns, output templates |
 
@@ -62,7 +62,7 @@ macos-design/
   accessibility.md
   swiftui-patterns.md
   appkit-patterns.md
-  notch-effect.md          # redirect → ../macos-notch/
+  notch-effect.md          # redirect → the macos-notch skill (separate plugin)
   critique-checklists.md
 ```
 
