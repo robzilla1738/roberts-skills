@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "web-marketing-landing",
+  "displayName": "Web Marketing Landing",
+  "version": "1.0.0",
+  "description": "Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, bento grid, CSS motion) on Next.js + Tailwind v4.",
+  "author": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/web-marketing-landing",
+  "repository": "https://github.com/robzilla1738/roberts-skills",
+  "license": "MIT",
+  "keywords": ["nextjs", "tailwind", "landing-page", "marketing", "css-animation", "design"]
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "autoreview",
+  "displayName": "Autoreview",
+  "version": "1.0.0",
+  "description": "Hard acceptance gate: review all session changes for production quality before marking work complete.",
+  "author": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/autoreview",
+  "repository": "https://github.com/robzilla1738/roberts-skills",
+  "license": "MIT",
+  "keywords": ["review", "code-review", "production-quality", "acceptance-gate"]
+}

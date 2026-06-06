@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
+  "name": "roberts-skills",
+  "owner": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "description": "Provider-agnostic agent skills for AI coding assistants — bug hunting, code review, native macOS/iOS design, and full-stack scaffolding.",
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "bughunt-suite",
+      "displayName": "Bughunt Suite",
+      "source": "bughunt-suite",
+      "description": "Offensive whole-codebase bug hunter for any project type. Recon, then fan out parallel hunters across 9 analysis lenses × risk hotspots; merge, cross-validate, and report ranked, reproducible findings. Includes triage (severity × confidence + repro) and fuzz (property/fuzz harnesses). Report-only. Commands: /bughunt, /triage, /fuzz.",
+      "category": "code-quality",
+      "keywords": ["bug-hunting", "code-review", "security", "static-analysis", "taint", "concurrency", "authz", "performance", "triage", "fuzzing"]
+    },
+    {
+      "name": "autoreview",
+      "displayName": "Autoreview",
+      "source": "autoreview",
+      "description": "Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, code quality, architecture, maintainability, security, testing, and cleanup. Command: /review.",
+      "category": "code-quality",
+      "keywords": ["review", "code-review", "production-quality", "acceptance-gate", "workflow"]
+    },
+    {
+      "name": "scaffold",
+      "displayName": "Scaffold",
+      "source": "scaffold",
+      "description": "Product-driven greenfield Next.js: intake profiles (SaaS, internal tool, API-first), typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. Command: /scaffold.",
+      "category": "scaffolding",
+      "keywords": ["nextjs", "trpc", "drizzle", "clerk", "vercel", "vitest", "scaffold", "typescript"]
+    },
+    {
+      "name": "macos-sandbox",
+      "displayName": "macOS Sandbox",
+      "source": "macos-sandbox",
+      "description": "Smoke-test macOS .app/.pkg in disposable Tart VMs via the macbox CLI or MCP — upload, launch, logs, screenshots, crashes, guest automation. Command: /macos-sandbox.",
+      "category": "testing",
+      "keywords": ["macos", "tart", "vm", "sandbox", "smoke-test", "macbox", "mcp"]
+    },
+    {
+      "name": "macos-native",
+      "displayName": "macOS Native Design",
+      "source": "macos-native",
+      "description": "Design, critique, and scaffold native macOS apps (HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI/AppKit) plus Dynamic Island / notch-style apps (NSPanel, modules). Commands: /macos-design, /macos-notch.",
+      "category": "design",
+      "keywords": ["macos", "swiftui", "appkit", "liquid-glass", "hig", "notch", "dynamic-island", "design"]
+    },
+    {
+      "name": "web-marketing-landing",
+      "displayName": "Web Marketing Landing",
+      "source": "web-marketing-landing",
+      "description": "Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, connector hub, bento grid, CSS motion) on Next.js + Tailwind v4. Command: /landing-page.",
+      "category": "design",
+      "keywords": ["nextjs", "tailwind", "landing-page", "marketing", "css-animation", "design"]
+    }
+  ]
+}

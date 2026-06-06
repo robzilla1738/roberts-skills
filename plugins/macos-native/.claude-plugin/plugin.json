@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "macos-native",
+  "displayName": "macOS Native Design",
+  "version": "1.0.0",
+  "description": "Design, critique, and scaffold native macOS apps (HIG, Liquid Glass, SwiftUI/AppKit) plus Dynamic Island / notch-style apps.",
+  "author": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/macos-native",
+  "repository": "https://github.com/robzilla1738/roberts-skills",
+  "license": "MIT",
+  "keywords": ["macos", "swiftui", "appkit", "liquid-glass", "hig", "notch", "dynamic-island", "design"]
+}
