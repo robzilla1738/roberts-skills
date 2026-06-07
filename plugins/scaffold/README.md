@@ -1,7 +1,11 @@
 # Scaffold
 
-Product-driven greenfield Next.js: intake profiles (SaaS dashboard, internal tool, API-first),
-typed env, Vitest, tRPC, TanStack Query, Neon/Drizzle, optional Clerk, Vercel.
+Product-driven greenfield for **web** and **native Apple** apps:
+
+- **Web:** Next.js, intake profiles (SaaS, internal tool, API-first), tRPC, Neon/Drizzle, Clerk, Vercel
+- **iOS / macOS:** SwiftUI, SwiftData, XCTest, SPM integrations (RevenueCat, Sparkle, Sentry, …)
+
+Intake **recommends** integrations from what you're building; you confirm before install.
 
 **Author:** [Robert Courson](https://robertcourson.com) · Part of [Robert's Skills](https://github.com/robzilla1738/roberts-skills)
 
@@ -28,7 +32,9 @@ cp -R plugins/scaffold/skills/scaffold ~/.cursor/skills/   # Cursor (global)
 ## Use it
 
 ```text
-/scaffold a SaaS dashboard with auth and a Postgres database
+/scaffold a Mac subscription app sold from my website
+/scaffold a SaaS dashboard with auth and Postgres
+/scaffold an iPhone app with premium unlock
 ```
 
 See [`skills/scaffold/`](skills/scaffold/) for the hub and all reference spokes.

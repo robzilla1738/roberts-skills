@@ -1,6 +1,6 @@
 # Stack Scaffold
 
-Greenfield a **Next.js 16 + Tailwind v4 + tRPC + TanStack Query + Neon/Drizzle + Vercel** app with **product-driven intake** — typed env, Vitest, optional Clerk, **intake-selected integrations fully installed** (AI SDK, Resend, Stripe, Sentry, PostHog), and production-habits checklist.
+Greenfield **web** (Next.js 16 + tRPC + Neon/Drizzle + Vercel) and **native** (iOS/macOS SwiftUI) with product-driven intake, **recommended integrations**, typed config, tests, and build-green verification.
 
 Works with any AI coding assistant that loads skills from markdown files.
 
@@ -12,15 +12,16 @@ Works with any AI coding assistant that loads skills from markdown files.
 
 | File | Role |
 | --- | --- |
-| `SKILL.md` | Hub — product intake, phase order |
-| `intake-product-profiles.md` | **Start here** — what are you building? |
-| `foundation-env-and-errors.md` | Zod env + AppError |
-| `foundation-testing.md` | Vitest |
-| `foundation-ui.md` | shadcn vs minimal |
-| `production-habits.md` | Post-scaffold industry checklist |
-| `phase-integrations.md` | Phase 9 — install all intake add-ons |
-| `ai-sdk-and-integrations.md` | AI SDK patterns + verification |
-| + stack, DB, tRPC, auth, Vercel, verify spokes |
+| `SKILL.md` | Hub — platform + product intake, phase order |
+| `platform-router.md` | **Start here** — web vs iOS vs macOS |
+| `intake-product-profiles.md` | Web profiles + add-ons |
+| `intake-native-profiles.md` | iOS/macOS profiles + RevenueCat, Sparkle, … |
+| `foundation-macos-shell.md` | macOS Settings, commands, MenuBarExtra |
+| `distribution-macos.md` | Sandbox, notarization, Sparkle |
+| `production-habits-native.md` | CI, TestFlight, shipping checklists |
+| `phases-greenfield.md` / `phases-native-greenfield.md` | Ordered phases |
+| `phase-integrations.md` / `phase-native-integrations.md` | Install confirmed add-ons |
+| + security, testing, file-tree, iOS shell spokes |
 
 ---
 
@@ -33,35 +34,37 @@ Copy `scaffold/` to `~/.cursor/skills/scaffold/` (or Claude/Codex paths in hub).
 ## Use it
 
 ```text
-/scaffold — B2B SaaS dashboard for Acme with teams and billing later
+/scaffold — Mac menu bar utility with direct download and auto-update
+/scaffold — B2B SaaS dashboard for Acme with teams
 ```
 
-The agent should ask **what you are building**, pick a profile and add-ons, then run phases 0–10 (integrations in Phase 9 when selected).
+The agent should ask **platform**, then **what you are building**, recommend add-ons, then run the matching phase bundle.
 
 ---
 
-## Profiles (summary)
+## Platform families
 
-| Profile | Use for |
+| Family | Examples |
 | --- | --- |
-| `saas-dashboard` | Default multi-user SaaS |
-| `internal-tool` | Team tools |
-| `api-first` | Backend-first, thin UI |
-| `marketing-only` | Redirect to web-marketing-landing |
-| `extend-existing` | Gap-fill only |
+| `web-next` | SaaS dashboard, internal tool, API-first |
+| `ios` | iPhone/iPad apps, subscriptions |
+| `macos` | Mac apps, menu bar, direct download + Sparkle |
+| `multi` | Web API + native clients |
 
 ---
 
 ## Related skills
 
-- the **autoreview** skill (`/review`) — `/review` after scaffold
-- the **web-marketing-landing** skill — marketing-only
-- **clerk-auth** — advanced Clerk
+- **autoreview** (`/review`) — after scaffold
+- **web-marketing-landing** — marketing-only web
+- **ios-design** / **macos-design** — native UI polish
+- **macos-notch** — notch-style Mac apps
+- **clerk-auth** — advanced Clerk (web)
 
 ---
 
 ## Version
 
-`2026-06-03.4` — see `SKILL.md` front matter.
+`2026-06-04.2` — see `SKILL.md` front matter.
 
 `disable-model-invocation: true` — invoke with `/scaffold`.

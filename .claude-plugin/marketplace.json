@@ -51,7 +51,7 @@
       "name": "scaffold",
       "displayName": "Scaffold",
       "source": "./plugins/scaffold",
-      "description": "Product-driven greenfield Next.js: intake profiles (SaaS, internal tool, API-first), typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. Command: /scaffold.",
+      "description": "Product-driven greenfield for web (Next.js, tRPC, Neon/Drizzle, Vercel) and native Apple (iOS/macOS SwiftUI). Intake recommends integrations (RevenueCat, Sparkle, Stripe, Sentry, PostHog). Command: /scaffold.",
       "category": "scaffolding",
       "keywords": [
         "nextjs",
@@ -61,7 +61,12 @@
         "vercel",
         "vitest",
         "scaffold",
-        "typescript"
+        "typescript",
+        "ios",
+        "macos",
+        "swiftui",
+        "revenuecat",
+        "sparkle"
       ]
     },
     {

@@ -2,20 +2,24 @@
 
 > Read first on every `/scaffold` run. Back to [SKILL.md](SKILL.md).
 
-**Do not create files until product intake is complete.**
+**Do not create files until platform + product intake is complete.**
 
-Full intake lives in **[intake-product-profiles.md](intake-product-profiles.md)** — archetype, profile ID, secondary picks, and output template.
+1. **[platform-router.md](platform-router.md)** — platform family + integration recommendations
+2. **Profile file** — [intake-product-profiles.md](intake-product-profiles.md) (web) or [intake-native-profiles.md](intake-native-profiles.md) (iOS/macOS)
+3. Post intake output template; user confirms
+4. Execute phase bundle — [phases-greenfield.md](phases-greenfield.md) or [phases-native-greenfield.md](phases-native-greenfield.md)
 
-This file covers **legacy aliases** and **extend-existing** / **monorepo** only.
+This file covers **legacy aliases**, **extend-existing**, and **monorepo** only.
 
 ---
 
 ## Quick path
 
-1. Ask: **What are you building?**
-2. Pick profile in [intake-product-profiles.md](intake-product-profiles.md)
-3. Post intake output template
-4. Execute [phases-greenfield.md](phases-greenfield.md)
+1. Ask: **What platform?** → [platform-router.md](platform-router.md)
+2. Ask: **What are you building?** → family profile file
+3. **Recommend** add-ons; user confirms
+4. Post intake output template
+5. Execute the matching phase bundle
 
 ---
 

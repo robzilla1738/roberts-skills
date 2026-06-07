@@ -6,12 +6,12 @@
 
 ---
 
-## Phase 0 — Product intake
+## Phase 0 — Platform + product intake
 
 | | |
 |--|--|
-| **Actions** | [intake-product-profiles.md](intake-product-profiles.md) — ask what you are building; post scaffold plan |
-| **Exit** | Profile ID + secondary picks written; user confirmed |
+| **Actions** | [platform-router.md](platform-router.md) (`web-next`) → [intake-product-profiles.md](intake-product-profiles.md) — recommend add-ons; post scaffold plan |
+| **Exit** | Platform family, profile ID, confirmed add-ons; user confirmed |
 
 ---
 

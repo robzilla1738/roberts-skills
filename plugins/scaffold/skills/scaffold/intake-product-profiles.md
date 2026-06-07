@@ -1,6 +1,8 @@
-# Product intake and scaffold profiles
+# Product intake and scaffold profiles (web-next)
 
-> Phase 0 — run before `create-next-app`. Back to [SKILL.md](SKILL.md).
+> Phase 0b for **`web-next`** only — after [platform-router.md](platform-router.md). Back to [SKILL.md](SKILL.md).
+
+For **iOS / macOS**, use [intake-native-profiles.md](intake-native-profiles.md) instead.
 
 ## Opening question (required)
 
@@ -9,6 +11,8 @@ Ask the user:
 > **What are you building?** One sentence is enough — e.g. “B2B SaaS dashboard with teams”, “internal ops tool”, “API-first admin with thin UI”, “marketing site only”.
 
 Map the answer to a **scaffold profile** below. If unclear, default to **`saas-dashboard`**.
+
+**Recommend add-ons** from the product sentence (see add-on table + [platform-router.md](platform-router.md#integration-recommendations-all-families)); confirm before Phase 9.
 
 ---
 
@@ -52,13 +56,14 @@ Map the answer to a **scaffold profile** below. If unclear, default to **`saas-d
 
 ---
 
-## Out of scope for this skill
+## Out of scope for this file
 
 | Request | Route to |
 |---------|----------|
+| iOS / macOS native app | [platform-router.md](platform-router.md) → [intake-native-profiles.md](intake-native-profiles.md) |
 | Supabase instead of Neon/Drizzle | Different stack — do not force this skill |
 | NextAuth instead of Clerk | Note in README; see [auth-clerk-optional.md](auth-clerk-optional.md) fork |
-| Expo / React Native | Separate mobile scaffold (not here) |
+| Expo / React Native | [platform-router.md](platform-router.md) — custom plan |
 | Turborepo from day one | [intake-and-variants.md](intake-and-variants.md) monorepo fork |
 
 ---
