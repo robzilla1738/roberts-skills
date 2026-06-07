@@ -16,6 +16,7 @@
 | plugins/macos-design/skills/macos-design/macos_immersive_onboarding_guide.md | design / macOS | Immersive first-launch onboarding wizard with blur, motion, and permission steps | swiftui, macos, onboarding, appkit, animation, permissions | 2026-05-30 |
 | plugins/macos-notch/skills/macos-notch/SKILL.md | design / macOS | Dynamic Island notch apps — NSPanel, geometry, state machine, module widgets (media, HUD, shelf, agents) | macos, notch, nspanel, dynamic-island, swiftui, appkit, menubar | 2026-06-03.2 |
 | plugins/web-marketing-landing/skills/web-marketing-landing/SKILL.md | design / Web | Premium SaaS marketing home — aurora hero, glass nav, connector hub, bento grid, CSS motion (Next.js + Tailwind v4) | nextjs, react, tailwind, marketing, landing-page, css-animation | 2026-06-02 |
+| plugins/svvarm/skills/svvarm/SKILL.md | design / Web | Opinionated design director — anti-slop audits (38 patterns, 0-100 scoring), OKLCH color, typography, layout, UX copy, full builds via creative brief → design spec | design, anti-slop, oklch, typography, layout, ux-writing, audit, frontend | 2026-06-07 |
 | guides/ios/liquidglass-animation.md | guide / iOS | Expanding Liquid Glass composer shell with + menu and slash-command panels | swiftui, ios, liquid-glass, animation, composer, chat-input | 2026-05-28 |
 | guides/ios/ios-sidebar-slide.md | guide / iOS | Mobile sidebar underlay with foreground card slide, gesture-driven open/close | swiftui, ios, sidebar, drawer, gesture, navigation | 2026-05-28 |
 
@@ -40,6 +41,7 @@
 ### design / Web
 
 - [web-marketing-landing](plugins/web-marketing-landing/skills/web-marketing-landing/SKILL.md) — Premium SaaS marketing home page pattern (`/landing-page`)
+- [svvarm](plugins/svvarm/skills/svvarm/SKILL.md) — Opinionated design director: anti-slop audits, design systems, full builds from creative brief to spec (`/svvarm`)
 
 ### guide / iOS
 

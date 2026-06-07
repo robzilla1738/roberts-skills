@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "svvarm",
+  "displayName": "svvarm",
+  "version": "2.0.0",
+  "description": "Opinionated design director for frontend interfaces. Reviews, fixes, and builds UI with a 38-pattern anti-slop standard — color, typography, layout, copy, interaction, production. One command, zero AI slop.",
+  "author": {
+    "name": "Robert Courson",
+    "url": "https://robertcourson.com"
+  },
+  "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/svvarm",
+  "repository": "https://github.com/robzilla1738/roberts-skills",
+  "license": "MIT",
+  "keywords": ["design", "frontend", "ui", "css", "typography", "color", "layout", "anti-slop"]
+}

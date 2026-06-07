@@ -5,7 +5,7 @@
     "name": "Robert Courson",
     "url": "https://robertcourson.com"
   },
-  "description": "Provider-agnostic agent skills for AI coding assistants — bug hunting, code review, native macOS/iOS design, and full-stack scaffolding.",
+  "description": "Provider-agnostic agent skills for AI coding assistants \u2014 bug hunting, code review, native macOS/iOS design, and full-stack scaffolding.",
   "metadata": {
     "pluginRoot": "./plugins"
   },
@@ -13,58 +13,136 @@
     {
       "name": "bughunt-suite",
       "displayName": "Bughunt Suite",
-      "source": "bughunt-suite",
-      "description": "Offensive whole-codebase hunter for bugs, pain points, and inefficiencies. A zero-dependency toolkit ranks hotspots deterministically, then parallel hunters sweep 13 analysis lenses × risk hotspots; a mandatory skeptic pass refutes false positives; findings are fingerprinted, deduped, baseline-diffed, and rendered to markdown/HTML/SARIF with CI exit codes. Includes triage (severity × confidence + repro) and fuzz (runs property/fuzz harnesses). Report-only. Commands: /bughunt, /triage, /fuzz.",
+      "source": "./plugins/bughunt-suite",
+      "description": "Offensive whole-codebase hunter for bugs, pain points, and inefficiencies. A zero-dependency toolkit ranks hotspots deterministically, then parallel hunters sweep 13 analysis lenses \u00d7 risk hotspots; a mandatory skeptic pass refutes false positives; findings are fingerprinted, deduped, baseline-diffed, and rendered to markdown/HTML/SARIF with CI exit codes. Includes triage (severity \u00d7 confidence + repro) and fuzz (runs property/fuzz harnesses). Report-only. Commands: /bughunt, /triage, /fuzz.",
       "category": "code-quality",
-      "keywords": ["bug-hunting", "code-review", "security", "static-analysis", "taint", "concurrency", "authz", "performance", "supply-chain", "technical-debt", "triage", "fuzzing", "sarif", "ci"]
+      "keywords": [
+        "bug-hunting",
+        "code-review",
+        "security",
+        "static-analysis",
+        "taint",
+        "concurrency",
+        "authz",
+        "performance",
+        "supply-chain",
+        "technical-debt",
+        "triage",
+        "fuzzing",
+        "sarif",
+        "ci"
+      ]
     },
     {
       "name": "autoreview",
       "displayName": "Autoreview",
-      "source": "autoreview",
-      "description": "Hard acceptance gate before marking work complete. Reviews all session changes for production quality — correctness, code quality, architecture, maintainability, security, testing, and cleanup. Command: /review.",
+      "source": "./plugins/autoreview",
+      "description": "Hard acceptance gate before marking work complete. Reviews all session changes for production quality \u2014 correctness, code quality, architecture, maintainability, security, testing, and cleanup. Command: /review.",
       "category": "code-quality",
-      "keywords": ["review", "code-review", "production-quality", "acceptance-gate", "workflow"]
+      "keywords": [
+        "review",
+        "code-review",
+        "production-quality",
+        "acceptance-gate",
+        "workflow"
+      ]
     },
     {
       "name": "scaffold",
       "displayName": "Scaffold",
-      "source": "scaffold",
+      "source": "./plugins/scaffold",
       "description": "Product-driven greenfield Next.js: intake profiles (SaaS, internal tool, API-first), typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel. Command: /scaffold.",
       "category": "scaffolding",
-      "keywords": ["nextjs", "trpc", "drizzle", "clerk", "vercel", "vitest", "scaffold", "typescript"]
+      "keywords": [
+        "nextjs",
+        "trpc",
+        "drizzle",
+        "clerk",
+        "vercel",
+        "vitest",
+        "scaffold",
+        "typescript"
+      ]
     },
     {
       "name": "macos-sandbox",
       "displayName": "macOS Sandbox",
-      "source": "macos-sandbox",
-      "description": "Smoke-test macOS .app/.pkg in disposable Tart VMs via the macbox CLI or MCP — upload, launch, logs, screenshots, crashes, guest automation. Command: /macos-sandbox.",
+      "source": "./plugins/macos-sandbox",
+      "description": "Smoke-test macOS .app/.pkg in disposable Tart VMs via the macbox CLI or MCP \u2014 upload, launch, logs, screenshots, crashes, guest automation. Command: /macos-sandbox.",
       "category": "testing",
-      "keywords": ["macos", "tart", "vm", "sandbox", "smoke-test", "macbox", "mcp"]
+      "keywords": [
+        "macos",
+        "tart",
+        "vm",
+        "sandbox",
+        "smoke-test",
+        "macbox",
+        "mcp"
+      ]
     },
     {
       "name": "macos-design",
       "displayName": "macOS Native Design",
-      "source": "macos-design",
-      "description": "Design, critique, and scaffold native macOS apps — HIG, Liquid Glass, menus, toolbars, sidebars, safe areas, accessibility, SwiftUI/AppKit. Pairs with macos-notch. Command: /macos-design.",
+      "source": "./plugins/macos-design",
+      "description": "Design, critique, and scaffold native macOS apps \u2014 HIG, Liquid Glass, menus, toolbars, sidebars, safe areas, accessibility, SwiftUI/AppKit. Pairs with macos-notch. Command: /macos-design.",
       "category": "design",
-      "keywords": ["macos", "swiftui", "appkit", "liquid-glass", "hig", "design"]
+      "keywords": [
+        "macos",
+        "swiftui",
+        "appkit",
+        "liquid-glass",
+        "hig",
+        "design"
+      ]
     },
     {
       "name": "macos-notch",
       "displayName": "macOS Notch Apps",
-      "source": "macos-notch",
-      "description": "Design and implement macOS Dynamic Island / notch-style apps — NSPanel, hardware-aligned geometry, state machine, module widgets (media, HUD, shelf, agents). Pairs with macos-design. Command: /macos-notch.",
+      "source": "./plugins/macos-notch",
+      "description": "Design and implement macOS Dynamic Island / notch-style apps \u2014 NSPanel, hardware-aligned geometry, state machine, module widgets (media, HUD, shelf, agents). Pairs with macos-design. Command: /macos-notch.",
       "category": "design",
-      "keywords": ["macos", "notch", "nspanel", "dynamic-island", "swiftui", "appkit", "menubar"]
+      "keywords": [
+        "macos",
+        "notch",
+        "nspanel",
+        "dynamic-island",
+        "swiftui",
+        "appkit",
+        "menubar"
+      ]
     },
     {
       "name": "web-marketing-landing",
       "displayName": "Web Marketing Landing",
-      "source": "web-marketing-landing",
+      "source": "./plugins/web-marketing-landing",
       "description": "Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, connector hub, bento grid, CSS motion) on Next.js + Tailwind v4. Command: /landing-page.",
       "category": "design",
-      "keywords": ["nextjs", "tailwind", "landing-page", "marketing", "css-animation", "design"]
+      "keywords": [
+        "nextjs",
+        "tailwind",
+        "landing-page",
+        "marketing",
+        "css-animation",
+        "design"
+      ]
+    },
+    {
+      "name": "svvarm",
+      "displayName": "svvarm",
+      "source": "./plugins/svvarm",
+      "description": "Opinionated design director for frontend interfaces \u2014 reviews, fixes, and builds UI with a 38-pattern anti-slop standard covering color, typography, layout, copy, interaction, and production. Two-tier reference library: one ~5K-token digest for full builds, eleven deep references on demand. Command: /svvarm.",
+      "category": "design",
+      "keywords": [
+        "design",
+        "frontend",
+        "ui",
+        "anti-slop",
+        "typography",
+        "color",
+        "layout",
+        "oklch",
+        "ux-writing"
+      ]
     }
   ]
 }

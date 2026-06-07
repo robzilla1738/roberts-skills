@@ -23,6 +23,7 @@ copy the skill folder into Cursor/Codex.
 | [macos-notch](plugins/macos-notch/) | `/macos-notch` | Design and implement macOS Dynamic Island / notch-style apps — NSPanel, geometry, state machine, module widgets. |
 | [macos-sandbox](plugins/macos-sandbox/) | `/macos-sandbox` | Smoke-test macOS `.app`/`.pkg` in disposable Tart VMs via [macbox](https://github.com/robzilla1738/macbox) CLI or MCP. |
 | [web-marketing-landing](plugins/web-marketing-landing/) | `/landing-page` | Design and scaffold a premium SaaS marketing home page (aurora hero, glass nav, bento grid) on Next.js + Tailwind v4. |
+| [svvarm](plugins/svvarm/) | `/svvarm` | Opinionated design director for frontend interfaces. Reviews, fixes, and builds UI with a 38-pattern anti-slop standard — color, typography, layout, copy, interaction, production. Two-tier library: one ~5K-token digest for full builds, eleven deep references on demand. |
 
 Portable replication guides (patterns captured from real projects) live in [guides/](guides/)
 and are cataloged in **[INDEX.md](INDEX.md)**.
@@ -101,7 +102,7 @@ roberts-skills/
         bughunt/  SKILL.md + spokes   # the actual skill content
         triage/   SKILL.md
         fuzz/     SKILL.md
-    autoreview/ · scaffold/ · macos-design/ · macos-notch/ · macos-sandbox/ · web-marketing-landing/
+    autoreview/ · scaffold/ · macos-design/ · macos-notch/ · macos-sandbox/ · web-marketing-landing/ · svvarm/
   guides/                             # portable replication write-ups (not skills)
   INDEX.md
 ```
