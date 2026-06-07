@@ -9,7 +9,7 @@ description: >
   invokes /bughunt, asks to find hidden bugs, audit code for defects, hunt pain points or
   inefficiencies, do a deep code review, gate CI on findings, or hunt for what tests miss.
 disable-model-invocation: true
-version: 2026-06-06.5
+version: 2026-06-07.1
 platforms: [language-agnostic, Apple, Web, Systems, Backend, CLI, Android, .NET, PHP, SQL, IaC]
 primary_use_cases:
   - Hunt an entire codebase for hidden defects, not just the current diff
@@ -43,8 +43,10 @@ product code unless the user asks.
    [tooling.md](tooling.md). Degrades to a pure-markdown pipeline when `python3` is absent.
 2. **Breadth via fan-out** — split the target into a grid of **(lens × hotspot)** cells and
    run them as independent parallel hunters, so every risky area is examined through every
-   relevant lens. A capability ladder runs the same phases whether or not the Workflow tool
-   is available. See [orchestration.md](orchestration.md).
+   relevant lens. A capability ladder runs the same phases on whatever fan-out machinery the
+   tool has — the Workflow tool, an **external coding-CLI fan-out** (Composer 2.5 / Grok via
+   `cursor-agent`, the fast variant), parallel Tasks, or a sequential walk. See
+   [orchestration.md](orchestration.md).
 3. **Depth via specialized lenses + platform catalogs** — 13 lenses, each a distinct
    adversarial discipline (bugs, perf, DX, UX, supply-chain, data safety); each platform
    catalog encodes that ecosystem's specific footguns.
@@ -100,7 +102,7 @@ Execute in order. Spokes carry the detail.
 | 4 | **Verify (mandatory)** — a skeptic pass tries to refute every candidate before it counts as a finding | [verification.md](verification.md) |
 | 5 | **Merge & cross-validate** — `bughunt.py merge`: fingerprint, dedupe, cross-validate, suppress, baseline-diff | [orchestration.md](orchestration.md), [tooling.md](tooling.md) |
 | 6 | **Triage** — severity × confidence (+ impact rubric), filter false positives, build minimal repros | [triage](../triage/SKILL.md) |
-| 7 | **Confirm (optional)** — prove high-value findings dynamically or at runtime | [fuzz](../fuzz/SKILL.md), `verify` |
+| 7 | **Confirm (optional)** — prove high-value findings dynamically or at runtime; in parallel isolated sandboxes via the E2B rung | [confirm.md](confirm.md), [fuzz](../fuzz/SKILL.md), `verify` |
 | 8 | **Report** — `bughunt.py render` the ranked markdown/HTML/SARIF; hand fixing off | [tooling.md](tooling.md), [triage](../triage/SKILL.md) report layout |
 
 ## Toolkit & capability ladder
@@ -117,8 +119,11 @@ on Claude Code, Cursor, or Codex.
   findings in markdown, skip SARIF; nothing in the toolkit is required for the hunt to work.
 - **Capability ladder** ([orchestration.md](orchestration.md)) — same five phases
   (Recon → Hunt → **Verify** → Merge → Report) on every rung: **(A)** invoke the shipped
-  `hunt-workflow.js` when the Workflow tool is available; **(B)** parallel Tasks on standard
-  Claude Code; **(C)** a sequential walk on single-agent tools. Verify is mandatory on all three.
+  `hunt-workflow.js` when the Workflow tool is available; **(A-CLI)** the shipped
+  `hunt-cursor.mjs` to fan out Composer 2.5 / Grok hunters via `cursor-agent` — the **fast
+  variant**, and the highest rung available inside Cursor; **(B)** parallel Tasks on standard
+  Claude Code; **(C)** a sequential walk on single-agent tools. Verify is mandatory on every
+  rung, and always on a strong reasoner even when hunters run on a fast model.
 
 ## Example: one trip through the loop (condensed)
 
@@ -188,6 +193,7 @@ Pick the one(s) recon identifies.
 | [recon-and-scoping.md](recon-and-scoping.md) | Deterministic pre-pass, platform detection, trust boundaries, hotspot ranking, hunt plan |
 | [orchestration.md](orchestration.md) | (Lens × hotspot) grid, hunter prompt, capability ladder (Workflow/Tasks/sequential), merge/cross-validate |
 | [verification.md](verification.md) | The mandatory adversarial skeptic pass — four refutation questions, verdict contract |
+| [confirm.md](confirm.md) | Optional E2B-backed Confirm rung — parallel isolated repros that earn Confirmed verdicts (`confirm-e2b.py`) |
 | [tooling.md](tooling.md) | `bughunt.py` reference — census/hotspots/signals/deps/merge/render/diff, state dir, CI mode |
 | [lens-dataflow-taint.md](lens-dataflow-taint.md) | Source→sink tracing |
 | [lens-state-lifecycle.md](lens-state-lifecycle.md) | State machines & resource lifecycle |

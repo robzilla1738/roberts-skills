@@ -59,7 +59,9 @@ The skeptic returns exactly this JSON object (it becomes the finding's `verified
   may write the field too).
 - `method` — `"static-refutation"` (read the code), `"failing-test"` (you wrote/ran a test
   that fails on the bug), or `"runtime-repro"` (you reproduced it live). Most skeptic passes
-  are `"static-refutation"`.
+  are `"static-refutation"`. The dynamic methods (`failing-test`, `runtime-repro`,
+  `property-test`) are what earn **Confirmed** — produce them in parallel isolated sandboxes
+  with the optional [Confirm rung](confirm.md).
 - `verdict` — one of `upheld` | `refuted` | `uncertain`.
 - `note` — a single line naming which refutation question(s) you tried and what you saw. This
   is the audit trail; write it so a human can re-check your reasoning fast.

@@ -103,14 +103,17 @@ bughunt-suite/
     │   ├── recon-and-scoping.md deterministic pre-pass + trust boundaries + hunt plan
     │   ├── orchestration.md     (lens × hotspot) grid + the capability ladder
     │   ├── verification.md      the mandatory skeptic pass
+    │   ├── confirm.md           optional E2B-backed Confirm rung (runtime proof)
     │   ├── tooling.md           full bughunt.py reference
     │   ├── lens-*.md  (13)      one adversarial discipline each
     │   ├── platform-*.md (5)    ecosystem footguns (Apple/Web/Systems/Backend+CLI/Other)
     │   └── scripts/
     │       ├── bughunt.py       the zero-dependency toolkit (python3 stdlib only)
     │       ├── hunt-workflow.js  the Workflow-tool fan-out script (Rung A)
+    │       ├── hunt-cursor.mjs  the Cursor-CLI fan-out script (Rung A-CLI, fast variant)
+    │       ├── confirm-e2b.py   the optional E2B Confirm rung (opt-in)
     │       ├── schema/finding.schema.json   the findings contract
-    │       └── selftest.py      31 stdlib unit tests
+    │       └── selftest.py      stdlib unit tests (incl. offline tests for both new rungs)
     ├── triage/                  severity × confidence, repro, report format
     └── fuzz/                    property/fuzz/differential harnesses that RUN
 ```
@@ -327,9 +330,10 @@ Suggested `.gitignore`:
 python3 ${CLAUDE_PLUGIN_ROOT}/skills/bughunt/scripts/selftest.py
 ```
 
-31 stdlib unit tests cover the whole pipeline (schema round-trip, fingerprint stability,
-dedupe, clustering, suppression, baseline diff, exit codes, SARIF/HTML). Run it after editing
-`bughunt.py`.
+37 stdlib unit tests cover the whole pipeline (schema round-trip, fingerprint stability,
+dedupe, clustering, suppression, baseline diff, exit codes, SARIF/HTML) plus offline `--dry-run`
+tests for the Cursor-CLI and E2B rungs. Run it after editing `bughunt.py`, `hunt-cursor.mjs`,
+or `confirm-e2b.py`.
 
 ---
 
@@ -546,14 +550,29 @@ whichever rung is available:
   builds the grid, and invokes the shipped `scripts/hunt-workflow.js` through the Workflow
   tool. That script fans out one hunter per cell and one skeptic per candidate (pipelined), and
   returns findings with verifier verdicts as JSON; the agent pipes them through `merge` + `render`.
+- **Rung A-CLI — external coding-CLI fan-out (the fast variant).** The agent builds the same
+  grid, then runs the shipped `scripts/hunt-cursor.mjs` (zero-dependency Node), which fans out
+  one `cursor-agent` hunter per cell on a **fast** model (Composer 2.5 / Grok) and one skeptic
+  per candidate on a **strong** reasoner (Opus 4.8). It prints the same findings document the
+  Workflow rung does, so `merge`/`render` are unchanged. Runs from any shell with `cursor-agent`
+  on PATH — Cursor (where it replaces Rung C), Claude Code, or CI. Hunters are read-only
+  (`--mode ask`, never `--force`). Exposed as `/bughunt-cursor`.
 - **Rung B — standard Claude Code.** Identical phases by hand: parallel Task/Agent calls for
   the hunters, then a skeptic Task per surviving candidate, then `merge` + `render` via Bash.
 - **Rung C — single-agent tools (Cursor / Codex).** A sequential walk of the grid: for each
   cell, hunt then immediately skeptic-verify before moving on; accumulate JSON; `merge` +
   `render` if `python3` is present, else hand-assemble the markdown report.
 
-**Verify is mandatory on every rung.** The grid, the evidence contract, and the merge
-discipline are identical; only the execution (parallel vs serial) changes.
+**Verify is mandatory on every rung**, and always on a strong reasoner even when hunters run on
+a fast model. The grid, the evidence contract, and the merge discipline are identical; only the
+execution (parallel vs serial, fast-model vs not) changes.
+
+**Optional Confirm rung (E2B).** After merge, the optional `scripts/confirm-e2b.py` runs
+Probable findings' repros in parallel ephemeral E2B sandboxes to earn **Confirmed** verdicts
+(per-sandbox timeout, concurrency cap, always-on teardown), then pipes back into `merge`. The
+agent supplies executable repros via a repro-map; the script owns isolation and parallelism. It
+is strictly opt-in — without an `E2B_API_KEY`/SDK it passes findings through unchanged and the
+Confirm step stays the manual `/fuzz` + `verify` path. See `skills/bughunt/confirm.md`.
 
 ---
 
