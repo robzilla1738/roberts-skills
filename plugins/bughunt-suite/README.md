@@ -109,8 +109,15 @@ bughunt-suite/
   structured findings, baseline diffing, and SARIF; the hunt still works in pure markdown
   when `python3` is absent.
 - **Verified merge** — CI can require every finding to carry a skeptic/runtime verdict and coverage metadata; uncertain findings stay Speculative and refuted ones move to an appendix.
-- **Portable** — a capability ladder runs the same five phases via the Workflow tool, parallel
-  Tasks, or a sequential single-agent walk. The same `SKILL.md` files are native to Claude
-  Code, Cursor, and Codex.
+- **Portable** — a capability ladder runs the same five phases via the Workflow tool, an
+  external coding-CLI fan-out, parallel Tasks, or a sequential single-agent walk. The same
+  `SKILL.md` files are native to Claude Code, Cursor, and Codex.
+- **Fast variant (Cursor / Composer 2.5)** — `hunt-cursor.mjs` fans out `cursor-agent` hunters
+  on a fast model (Composer 2.5 / Grok) with the skeptic pass kept on a strong reasoner
+  (Opus 4.8). Same output, less wall-clock; read-only by construction. See
+  [`orchestration.md`](skills/bughunt/orchestration.md) (Rung A-CLI).
+- **Confirm rung (E2B, opt-in)** — `confirm-e2b.py` runs Probable findings' repros in parallel
+  isolated sandboxes to earn **Confirmed** verdicts. Degrades to the manual `/fuzz` path when
+  no E2B key is set. See [`confirm.md`](skills/bughunt/confirm.md).
 
-Current versions: `bughunt` 2026-06-06.5 · `triage` 2026-06-06.3 · `fuzz` 2026-06-06.2 · plugin 2.1.0
+Current versions: `bughunt` 2026-06-07.1 · `triage` 2026-06-06.3 · `fuzz` 2026-06-06.2 · plugin 2.2.0

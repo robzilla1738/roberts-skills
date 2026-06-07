@@ -26,6 +26,9 @@ import bughunt  # noqa: E402
 PY = sys.executable or "python3"
 SCRIPT = HERE / "bughunt.py"
 GIT = shutil.which("git") is not None
+NODE = shutil.which("node")
+HUNT_CURSOR = HERE / "hunt-cursor.mjs"
+CONFIRM_E2B = HERE / "confirm-e2b.py"
 
 
 def run_cli(args, cwd, stdin=None):
@@ -532,6 +535,94 @@ class TestRenderAndDiff(TempRepo):
         r = run_cli(["diff", "a.json", "b.json"], self.dir)
         out = json.loads(r.stdout)
         self.assertEqual(out["counts"], {"new": 1, "fixed": 0, "unchanged": 1})
+
+
+class TestHuntCursorRung(TempRepo):
+    """Rung A-CLI orchestrator — exercised fully offline via --dry-run (no cursor-agent)."""
+
+    @unittest.skipIf(NODE is None, "node not installed")
+    def test_dry_run_emits_mergeable_doc(self):
+        cells = {
+            "cells": [
+                {"lens": "auth-access", "platform": "web", "area": "routes/invoices.js",
+                 "files": ["routes/invoices.js"], "lensPath": str(self.dir / "lens.md")},
+                {"lens": "logic-correctness", "platform": "web", "area": "lib/pricing.js",
+                 "files": ["lib/pricing.js"], "lensPath": str(self.dir / "lens.md")},
+            ],
+            "commandsRun": ["bughunt.py hotspots"],
+        }
+        (self.dir / "cells.json").write_text(json.dumps(cells))
+        r = subprocess.run([NODE, str(HUNT_CURSOR), "--dry-run", "--cells", "cells.json"],
+                           cwd=self.dir, capture_output=True, text=True, timeout=120)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(out["schemaVersion"], "1.0")
+        self.assertEqual(out["coverage"]["plannedCells"], 2)
+        self.assertEqual(len(out["findings"]), 2)
+        for f in out["findings"]:
+            self.assertIn(f["verified"]["verdict"], ("upheld", "refuted", "uncertain"))
+            self.assertIn(f["lens"], ("auth-access", "logic-correctness"))
+        # the emitted doc must be byte-compatible with merge (same as the Workflow rung)
+        m = run_cli(["merge", "-", "--require-verified", "--require-coverage", "--strict"],
+                    self.dir, stdin=r.stdout)
+        self.assertNotEqual(m.returncode, 3, m.stderr)
+        self.assertEqual(len(json.loads(m.stdout)["findings"]), 2)
+
+    @unittest.skipIf(NODE is None, "node not installed")
+    def test_help_runs(self):
+        r = subprocess.run([NODE, str(HUNT_CURSOR), "--help"], cwd=self.dir,
+                           capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("Rung A-CLI", r.stdout)
+
+
+class TestConfirmE2BRung(TempRepo):
+    """Confirm rung — selection, dynamic stamping, and clean degrade, all offline."""
+
+    def _merged_doc(self):
+        verified = {"by": "skeptic-pass", "method": "static-refutation",
+                    "verdict": "upheld", "note": "static"}
+        m = run_cli(["merge", "-", "--require-verified", "--require-coverage"], self.dir,
+                    stdin=json.dumps({
+                        "schemaVersion": "1.0",
+                        "coverage": {"plannedCells": 1, "executedCells": 1,
+                                     "filesRead": [], "commandsRun": []},
+                        "findings": [make_finding(verified=verified)],
+                    }))
+        self.assertNotEqual(m.returncode, 3, m.stderr)
+        return m.stdout
+
+    def test_dry_run_stamps_dynamic_method(self):
+        (self.dir / "f.json").write_text(self._merged_doc())
+        r = subprocess.run([PY, str(CONFIRM_E2B), "f.json", "--dry-run"], cwd=self.dir,
+                           capture_output=True, text=True, timeout=120)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        v = json.loads(r.stdout)["findings"][0]["verified"]
+        self.assertEqual(v["by"], "e2b-confirm")
+        self.assertIn(v["method"], ("failing-test", "runtime-repro", "property-test"))
+        # downstream merge must still accept the re-stamped finding
+        m = run_cli(["merge", "-", "--require-verified", "--require-coverage", "--strict"],
+                    self.dir, stdin=r.stdout)
+        self.assertNotEqual(m.returncode, 3, m.stderr)
+
+    def test_repro_map_method_wins(self):
+        (self.dir / "f.json").write_text(self._merged_doc())
+        (self.dir / "repros.json").write_text(json.dumps(
+            {"BH-001": {"cmd": "true", "expect": "nonzero-means-bug", "method": "failing-test"}}))
+        r = subprocess.run([PY, str(CONFIRM_E2B), "f.json", "--repro-map", "repros.json",
+                            "--dry-run"], cwd=self.dir, capture_output=True, text=True, timeout=120)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertEqual(json.loads(r.stdout)["findings"][0]["verified"]["method"], "failing-test")
+
+    def test_degrades_without_key(self):
+        (self.dir / "f.json").write_text(self._merged_doc())
+        env = dict(os.environ)
+        env.pop("E2B_API_KEY", None)
+        r = subprocess.run([PY, str(CONFIRM_E2B), "f.json", "--all"], cwd=self.dir,
+                           capture_output=True, text=True, timeout=120, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(len(out["findings"]), 1)  # unchanged passthrough, pipeline unblocked
 
 
 if __name__ == "__main__":

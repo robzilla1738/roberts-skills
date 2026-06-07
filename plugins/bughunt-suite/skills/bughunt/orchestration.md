@@ -89,7 +89,12 @@ it and pipes it straight to `merge`; prose write-ups break the pipeline.
 
 Different assistants have different fan-out machinery. Pick the **highest rung your tool
 supports**; the five phases (Recon → Hunt → **Verify** → Merge → Report) are identical on
-every rung. **Verify is mandatory on all three rungs** — see [verification.md](verification.md).
+every rung. **Verify is mandatory on every rung** — see [verification.md](verification.md).
+
+The rungs: **A** (Workflow tool), **A-CLI** (external coding-CLI fan-out via `cursor-agent` —
+Composer 2.5 / Grok), **B** (parallel Tasks), **C** (sequential single-agent). A-CLI is the
+fast variant and is also the highest rung available *inside Cursor*: it upgrades Cursor from a
+sequential Rung-C tool to a true parallel fan-out.
 
 ### Rung A — Workflow tool available (Claude Code with the Workflow tool)
 
@@ -122,6 +127,44 @@ shipped workflow script.
    ```
 5. **Report (Bash):** `python3 scripts/bughunt.py render .bughunt/findings.json` →
    md/html/sarif.
+
+### Rung A-CLI — external coding-CLI fan-out (Composer 2.5 / Grok via `cursor-agent`)
+
+The **fast variant**. Identical phases, but the parallel Hunt+Verify is driven by the Cursor
+CLI instead of the Workflow tool, so it runs from *any* shell with `cursor-agent` on PATH —
+including **inside Cursor** (where it replaces the sequential Rung C), Claude Code, or CI.
+Composer 2.5 has no external API; `cursor-agent` is how you reach it. The shipped
+[`scripts/hunt-cursor.mjs`](scripts/hunt-cursor.mjs) (zero-dependency Node) owns the fan-out.
+
+**Why it's faster, without losing signal:** hunters run on a **fast** model (Composer 2.5 /
+Grok) for breadth and cost; the mandatory skeptic pass stays on a **strong reasoner**
+(Opus 4.8). That split — fast where breadth matters, strong at the signal gate — is the rule
+that keeps the hunt *just as powerful*. Don't put the verify pass on the fast model.
+
+1. **Recon + build the grid:** exactly as Rung A — run the pre-pass, emit
+   `cells: [{ lens, platform, area, files, lensPath, platformPath }]` into a `cells.json`.
+2. **Hunt + Verify (one command):**
+   ```bash
+   node ${CLAUDE_PLUGIN_ROOT}/skills/bughunt/scripts/hunt-cursor.mjs \
+       --cells cells.json --workspace "$PWD" \
+       --hunt-model composer-2.5 --verify-model claude-opus-4-8-thinking-high \
+     | python3 ${CLAUDE_PLUGIN_ROOT}/skills/bughunt/scripts/bughunt.py merge - \
+         --require-verified --require-coverage --strict --write-baseline
+   ```
+   It fans out one hunter per cell (bounded `--concurrency`, default 6), then one skeptic per
+   candidate finding, and prints the **same** `{schemaVersion:"1.0", coverage, findings}`
+   document the Workflow rung does — so `merge`/`render` are unchanged.
+3. **Report (Bash):** `python3 scripts/bughunt.py render .bughunt/findings.json`.
+
+**Read-only by construction.** Every `cursor-agent` call uses `-p --mode ask --trust` and
+**never** `--force`/`--yolo`, so a hunter cannot edit your code. `--trust` only suppresses the
+workspace-trust prompt; it grants no write access.
+
+**Auth & models.** `cursor-agent` uses its stored login or `CURSOR_API_KEY`. Discover exact
+model ids with `cursor-agent --list-models` (e.g. `composer-2.5`, `composer-2.5-fast`,
+`grok-build-0.1`, `grok-4.3` for hunters; `claude-opus-4-8-thinking-high` for the skeptic).
+Pass `--inline-lenses` if the hunter can't read the spoke files by path. `node hunt-cursor.mjs
+--help` lists every flag; `--dry-run` exercises the whole pipeline offline.
 
 ### Rung B — standard Claude Code (Task/Agent fan-out, no Workflow tool)
 
@@ -160,7 +203,7 @@ No fan-out machinery: walk the grid **sequentially**, but run all five phases.
    triage layout (severity × confidence sections; refuted in an appendix; uncertain capped at
    Speculative). The hunt still works without the scripts — only the automation is lost.
 
-**Explicitly: Verify is mandatory on all three rungs.** A hunt that skips it has not run the
+**Explicitly: Verify is mandatory on every rung.** A hunt that skips it has not run the
 skill.
 
 ## Budget & stop policy
