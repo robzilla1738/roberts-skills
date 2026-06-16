@@ -11,7 +11,7 @@
 | plugins/bughunt-suite/GUIDE.md | guide / reference | Complete bughunt-suite manual — architecture, the hunt loop, all 13 lenses, every bughunt.py subcommand, the findings schema, scoping, baselines/suppressions, CI/SARIF, the capability ladder, and a full worked example | bughunt, guide, documentation, manual, cli, ci, sarif, reference | 2026-06-06 |
 | plugins/autoreview/skills/autoreview/SKILL.md | workflow | Hard acceptance gate — review all session changes for production quality before marking work complete | autoreview, review, production-quality, acceptance-gate, workflow | 2026-05-28 |
 | plugins/macos-sandbox/skills/macos-sandbox/SKILL.md | workflow | Smoke-test macOS .app/.pkg in disposable Tart VMs via macbox CLI or MCP — upload, launch, logs, screenshots, crashes, guest automation | macbox, macos, tart, vm, sandbox, smoke-test, mcp | 2026-06-03 |
-| plugins/scaffold/skills/scaffold/SKILL.md | workflow | Greenfield Next.js — product intake profiles, typed env, Vitest, tRPC, optional Clerk, Neon/Drizzle, Vercel, intake add-ons installed (AI SDK, Resend, Stripe, Sentry, PostHog) | scaffold, nextjs, trpc, clerk, neon, drizzle, vercel, vitest, zod, shadcn, ai-sdk, resend, stripe, sentry, posthog | 2026-06-03.4 |
+| plugins/scaffold/skills/scaffold/SKILL.md | workflow | Greenfield web + native Apple — platform intake, macOS shell/distribution best practices, recommended integrations (RevenueCat, Sparkle, etc.) installed build-green | scaffold, nextjs, trpc, ios, macos, swiftui, revenuecat, sparkle, sandbox, notarization | 2026-06-04.2 |
 | plugins/macos-design/skills/macos-design/SKILL.md | design / macOS | Design, critique, and scaffold native macOS apps — HIG, Liquid Glass, menus, toolbars, safe areas, accessibility, SwiftUI/AppKit | macos, swiftui, appkit, liquid-glass, hig, design | 2026-05-28 |
 | plugins/macos-design/skills/macos-design/macos_immersive_onboarding_guide.md | design / macOS | Immersive first-launch onboarding wizard with blur, motion, and permission steps | swiftui, macos, onboarding, appkit, animation, permissions | 2026-05-30 |
 | plugins/macos-notch/skills/macos-notch/SKILL.md | design / macOS | Dynamic Island notch apps — NSPanel, geometry, state machine, module widgets (media, HUD, shelf, agents) | macos, notch, nspanel, dynamic-island, swiftui, appkit, menubar | 2026-06-03.2 |
@@ -30,7 +30,7 @@
 - [bughunt-suite/GUIDE.md](plugins/bughunt-suite/GUIDE.md) — 📖 the complete bughunt-suite manual (how it works, every subcommand, CI, worked example)
 - [autoreview](plugins/autoreview/skills/autoreview/SKILL.md) — Hard acceptance gate for session changes (`/review`)
 - [macos-sandbox](plugins/macos-sandbox/skills/macos-sandbox/SKILL.md) — macOS app smoke testing in Tart VMs via macbox (`/macos-sandbox`)
-- [scaffold](plugins/scaffold/skills/scaffold/SKILL.md) — Greenfield full-stack Next.js app (`/scaffold`)
+- [scaffold](plugins/scaffold/skills/scaffold/SKILL.md) — Greenfield web or native Apple app (`/scaffold`)
 
 ### design / macOS
 

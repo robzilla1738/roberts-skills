@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "scaffold",
   "displayName": "Scaffold",
-  "version": "1.1.0",
-  "description": "Product-driven greenfield Next.js: intake profiles, typed env, Vitest, tRPC, Neon/Drizzle, optional Clerk, Vercel, intake add-ons (AI SDK, Resend, Stripe, Sentry, PostHog).",
+  "version": "1.3.0",
+  "description": "Product-driven greenfield for web (Next.js, tRPC, Neon/Drizzle, Vercel) and native Apple (iOS/macOS SwiftUI). Intake recommends integrations (RevenueCat, Sparkle, Stripe, Sentry, PostHog, etc.) and installs them build-green.",
   "author": {
     "name": "Robert Courson",
     "url": "https://robertcourson.com"
@@ -11,5 +11,5 @@
   "homepage": "https://github.com/robzilla1738/roberts-skills/tree/main/plugins/scaffold",
   "repository": "https://github.com/robzilla1738/roberts-skills",
   "license": "MIT",
-  "keywords": ["nextjs", "trpc", "drizzle", "clerk", "vercel", "vitest", "scaffold"]
+  "keywords": ["nextjs", "trpc", "drizzle", "clerk", "vercel", "vitest", "scaffold", "ios", "macos", "swiftui", "revenuecat", "sparkle"]
 }
